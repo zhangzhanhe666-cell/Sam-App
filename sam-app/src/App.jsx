@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 
 // ─── COLOUR TOKENS ────────────────────────────────────────────────────────────
 const C = {
@@ -663,13 +663,42 @@ function AiGenerateButton({ aiKey, module, level, onResult, onSetAiKey }) {
 }
 
 // Google Cloud TTS — 傳入 apiKey 時用高品質語音，否則 fallback 到瀏覽器 TTS
-async function speakGoogle(text, apiKey) {
-  if (!apiKey) {
-    // fallback
+// 嘗試挑一個德語語音（手機 Safari 常需要明確指定，否則用錯發音）
+function pickGermanVoice() {
+  const voices = window.speechSynthesis.getVoices() || [];
+  // 優先找 de-DE，其次任何 de 開頭
+  return voices.find(v => v.lang === "de-DE")
+    || voices.find(v => v.lang && v.lang.toLowerCase().startsWith("de"))
+    || null;
+}
+
+function speakBrowser(text) {
+  try {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "de-DE"; u.rate = 0.85;
+    u.lang = "de-DE";
+    u.rate = 0.85;
+    const v = pickGermanVoice();
+    if (v) u.voice = v;
+    // 手機有時語音清單還沒載入，等一下再唸
+    if (!v && window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        const v2 = pickGermanVoice();
+        if (v2) u.voice = v2;
+        window.speechSynthesis.speak(u);
+        window.speechSynthesis.onvoiceschanged = null;
+      };
+      return;
+    }
     window.speechSynthesis.speak(u);
+  } catch (e) {
+    // 靜默失敗
+  }
+}
+
+async function speakGoogle(text, apiKey) {
+  if (!apiKey) {
+    speakBrowser(text);
     return;
   }
   const res = await fetch(
@@ -692,10 +721,7 @@ async function speakGoogle(text, apiKey) {
 }
 
 function speak(text) {
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = "de-DE"; u.rate = 0.85;
-  window.speechSynthesis.speak(u);
+  speakBrowser(text);
 }
 
 // ─── API KEY CONTEXT ──────────────────────────────────────────────────────────
@@ -723,7 +749,7 @@ function ApiKeyBanner({ apiKey, onSet }) {
         </button>
       </div>
       <div style={{ fontSize: 11, color: "#6B7280", marginTop: 6 }}>
-        沒有金鑰？仍可使用瀏覽器 TTS（品質較低）。
+        沒有金鑰？仍可使用瀏覽器 TTS（電腦較準，手機可能發音不準）。建議聽力用電腦，或填入 Google 金鑰獲得高品質語音。
         <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" style={{ color: C.blue, marginLeft: 4 }}>取得金鑰 →</a>
       </div>
     </div>
@@ -921,8 +947,22 @@ function ListeningModule({ apiKey, onSetApiKey, aiKey, onSetAiKey }) {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.lang = "de-DE"; u.rate = 0.82;
+        const v = pickGermanVoice();
+        if (v) u.voice = v;
         u.onend = () => { setPlaying(false); setPlayed(true); };
-        window.speechSynthesis.speak(u);
+        const doSpeak = () => window.speechSynthesis.speak(u);
+        if (!v && window.speechSynthesis.getVoices().length === 0) {
+          window.speechSynthesis.onvoiceschanged = () => {
+            const v2 = pickGermanVoice();
+            if (v2) u.voice = v2;
+            doSpeak();
+            window.speechSynthesis.onvoiceschanged = null;
+          };
+        } else {
+          doSpeak();
+        }
+        // 保險：若 3 秒內沒觸發 onend（手機偶發），解除 loading
+        setTimeout(() => setPlaying(false), Math.max(3000, text.length * 90));
       }
     } catch (e) {
       setTtsErr(e.message);
@@ -1030,6 +1070,15 @@ function ListeningModule({ apiKey, onSetApiKey, aiKey, onSetAiKey }) {
           {chosen && (
             <div style={{ textAlign: "center", marginTop: 14 }}>
               <div style={{ fontSize: 18, marginBottom: 10 }}>{chosen === q.answer ? "🎉 正確！" : `❌ 正確答案：${q.answer}`}</div>
+              <div style={{ textAlign: "left", background: "#EEF2FF", border: "1.5px solid #818CF8", borderRadius: 10, padding: "10px 12px", marginBottom: 10 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#4F46E5", marginBottom: 4 }}>📝 聽力原文</div>
+                <div style={{ fontSize: 14, color: "#1F2937", lineHeight: 1.6 }}>{q.tts}</div>
+                {q.ttsZh && <div style={{ fontSize: 13, color: "#6B7280", marginTop: 4, lineHeight: 1.6 }}>{q.ttsZh}</div>}
+                <button onClick={() => playTTS(q.tts)} disabled={playing}
+                  style={{ marginTop: 8, background: "#fff", border: "1.5px solid #818CF8", borderRadius: 8, padding: "4px 12px", fontSize: 12, fontWeight: 700, color: "#4F46E5", cursor: "pointer" }}>
+                  🔊 再聽一次
+                </button>
+              </div>
               {q.trap && (
                 <div style={{ textAlign: "left", background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#92400E", lineHeight: 1.6, marginBottom: 12 }}>
                   ⚠️ <b>陷阱解析：</b>{q.trap}
@@ -1774,53 +1823,186 @@ function RoleLegend({ roles }) {
 
 const GRAMMAR_LESSONS = [
   {
-    id: "g1", level: "A1.1", emoji: "🎀", title: "冠詞與名詞性別",
+    id: "g1", level: "A1.1", emoji: "🎀", title: "冠詞：der / die / das / ein",
     color: "#FF6B9D",
-    intro: "德語名詞有三個性別，冠詞隨性別變化。背單字要連冠詞一起記！",
+    intro: "德語每個名詞都有「性別」，冠詞要跟著變。這是德語最基礎、也最多人卡關的地方——把這張卡記熟，後面所有格位變化都好懂！",
     blocks: [
-      { type: "table", headers: ["性別", "定冠詞", "不定冠詞", "例子"], rows: [
-        ["陽性 (m)", "der", "ein", "der Mann 男人"],
-        ["陰性 (f)", "die", "eine", "die Frau 女人"],
-        ["中性 (n)", "das", "ein", "das Kind 小孩"],
-        ["複數", "die", "—", "die Kinder 孩子們"],
-      ]},
+      { type: "card", title: "定冠詞 vs 不定冠詞（記憶卡）", subtitle: "定冠詞=「那個」特指；不定冠詞=「一個」泛指", headers: ["性別", "定冠詞 the", "不定冠詞 a", "例子"], rows: [
+        ["陽性 m", "der", "ein", "der/ein Mann 男人"],
+        ["陰性 f", "die", "eine", "die/eine Frau 女人"],
+        ["中性 n", "das", "ein", "das/ein Kind 小孩"],
+        ["複數 pl", "die", "—", "die Kinder 孩子們"],
+      ], foot: "注意：陽性和中性的不定冠詞都是 ein，只有陰性多一個 e → eine。複數沒有不定冠詞！" },
+      { type: "tip", text: "🧠 記憶口訣：背單字時「冠詞+名詞」一起背，例如不要只記 Tisch，要記 der Tisch（桌子）。性別沒有邏輯，只能連著記！" },
       { type: "hi", roles: ["article", "subject"], title: "看冠詞配名詞", sentences: [
         [{t:"Der",r:"article"},{t:"Mann",r:"subject"},{t:"ist groß."}],
         [{t:"Die",r:"article"},{t:"Frau",r:"subject"},{t:"liest."}],
         [{t:"Das",r:"article"},{t:"Kind",r:"subject"},{t:"spielt."}],
       ]},
-      { type: "tip", text: "🎨 粉色 = 冠詞，藍色 = 主語（名詞）。記單字時把冠詞和名詞當一組！" },
+      { type: "examTip", points: [
+        { skill: "閱讀", text: "看到冠詞就能判斷名詞性別，幫你看懂句子結構。" },
+        { skill: "聽力", text: "聽到 der/die/das 能快速抓到主角是誰。" },
+        { skill: "寫作", text: "寫錯冠詞是最常見扣分點，名詞一定連冠詞寫。" },
+        { skill: "口說", text: "說名詞前先想冠詞，養成 der Tisch 的習慣。" },
+      ]},
     ],
     quiz: [
-      { q: "___ Mutter kocht gern.", options: ["Der", "Die", "Das"], answer: "Die", hint: "Mutter 是陰性" },
-      { q: "___ Kind schläft.", options: ["Der", "Die", "Das"], answer: "Das", hint: "Kind 是中性" },
-      { q: "___ Vater arbeitet.", options: ["Der", "Die", "Das"], answer: "Der", hint: "Vater 是陽性" },
+      // 前3題：基礎
+      { q: "___ Mutter kocht gern.", options: ["Der", "Die", "Das"], answer: "Die", hint: "Mutter 陰性 → die" },
+      { q: "___ Kind schläft.", options: ["Der", "Die", "Das"], answer: "Das", hint: "Kind 中性 → das" },
+      { q: "___ Vater arbeitet.", options: ["Der", "Die", "Das"], answer: "Der", hint: "Vater 陽性 → der" },
+      // 後面：應用（一段話、考試情境）
+      { q: "【閱讀情境】Im Zimmer steht ein Tisch. ___ Tisch ist neu.（第二句指「那張」桌子，用哪個冠詞？）", options: ["Ein", "Der", "Das"], answer: "Der", hint: "Tisch陽性,且第二次提到=特指→der。考試常考『第一次ein,第二次der』" },
+      { q: "【寫作情境】要寫「我有一隻狗」，Hund 是陽性，該用？Ich habe ___ Hund.", options: ["ein", "eine", "einen"], answer: "einen", hint: "陽性受詞(第四格)ein→einen!這是A1高頻考點" },
+    ],
+    trans: [
+      { zh: "在我的房間裡有一張桌子，那張桌子是新的。", scene: "歌德寫作常考：描述房間／住處", de: "In meinem Zimmer steht ein Tisch. Der Tisch ist neu.", note: "第一次提到用 ein(泛指),第二次用 der(特指)。考試描述住處必考這個『ein→der』轉換" },
+      { zh: "我想買一台新電腦，但這台電腦太貴了。", scene: "歌德口說／寫作：購物、表達需求", de: "Ich möchte einen neuen Computer kaufen, aber der Computer ist zu teuer.", note: "Computer陽性,第四格ein→einen;möchte+原形kaufen放句尾;第二句der特指" },
+      { zh: "這個小孩沒有自己的房間。", scene: "歌德寫作：家庭、居住情況", de: "Das Kind hat kein eigenes Zimmer.", note: "Kind中性→das;否定名詞用kein;Zimmer中性→kein(不變)" },
     ]
   },
   {
-    id: "g2", level: "A1.1", emoji: "⚡", title: "現在式動詞變位",
-    color: "#EF4444",
-    intro: "動詞會根據主語變化詞尾。注意：動詞永遠在第二位！",
+    id: "g1b", level: "A1.1", emoji: "👨‍👩‍👧", title: "物主代詞：我的、你的、他的",
+    color: "#A855F7",
+    intro: "「我的書、你的車、他的狗」——這些 mein/dein/sein 就是物主代詞。它跟著後面名詞的性別變化，規則其實跟 ein 一模一樣！",
     blocks: [
-      { type: "table", headers: ["人稱", "wohnen 住", "詞尾"], rows: [
-        ["ich 我", "wohne", "-e"],
-        ["du 你", "wohnst", "-st"],
-        ["er/sie/es 他/她/它", "wohnt", "-t"],
-        ["wir 我們", "wohnen", "-en"],
-        ["ihr 你們", "wohnt", "-t"],
-        ["sie/Sie 他們/您", "wohnen", "-en"],
+      { type: "card", title: "物主代詞記憶卡", subtitle: "誰擁有 → 用哪個字", headers: ["人稱", "物主代詞", "例子"], rows: [
+        ["ich 我", "mein 我的", "mein Buch 我的書"],
+        ["du 你", "dein 你的", "dein Auto 你的車"],
+        ["er 他", "sein 他的", "sein Hund 他的狗"],
+        ["sie 她", "ihr 她的", "ihr Kind 她的孩子"],
+        ["wir 我們", "unser 我們的", "unser Haus 我們的家"],
+        ["ihr 你們", "euer 你們的", "euer Lehrer 你們的老師"],
+        ["sie/Sie 他們/您", "ihr / Ihr 他們的/您的", "Ihr Name 您的名字"],
+      ], foot: "重點：詞尾變化跟 ein 一樣！陰性和複數後面加 -e（meine Mutter 我的媽媽），陽性中性不加（mein Vater）。" },
+      { type: "card", title: "詞尾怎麼變（跟 ein 一樣）", headers: ["後面名詞", "mein 變化", "例子"], rows: [
+        ["陽性 m", "mein", "mein Vater 我爸"],
+        ["陰性 f", "meine", "meine Mutter 我媽"],
+        ["中性 n", "mein", "mein Kind 我的孩子"],
+        ["複數 pl", "meine", "meine Eltern 我父母"],
+      ], foot: "陰性、複數 → 加 e。其他人稱(dein, sein, ihr...)全部照這規則變！" },
+      { type: "hi", roles: ["article", "subject"], title: "例句（物主代詞當冠詞用）", sentences: [
+        [{t:"Mein",r:"article"},{t:"Vater",r:"subject"},{t:"ist Arzt."}],
+        [{t:"Meine",r:"article"},{t:"Mutter",r:"subject"},{t:"kocht gern."}],
+        [{t:"Sein",r:"article"},{t:"Hund",r:"subject"},{t:"ist klein."}],
       ]},
-      { type: "hi", roles: ["subject", "verb"], title: "動詞永遠在第二位", sentences: [
-        [{t:"Ich",r:"subject"},{t:"wohne",r:"verb"},{t:"in Taipei."}],
-        [{t:"Heute"},{t:"wohne",r:"verb"},{t:"ich",r:"subject"},{t:"hier."}],
-        [{t:"Du",r:"subject"},{t:"spielst",r:"verb"},{t:"Fußball."}],
+      { type: "examTip", points: [
+        { skill: "閱讀", text: "看到 mein/dein 就知道在講「誰的東西」，幫你理解人物關係。" },
+        { skill: "聽力", text: "聽自我介紹、家庭話題常出現 meine Familie, mein Bruder。" },
+        { skill: "寫作", text: "寫家庭、介紹自己一定用到，詞尾 -e 別漏（meine Schwester）。" },
+        { skill: "口說", text: "介紹「我的工作 mein Job、我的城市 meine Stadt」超常用。" },
       ]},
-      { type: "tip", text: "🎨 紅色 = 動詞，藍色 = 主語。看第二句：就算句首是『Heute』，動詞 wohne 還是排第二位！" },
+    ],
+    quiz: [
+      { q: "___ Vater ist Arzt.（我的爸爸，Vater陽性）", options: ["Mein", "Meine", "Meiner"], answer: "Mein", hint: "陽性不加e → mein" },
+      { q: "___ Mutter kocht gern.（我的媽媽，Mutter陰性）", options: ["Mein", "Meine", "Meines"], answer: "Meine", hint: "陰性加e → meine" },
+      { q: "Wie ist ___ Name?（您的名字，禮貌）", options: ["dein", "Ihr", "sein"], answer: "Ihr", hint: "禮貌『您的』用大寫 Ihr" },
+      { q: "【情境】介紹朋友的姐姐：Das ist Tom. ___ Schwester heißt Anna.（他的姐姐）", options: ["Seine", "Ihre", "Deine"], answer: "Seine", hint: "Tom是男生→他的=sein,Schwester陰性→seine。考試常考sein/ihr分辨" },
+      { q: "【寫作】「我們的房子很大」Unser Haus ist groß. 若改成「我們的家庭」Familie陰性，該用？", options: ["Unser", "Unsere", "Unseres"], answer: "Unsere", hint: "Familie陰性→加e→unsere" },
+    ],
+    trans: [
+      { zh: "我想向你介紹我的家庭：我爸爸是醫生，我媽媽是老師。", scene: "歌德口說 Teil 1：自我介紹／家庭", de: "Ich möchte dir meine Familie vorstellen: Mein Vater ist Arzt und meine Mutter ist Lehrerin.", note: "Familie陰性→meine;Vater陽性→mein;Mutter陰性→meine。介紹家庭必考" },
+      { zh: "他的姐姐住在柏林，她的工作很有趣。", scene: "歌德寫作：描述他人", de: "Seine Schwester wohnt in Berlin und ihre Arbeit ist sehr interessant.", note: "他的=sein(Schwester陰性→seine);她的=ihr(Arbeit陰性→ihre)。sein/ihr分辨是高頻考點" },
+      { zh: "您可以給我您的電話號碼嗎？", scene: "歌德口說／寫作：禮貌請求", de: "Können Sie mir Ihre Telefonnummer geben?", note: "禮貌『您的』大寫Ihr;Nummer陰性→Ihre;mir第三格(給我)" },
+    ]
+  },
+  {
+    id: "g1c", level: "A1.2", emoji: "🔄", title: "人稱代詞四格變化",
+    color: "#0EA5E9",
+    intro: "「我 ich、我（受詞）mich、給我 mir」——人稱代詞在不同「格」會變身。這是德語核心難點，但只要記住這張表，聽說讀寫都通！",
+    blocks: [
+      { type: "card", title: "人稱代詞變化總表（超重要記憶卡）", subtitle: "主格=誰做動作｜第四格=直接受詞｜第三格=給誰", headers: ["主格 (誰)", "第四格 (把誰)", "第三格 (給誰)"], rows: [
+        ["ich 我", "mich 我", "mir 給我"],
+        ["du 你", "dich 你", "dir 給你"],
+        ["er 他", "ihn 他", "ihm 給他"],
+        ["sie 她", "sie 她", "ihr 給她"],
+        ["es 它", "es 它", "ihm 給它"],
+        ["wir 我們", "uns 我們", "uns 給我們"],
+        ["ihr 你們", "euch 你們", "euch 給你們"],
+        ["sie/Sie 他們/您", "sie/Sie", "ihnen/Ihnen"],
+      ], foot: "口訣:第四格『把/看/愛』誰(Ich liebe dich我愛你)。第三格『給/幫/謝』誰(Ich helfe dir我幫你)。" },
+      { type: "hi", roles: ["subject", "verb", "object"], title: "主格 vs 第四格", sentences: [
+        [{t:"Ich",r:"subject"},{t:"liebe",r:"verb"},{t:"dich",r:"object"},{t:"."}],
+        [{t:"Er",r:"subject"},{t:"sieht",r:"verb"},{t:"mich",r:"object"},{t:"."}],
+      ]},
+      { type: "hi", roles: ["subject", "verb", "object"], title: "第三格（給誰／幫誰）", sentences: [
+        [{t:"Ich",r:"subject"},{t:"helfe",r:"verb"},{t:"dir",r:"object"},{t:"."}],
+        [{t:"Sie",r:"subject"},{t:"gibt",r:"verb"},{t:"mir",r:"object"},{t:"das Buch."}],
+      ]},
+      { type: "tip", text: "🧠 怎麼判斷用第幾格？看動詞！liebe/sehe/habe(愛/看/有)→第四格(mich,dich)。helfe/danke/gebe(幫/謝/給)→第三格(mir,dir)。" },
+      { type: "examTip", points: [
+        { skill: "閱讀", text: "代詞指代誰？mich=我、ihn=他，看懂才知道在講誰。" },
+        { skill: "聽力", text: "對話常說 Kannst du mir helfen?（你能幫我嗎）要聽懂 mir。" },
+        { skill: "寫作", text: "寫信常用 Ich danke dir（謝謝你）、Schreib mir（寫信給我）。" },
+        { skill: "口說", text: "Ich liebe dich, Hilf mir!——日常超高頻，一定要會。" },
+      ]},
+    ],
+    quiz: [
+      { q: "Ich liebe ___.（我愛你）", options: ["du", "dich", "dir"], answer: "dich", hint: "lieben接第四格,你=dich" },
+      { q: "Er sieht ___.（他看見我）", options: ["ich", "mich", "mir"], answer: "mich", hint: "sehen接第四格,我=mich" },
+      { q: "Kannst du ___ helfen?（你能幫我嗎）", options: ["mich", "mir", "ich"], answer: "mir", hint: "helfen接第三格,給我=mir" },
+      { q: "【聽力情境】服務生問 Was kann ich für ___ tun?（我能為您做什麼，禮貌）", options: ["Sie", "Ihnen", "euch"], answer: "Sie", hint: "für+第四格,您=Sie。für ist第四格介詞" },
+      { q: "【寫作情境】寫「我給他一本書」Ich gebe ___ ein Buch.（給他）", options: ["ihn", "ihm", "er"], answer: "ihm", hint: "geben給誰=第三格,給他=ihm。考試常考ihn(四格)vs ihm(三格)" },
+    ],
+    trans: [
+      { zh: "我想邀請你來我的生日派對。", scene: "歌德寫作 A2：寫邀請信最常考！", de: "Ich möchte dich zu meiner Geburtstagsparty einladen.", note: "möchte+原形;邀請『誰』=第四格dich;einladen可分動詞跟情態動詞連用時『不拆開』放句尾。寫邀請信必背句型!" },
+      { zh: "你能幫我一個忙嗎？我之後會謝謝你。", scene: "歌德口說／寫作：請求幫助", de: "Kannst du mir helfen? Ich danke dir später.", note: "helfen接第三格→mir;danken接第三格→dir。helfen/danken都是第三格動詞,考試易錯" },
+      { zh: "服務生問：我能為您做什麼嗎？", scene: "歌德聽力／口說：餐廳、商店情境", de: "Der Kellner fragt: Was kann ich für Sie tun?", note: "für是第四格介詞→您=Sie;kann+原形tun放句尾。服務情境高頻句" },
+    ]
+  },
+  {
+    id: "g2", level: "A1.1", emoji: "⚡", title: "現在式動詞變位（含不規則・可分動詞）",
+    color: "#EF4444",
+    intro: "德語動詞會跟著主語變詞尾，而且動詞永遠在第二位！這課還要教你考試最容易錯的『不規則變音』和『可分動詞』——這兩個是 A1-A2 必考重點。",
+    blocks: [
+      { type: "card", title: "規則動詞變位（記憶卡）", subtitle: "以 wohnen(住)、spielen(玩) 為例", headers: ["人稱", "詞尾", "wohnen"], rows: [
+        ["ich 我", "-e", "wohne"],
+        ["du 你", "-st", "wohnst"],
+        ["er/sie/es 他/她/它", "-t", "wohnt"],
+        ["wir 我們", "-en", "wohnen"],
+        ["ihr 你們", "-t", "wohnt"],
+        ["sie/Sie 他們/您", "-en", "wohnen"],
+      ], foot: "規則動詞:去掉原形的-en,加上對應詞尾即可。" },
+      { type: "card", title: "⚠️ 不規則動詞：du / er 會變音", subtitle: "考試最愛考！只有 du 和 er/sie/es 變，其他不變", headers: ["變化", "原形", "er 形（變了！）"], rows: [
+        ["e → i", "sprechen 說", "spricht"],
+        ["e → i", "essen 吃", "isst"],
+        ["e → ie", "sehen 看", "sieht"],
+        ["e → ie", "lesen 讀", "liest"],
+        ["a → ä", "fahren 開車", "fährt"],
+        ["a → ä", "schlafen 睡", "schläft"],
+        ["a → ä", "lassen 讓", "lässt"],
+      ], foot: "口訣:e變i/ie(說吃看讀),a變ä(開睡讓)。只在du(du sprichst)和er(er spricht)變,wir/ihr/sie不變!" },
+      { type: "card", title: "🔗 可分動詞（分離動詞）", subtitle: "前綴會『分家』跑到句尾！", headers: ["原形", "拆開後", "例句"], rows: [
+        ["aufstehen 起床", "stehe...auf", "Ich stehe um 7 auf."],
+        ["einkaufen 購物", "kaufe...ein", "Ich kaufe ein."],
+        ["einladen 邀請", "lade...ein", "Ich lade dich ein."],
+        ["anrufen 打電話", "rufe...an", "Ich rufe dich an."],
+        ["fernsehen 看電視", "sehe...fern", "Ich sehe fern."],
+      ], foot: "現在式:前綴(auf/ein/an...)要拆下來丟到句尾!動詞本體在第二位,前綴在最後。" },
+      { type: "hi", roles: ["subject", "verb"], title: "可分動詞:本體第二位,前綴句尾", sentences: [
+        [{t:"Ich",r:"subject"},{t:"stehe",r:"verb"},{t:"um sieben Uhr"},{t:"auf",r:"verb"},{t:"."}],
+        [{t:"Ich",r:"subject"},{t:"lade",r:"verb"},{t:"dich"},{t:"ein",r:"verb"},{t:"."}],
+      ]},
+      { type: "tip", text: "🧠 重點區分:可分動詞在『現在式』要拆開(Ich rufe dich an);但跟『情態動詞』連用時不拆,放句尾原形(Ich möchte dich anrufen);『現在完成時』ge加中間(angerufen)。這三種狀況考試都考!" },
+      { type: "examTip", points: [
+        { skill: "閱讀", text: "看到句尾孤零零的 auf/ein/an，要回頭找前面的動詞本體，它們是一組。" },
+        { skill: "聽力", text: "聽到 Ich stehe...（停頓）...auf，別漏掉句尾的前綴，意思才完整。" },
+        { skill: "寫作", text: "寫日常作息(aufstehen, einkaufen)必用可分動詞，前綴別忘記丟句尾。" },
+        { skill: "口說", text: "描述一天:Ich stehe um 7 auf, dann kaufe ich ein...前綴位置要對。" },
+      ]},
     ],
     quiz: [
       { q: "Ich ___ (wohnen) in Berlin.", options: ["wohne", "wohnst", "wohnt"], answer: "wohne", hint: "ich + -e" },
       { q: "Du ___ (spielen) gut.", options: ["spiele", "spielst", "spielt"], answer: "spielst", hint: "du + -st" },
       { q: "Er ___ (kommen) aus China.", options: ["komme", "kommst", "kommt"], answer: "kommt", hint: "er + -t" },
+      { q: "【不規則】Er ___ (sprechen) drei Sprachen.（他說三種語言）", options: ["sprecht", "spricht", "sprechst"], answer: "spricht", hint: "sprechen是e→i不規則,er spricht。考試高頻!" },
+      { q: "【不規則】___ du gern Bücher? (lesen 讀)", options: ["Lest", "Liest", "Liesst"], answer: "Liest", hint: "lesen是e→ie,du liest" },
+      { q: "【可分動詞】描述作息:Ich ___ jeden Tag um 7 Uhr ___.（aufstehen 起床）", options: ["stehe...auf", "aufstehe", "stehe auf...nichts"], answer: "stehe...auf", hint: "可分動詞現在式要拆:stehe放第二位,auf丟句尾" },
+    ],
+    trans: [
+      { zh: "他每天讀很多書，也說兩種語言。", scene: "歌德寫作：描述某人能力／習慣", de: "Er liest jeden Tag viele Bücher und spricht auch zwei Sprachen.", note: "lesen→liest(e→ie),sprechen→spricht(e→i)。兩個都是不規則,er形變音" },
+      { zh: "我每天七點起床，然後去購物。", scene: "歌德口說／寫作：描述一天作息", de: "Ich stehe jeden Tag um sieben Uhr auf, dann kaufe ich ein.", note: "aufstehen→stehe...auf;einkaufen→kaufe...ein。可分動詞前綴丟句尾!作息題必考" },
+      { zh: "你今晚想看電視嗎？", scene: "歌德口說：邀約、休閒", de: "Möchtest du heute Abend fernsehen?", note: "fernsehen跟情態動詞möchte連用時『不拆開』,原形放句尾。對比現在式 Ich sehe fern(要拆)" },
     ]
   },
   {
@@ -2054,27 +2236,52 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g13", level: "A2.1", emoji: "🌈", title: "形容詞詞尾變化",
+    id: "g13", level: "A2.2", emoji: "🌈", title: "形容詞詞尾變化（三大表）",
     color: "#F472B6",
-    intro: "形容詞放名詞前面時，詞尾會變化。這是 A2 最常錯的地方！先掌握定冠詞後的規則。",
+    intro: "形容詞放名詞前面時，詞尾會跟著「冠詞種類 + 性別 + 格」變化。這是德語最複雜的語法之一，但只要記住這三張表，連 A1 文章裡的 ein gutes Buch 你都秒懂！橫看性別、直看格位。",
     blocks: [
-      { type: "table", headers: ["性別", "定冠詞 + 形容詞 + 名詞"], rows: [
-        ["陽性", "der gut-E Mann"],
-        ["陰性", "die gut-E Frau"],
-        ["中性", "das gut-E Kind"],
-        ["複數", "die gut-EN Kinder"],
-        ["第四格陽性", "den gut-EN Mann ⚠️"],
+      { type: "card", title: "表1：定冠詞後（der/die/das/die）", subtitle: "例：der gut__ Mann。橫=性別，直=格", headers: ["格 ＼ 性", "陽 m", "陰 f", "中 n", "複 pl"], rows: [
+        ["第一格 N", "-e", "-e", "-e", "-en"],
+        ["第二格 G", "-en", "-en", "-en", "-en"],
+        ["第三格 D", "-en", "-en", "-en", "-en"],
+        ["第四格 A", "-en", "-e", "-e", "-en"],
+      ], foot: "口訣:只有『上面一排(第一格)』和『陰性中性的第四格』是 -e,其餘全部 -en。先記這個就贏一半!" },
+      { type: "card", title: "表2：不定冠詞後（ein/eine/ein）", subtitle: "例：ein gut__ Mann（這就是學生看不懂 ein gutes Buch 的原因！）", headers: ["格 ＼ 性", "陽 m", "陰 f", "中 n", "複 pl*"], rows: [
+        ["第一格 N", "-er", "-e", "-es", "-en"],
+        ["第二格 G", "-en", "-en", "-en", "-en"],
+        ["第三格 D", "-en", "-en", "-en", "-en"],
+        ["第四格 A", "-en", "-e", "-es", "-en"],
+      ], foot: "重點:陽性主格-er(ein guter Mann),中性-es(ein gutes Buch ←就是這個!)。因為ein看不出性別,形容詞要『補』出來。*複數無不定冠詞,用kein/mein時同此欄。" },
+      { type: "card", title: "表3：無冠詞 / welch-（強變化）", subtitle: "例：guter Wein（沒冠詞時，形容詞自己扛起冠詞的活）", headers: ["格 ＼ 性", "陽 m", "陰 f", "中 n", "複 pl"], rows: [
+        ["第一格 N", "-er", "-e", "-es", "-e"],
+        ["第二格 G", "-en", "-er", "-en", "-er"],
+        ["第三格 D", "-em", "-er", "-em", "-en"],
+        ["第四格 A", "-en", "-e", "-es", "-e"],
+      ], foot: "沒冠詞時,形容詞詞尾幾乎=定冠詞的樣子(der→-er, das→-es, dem→-em)。welcher/dieser 這類後面則跟『表1』一樣用-e/-en。" },
+      { type: "hi", roles: ["article", "object"], title: "三種情況對照", sentences: [
+        [{t:"der",r:"article"},{t:"gute Wein",r:"object"},{t:"(定冠詞→-e)"}],
+        [{t:"ein",r:"article"},{t:"guter Wein",r:"object"},{t:"(不定冠詞→-er)"}],
+        [{t:"guter Wein",r:"object"},{t:"(無冠詞→-er)"}],
       ]},
-      { type: "hi", roles: ["article", "object"], title: "冠詞 + 形容詞 + 名詞", sentences: [
-        [{t:"Der",r:"article"},{t:"neue Lehrer",r:"object"},{t:"ist nett."}],
-        [{t:"Ich kaufe das"},{t:"rote Kleid",r:"object"},{t:"."}],
+      { type: "tip", text: "🧠 超級口訣:①有定冠詞→形容詞輕鬆,大多-e/-en ②有ein→形容詞要『補』性別(-er陽/-es中) ③沒冠詞→形容詞模仿定冠詞(-er/-es/-em)。背的順序:先表1,再表2,表3最後。" },
+      { type: "examTip", points: [
+        { skill: "閱讀", text: "ein gutes Buch、das große Haus——A1/A2 文章到處是，懂詞尾才讀得順。" },
+        { skill: "聽力", text: "詞尾常很輕，但能幫你判斷性別和格，聽描述題很有用。" },
+        { skill: "寫作", text: "A2/B1 寫作加形容詞讓句子更豐富(ein schönes Wochenende),詞尾錯就扣分。" },
+        { skill: "口說", text: "描述東西 ein interessanter Film、eine gute Idee，詞尾對了才地道。" },
       ]},
-      { type: "tip", text: "🎨 粉=冠詞,綠=形容詞+名詞。定冠詞後:單數主格/中陰性多是 -e,其他多是 -en。先背『-e 或 -en』兩種就能應付大半！" },
     ],
     quiz: [
-      { q: "Der neu___ Lehrer ist nett.", options: ["-e", "-en", "-er"], answer: "-e", hint: "定冠詞+陽性主格=-e" },
-      { q: "Ich sehe den groß___ Mann.", options: ["-e", "-en", "-er"], answer: "-en", hint: "第四格陽性=-en" },
-      { q: "Die klein___ Kinder spielen.", options: ["-e", "-en", "-er"], answer: "-en", hint: "複數=-en" },
+      { q: "der neu___ Lehrer（定冠詞+陽性第一格）", options: ["-e", "-en", "-er"], answer: "-e", hint: "表1,第一格→-e" },
+      { q: "das klein___ Kind（定冠詞+中性第一格）", options: ["-e", "-es", "-en"], answer: "-e", hint: "表1,定冠詞後第一格都-e" },
+      { q: "ein gut___ Buch（不定冠詞+中性第一格）", options: ["-e", "-es", "-er"], answer: "-es", hint: "表2!ein看不出中性,形容詞補-es。這就是學生最困惑的!" },
+      { q: "【閱讀情境】Ich habe einen ___ Tag.（一個美好的一天,schön,不定冠詞陽性第四格）", options: ["schöner", "schönen", "schönes"], answer: "schönen", hint: "表2,不定冠詞陽性第四格→-en。einen schönen Tag!" },
+      { q: "【寫作情境】祝福語 Ich wünsche dir ein ___ Wochenende!（美好的週末,schön,中性第四格）", options: ["schöner", "schönes", "schönen"], answer: "schönes", hint: "表2,中性第四格→-es。ein schönes Wochenende是高頻祝福語!" },
+    ],
+    trans: [
+      { zh: "祝你有個美好的週末！", scene: "歌德寫作：信件結尾祝福語（超高頻）", de: "Ich wünsche dir ein schönes Wochenende!", note: "Wochenende中性,不定冠詞第四格→schönes(表2,-es)。寫信結尾必備!" },
+      { zh: "我昨天看了一部很有趣的電影。", scene: "歌德寫作：描述經歷", de: "Gestern habe ich einen interessanten Film gesehen.", note: "Film陽性,不定冠詞第四格→interessanten(表2,-en);完成式habe...gesehen" },
+      { zh: "那位新老師非常友善。", scene: "歌德口說／寫作：描述人物", de: "Der neue Lehrer ist sehr freundlich.", note: "定冠詞陽性第一格→neue(表1,-e)" },
     ]
   },
   {
@@ -2176,6 +2383,8 @@ function GrammarModule({ aiKey }) {
   const [level, setLevel] = useState("all");
   const [quizAns, setQuizAns] = useState({});
   const [aiQuiz, setAiQuiz] = useState([]);
+  const [transShow, setTransShow] = useState({});
+  const [transInput, setTransInput] = useState({});
 
   if (!lesson) {
     const filtered = GRAMMAR_LESSONS.filter(g => level === "all" || g.level === level);
@@ -2192,7 +2401,7 @@ function GrammarModule({ aiKey }) {
                 <div style={{ fontWeight: 800, color: "#1F2937", fontSize: 15 }}>{g.title}</div>
                 <Badge text={g.level} color={LEVEL_COLORS[g.level] || g.color} />
               </div>
-              <button onClick={() => { setLesson(g); setQuizAns({}); setAiQuiz([]); }} style={btnStyle(g.color)}>學習</button>
+              <button onClick={() => { setLesson(g); setQuizAns({}); setAiQuiz([]); setTransShow({}); setTransInput({}); }} style={btnStyle(g.color)}>學習</button>
             </div>
           </Card>
         ))}
@@ -2242,8 +2451,74 @@ function GrammarModule({ aiKey }) {
             <div style={{ fontSize: 14, color: "#374151", lineHeight: 1.7 }}>{b.text}</div>
           </div>
         );
+        if (b.type === "card") return (
+          <div key={bi} style={{ background: "linear-gradient(135deg, #EDE9FE, #FAE8FF)", borderRadius: 18, padding: "18px 16px", margin: "0 0 14px", border: `2px solid ${g.color}55`, boxShadow: `0 4px 16px ${g.color}22` }}>
+            <div style={{ fontWeight: 900, color: g.color, fontSize: 15, marginBottom: 4 }}>🃏 {b.title}</div>
+            {b.subtitle && <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>{b.subtitle}</div>}
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <thead><tr>{b.headers.map((h, j) => (
+                  <th key={j} style={{ background: g.color, color: "#fff", fontWeight: 800, padding: "10px 8px", textAlign: "center", border: `1px solid ${g.color}` }}>{h}</th>
+                ))}</tr></thead>
+                <tbody>{b.rows.map((row, ri) => (
+                  <tr key={ri}>
+                    {row.map((cell, ci) => (
+                      <td key={ci} style={{ padding: "10px 8px", border: `1px solid ${g.color}44`, color: ci === 0 ? g.color : "#1F2937", fontWeight: ci === 0 ? 800 : 700, textAlign: "center", background: ci === 0 ? `${g.color}11` : "#fff", fontSize: ci === 0 ? 13 : 16 }}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+            {b.foot && <div style={{ fontSize: 12, color: "#6B21A8", marginTop: 10, lineHeight: 1.6, fontWeight: 600 }}>💡 {b.foot}</div>}
+          </div>
+        );
+        if (b.type === "examTip") return (
+          <div key={bi} style={{ background: "#FEF2F2", borderRadius: 14, padding: 16, margin: "0 0 14px", border: "2px solid #FCA5A5" }}>
+            <div style={{ fontWeight: 900, color: "#DC2626", fontSize: 14, marginBottom: 8 }}>🎯 這個文法考試怎麼考？</div>
+            {b.points.map((p, pi) => (
+              <div key={pi} style={{ fontSize: 13, color: "#374151", lineHeight: 1.7, marginBottom: 6, display: "flex", gap: 6 }}>
+                <span>{["📖","🎧","✍️","🗣️"][pi % 4]}</span>
+                <span><b style={{ color: "#DC2626" }}>{p.skill}：</b>{p.text}</span>
+              </div>
+            ))}
+          </div>
+        );
         return null;
       })}
+
+      {/* 翻譯練習 */}
+      {g.trans && g.trans.length > 0 && (
+        <div style={{ marginTop: 14 }}>
+          <div style={{ fontWeight: 800, color: C.purple, fontSize: 16, margin: "8px 0 4px" }}>🔁 翻譯練習（學會用出來）</div>
+          <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>先自己在框裡寫德語，寫完再對照參考答案。動手寫才會進步！</div>
+          {g.trans.map((t, ti) => {
+            const shown = transShow[ti];
+            return (
+              <Card key={ti} color={g.color}>
+                <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 4 }}>中文 → 德語</div>
+                <div style={{ fontWeight: 700, color: "#1F2937", fontSize: 15, marginBottom: 4 }}>{t.zh}</div>
+                {t.scene && <div style={{ fontSize: 12, color: "#A855F7", marginBottom: 8 }}>📌 {t.scene}</div>}
+                <textarea
+                  value={transInput[ti] || ""}
+                  onChange={e => setTransInput(s => ({ ...s, [ti]: e.target.value }))}
+                  placeholder="在這裡寫下你的德語翻譯..."
+                  rows={2}
+                  style={{ width: "100%", padding: "10px 12px", borderRadius: 10, border: `1.5px solid ${g.color}55`, fontSize: 14, outline: "none", boxSizing: "border-box", resize: "vertical", marginBottom: 8, fontFamily: "inherit" }}
+                />
+                {shown ? (
+                  <div style={{ background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 10, padding: "10px 12px" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#15803D", marginBottom: 4 }}>✅ 參考答案</div>
+                    <div style={{ fontSize: 15, color: "#166534", fontWeight: 700 }}>{t.de}</div>
+                    {t.note && <div style={{ fontSize: 12, color: "#6B7280", marginTop: 6, lineHeight: 1.6 }}>💡 {t.note}</div>}
+                  </div>
+                ) : (
+                  <button onClick={() => setTransShow(s => ({ ...s, [ti]: true }))} style={btnStyle(g.color)}>對照參考答案</button>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      )}
 
       {/* Quiz */}
       <div style={{ fontWeight: 800, color: C.purple, fontSize: 16, margin: "18px 0 10px" }}>📝 小練習</div>
@@ -2291,64 +2566,161 @@ function GrammarModule({ aiKey }) {
 
 // ─── HOME SCREEN ──────────────────────────────────────────────────────────────
 
-function HomeScreen({ onPick }) {
-  const boards = [
-    {
-      title: "📚 系統提升", subtitle: "打好基礎，穩紮穩打。單字和文法是地基，地基穩了，聽說讀寫自然輕鬆。", color: "#8B5CF6",
-      mods: [
-        { id: "vocab", emoji: "📒", label: "必背單字", desc: "A1+A2 高頻字・個人生詞本" },
-        { id: "grammar", emoji: "📐", label: "必考文法", desc: "17 課彩色標重點・附練習" },
-      ]
-    },
-    {
-      title: "🎯 檢定必備", subtitle: "考試錦囊，實戰演練。歌德題型有陷阱，這裡幫你練到看一眼就知道答案藏在哪。", color: "#EC4899",
-      mods: [
-        { id: "listen", emoji: "🎧", label: "聽力", desc: "歌德陷阱題・語音朗讀" },
-        { id: "read", emoji: "📖", label: "閱讀", desc: "分級短文・干擾選項" },
-        { id: "write", emoji: "✍️", label: "寫作", desc: "命題作文・老師批改" },
-        { id: "speak", emoji: "🎤", label: "口說", desc: "錄音練習・範例答案" },
-      ]
-    },
-  ];
+function HomeScreen({ onPick, user, myWords = [], onSpeakWord }) {
   return (
     <div>
-      {/* 勵志大標語 (像 PTE 校長寄語) */}
-      <div style={{
-        background: "linear-gradient(135deg, #7C3AED, #DB2777)", borderRadius: 24,
-        padding: "28px 22px", marginBottom: 18, color: "#fff", boxShadow: "0 8px 30px #7C3AED44"
-      }}>
-        <div style={{ fontSize: 13, fontWeight: 700, opacity: 0.85, marginBottom: 10 }}>Sam 老師想對你說</div>
-        <div style={{ fontSize: 26, fontWeight: 900, lineHeight: 1.5 }}>
-          學語言，從來不是<br />天分問題。
-        </div>
-        <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1.6, marginTop: 10, opacity: 0.95 }}>
-          只要方法對、練習夠，<br />每個人都能說一口好德語。
-        </div>
-        <div style={{ fontSize: 13, marginTop: 14, opacity: 0.8, lineHeight: 1.6 }}>
-          🌱 你已經跨出第一步了，剩下的，我們一起走。
-        </div>
-      </div>
-
-      <DailyQuote />
-      {boards.map(b => (
-        <div key={b.title} style={{ marginBottom: 22 }}>
-          <div style={{ fontWeight: 900, color: b.color, fontSize: 18 }}>{b.title}</div>
-          <div style={{ color: "#9CA3AF", fontSize: 13, marginBottom: 12, lineHeight: 1.6 }}>{b.subtitle}</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-            {b.mods.map(m => (
-              <button key={m.id} onClick={() => onPick(m.id)} style={{
-                background: "#fff", border: `2px solid ${b.color}33`, borderRadius: 16,
-                padding: "16px 12px", textAlign: "left", cursor: "pointer",
-                boxShadow: "0 4px 14px #7C3AED11", display: "flex", flexDirection: "column", gap: 4
-              }}>
-                <span style={{ fontSize: 30 }}>{m.emoji}</span>
-                <span style={{ fontWeight: 800, color: "#1F2937", fontSize: 15 }}>{m.label}</span>
-                <span style={{ fontSize: 11, color: "#9CA3AF", lineHeight: 1.4 }}>{m.desc}</span>
-              </button>
-            ))}
+      {/* 三張橫幅卡片 */}
+      <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 16, marginBottom: 28 }}>
+        {/* Sam 寄語 */}
+        <div style={{ background: "linear-gradient(135deg, #2D2A45, #1F1D2E)", borderRadius: 18, padding: "26px 24px", color: "#fff", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          <div style={{ fontSize: 18, fontWeight: 900, marginBottom: 12 }}>Sam 老師寄語：</div>
+          <div style={{ fontSize: 15, lineHeight: 1.8, opacity: 0.92 }}>
+            學語言，從來不是天分問題。只要方法對、練習夠，每個人都能說一口好德語。你已經跨出第一步了，剩下的，我們一起走。🌱
           </div>
         </div>
-      ))}
+        {/* 學習指南 */}
+        <button onClick={() => onPick("guide")} style={{ background: "linear-gradient(135deg, #5EEAD4, #2DD4BF)", borderRadius: 18, padding: "22px 20px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 150 }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 900, marginBottom: 6 }}>學習指南</div>
+            <div style={{ fontSize: 13, opacity: 0.95, lineHeight: 1.5 }}>新手必看<br />學習攻略</div>
+          </div>
+          <div style={{ fontSize: 26 }}>🧭</div>
+        </button>
+        {/* 零基礎3分鐘 */}
+        <button onClick={() => onPick("threemin")} style={{ background: "linear-gradient(135deg, #93C5FD, #60A5FA)", borderRadius: 18, padding: "22px 20px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: 150 }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 900, marginBottom: 6 }}>零基礎 3 分鐘</div>
+            <div style={{ fontSize: 13, opacity: 0.95, lineHeight: 1.5 }}>每日 3 分鐘<br />輕鬆學德語</div>
+          </div>
+          <div style={{ fontSize: 26 }}>⏰</div>
+        </button>
+      </div>
+
+      {/* 每日一句 */}
+      <DailyQuote />
+
+      {/* 2026 新版歌德考試課程 */}
+      <div style={{ marginTop: 24, marginBottom: 8 }}>
+        <div style={{ fontSize: 20, fontWeight: 900, color: "#1F2937" }}>2026 歌德檢定・聽說讀寫</div>
+        <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 2 }}>四大題型，點進去開始練習</div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
+        {[
+          { id: "speak", zh: "口說", en: "Sprechen", emoji: "🎤", bg: "linear-gradient(135deg, #C084FC, #A855F7)" },
+          { id: "write", zh: "寫作", en: "Schreiben", emoji: "✍️", bg: "linear-gradient(135deg, #F472B6, #EC4899)" },
+          { id: "read", zh: "閱讀", en: "Lesen", emoji: "📖", bg: "linear-gradient(135deg, #FBBF24, #F59E0B)" },
+          { id: "listen", zh: "聽力", en: "Hören", emoji: "🎧", bg: "linear-gradient(135deg, #34D399, #10B981)" },
+        ].map(c => (
+          <button key={c.id} onClick={() => onPick(c.id)} style={{ background: c.bg, borderRadius: 16, padding: "20px 16px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", minHeight: 130, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div style={{ fontSize: 32 }}>{c.emoji}</div>
+            <div>
+              <div style={{ fontSize: 17, fontWeight: 900 }}>{c.zh}</div>
+              <div style={{ fontSize: 12, opacity: 0.9 }}>{c.en}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* 系統課程：單字文法 */}
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 20, fontWeight: 900, color: "#1F2937" }}>系統課程・打好基礎</div>
+        <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 2 }}>單字和文法是地基，地基穩了，聽說讀寫自然輕鬆</div>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 28 }}>
+        {[
+          { id: "vocab", zh: "必背單字", desc: "A1+A2 高頻字・個人生詞本", emoji: "📒", bg: "linear-gradient(135deg, #818CF8, #6366F1)" },
+          { id: "grammar", zh: "必考文法", desc: "19 課彩色記憶卡・考試應用", emoji: "📐", bg: "linear-gradient(135deg, #A78BFA, #8B5CF6)" },
+        ].map(c => (
+          <button key={c.id} onClick={() => onPick(c.id)} style={{ background: c.bg, borderRadius: 16, padding: "22px 20px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", alignItems: "center", gap: 16 }}>
+            <div style={{ fontSize: 38 }}>{c.emoji}</div>
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 900 }}>{c.zh}</div>
+              <div style={{ fontSize: 12, opacity: 0.92, marginTop: 2 }}>{c.desc}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* VIP / 付費課程（佔位） */}
+      <div style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ fontSize: 20, fontWeight: 900, color: "#1F2937" }}>VIP 精修課程</div>
+        <span style={{ fontSize: 13, color: "#C4B5FD", fontWeight: 700 }}>敬請期待 ›</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 20 }}>
+        {["寫作高分模板", "閱讀長難句精析", "口說流利訓練營", "聽力陷阱破解"].map((t, i) => (
+          <div key={i} style={{ background: "#F9FAFB", borderRadius: 14, padding: "20px 14px", border: "2px dashed #E5E7EB", textAlign: "center", position: "relative" }}>
+            <div style={{ position: "absolute", top: 0, right: 0, background: "linear-gradient(135deg, #FB923C, #F59E0B)", color: "#fff", fontSize: 10, fontWeight: 800, padding: "3px 8px", borderRadius: "0 14px 0 10px" }}>VIP</div>
+            <div style={{ fontSize: 24, marginBottom: 8, opacity: 0.5 }}>🔒</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#6B7280" }}>{t}</div>
+            <div style={{ fontSize: 11, color: "#C4B5FD", marginTop: 4 }}>敬請期待</div>
+          </div>
+        ))}
+      </div>
+
+      {/* 底部鼓勵 */}
+      <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 16, padding: "16px 18px", textAlign: "center" }}>
+        <span style={{ fontSize: 15, fontWeight: 800, color: "#7C3AED" }}>🚀 堅持學習，你的德語一定會越來越好！💜</span>
+      </div>
+    </div>
+  );
+}
+
+// 頂部橫向導航（門戶式，像 PTE 首頁）
+const TOP_NAV = [
+  { id: "home", label: "首頁" },
+  { id: "system", label: "系統課程" },
+  { id: "exam", label: "檢定課程" },
+  { id: "community", label: "社區" },
+  { id: "ausbildung", label: "Ausbildung" },
+  { id: "business", label: "商業德語" },
+  { id: "appinfo", label: "App" },
+];
+
+function TopNav({ tab, setTab, user, onLogin, onLogout, aiKey, onSetAiKey }) {
+  return (
+    <div style={{ background: "#fff", borderBottom: "1px solid #EEE", position: "sticky", top: 0, zIndex: 20 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "12px 24px", display: "flex", alignItems: "center", gap: 8 }}>
+        {/* Logo */}
+        <button onClick={() => setTab("home")} style={{ display: "flex", alignItems: "center", gap: 10, background: "none", border: "none", cursor: "pointer", marginRight: 12 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 12, background: "linear-gradient(135deg, #7C3AED, #EC4899)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, position: "relative" }}>
+            🇩🇪<span style={{ position: "absolute", top: -4, right: -4, fontSize: 12 }}>⭐</span>
+          </div>
+          <span style={{ fontWeight: 900, fontSize: 16, color: "#1F2937", whiteSpace: "nowrap" }}>Sam 德語小屋</span>
+        </button>
+
+        {/* 橫向菜單 */}
+        <div style={{ display: "flex", gap: 4, flex: 1, overflowX: "auto" }}>
+          {TOP_NAV.map(t => {
+            const active = tab === t.id;
+            return (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{
+                background: "none", border: "none", cursor: "pointer", padding: "8px 12px", borderRadius: 8,
+                color: active ? "#7C3AED" : "#4B5563", fontWeight: active ? 800 : 600, fontSize: 14.5, whiteSpace: "nowrap",
+                borderBottom: active ? "2px solid #7C3AED" : "2px solid transparent",
+              }}>{t.label}</button>
+            );
+          })}
+        </div>
+
+        {/* 右側 */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {user ? (
+            <>
+              <button onClick={() => { const k = window.prompt("輸入 AI 金鑰（Anthropic，用於生成題目／批改）：", aiKey || ""); if (k !== null) onSetAiKey(k.trim()); }}
+                style={{ background: aiKey ? "#EDE9FE" : "#F3F4F6", border: "none", borderRadius: 20, padding: "6px 12px", color: aiKey ? "#7C3AED" : "#6B7280", fontSize: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+                {aiKey ? "✨ AI已啟用" : "⚙️ AI設定"}
+              </button>
+              <span style={{ fontSize: 13, fontWeight: 700, color: "#4B5563", whiteSpace: "nowrap" }}>{user?.name}</span>
+              <button onClick={onLogout} style={{ background: "none", border: "1px solid #E5E7EB", borderRadius: 20, padding: "5px 14px", color: "#6B7280", fontSize: 13, cursor: "pointer", whiteSpace: "nowrap" }}>登出</button>
+            </>
+          ) : (
+            <>
+              <button onClick={onLogin} style={{ background: "none", border: "none", color: "#4B5563", fontSize: 14, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>登入</button>
+              <button onClick={onLogin} style={{ background: "linear-gradient(135deg, #7C3AED, #EC4899)", border: "none", borderRadius: 20, padding: "7px 18px", color: "#fff", fontSize: 14, fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap" }}>註冊</button>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -2365,6 +2737,24 @@ const TABS = [
   { id: "speak", label: "口說", emoji: "🎤" },
 ];
 
+// 側邊欄分組結構（電腦版）
+const NAV_GROUPS = [
+  { type: "item", id: "home", label: "首頁", emoji: "🏠" },
+  { type: "group", label: "系統學習", emoji: "📚", children: [
+    { id: "vocab", label: "單字", emoji: "📒" },
+    { id: "grammar", label: "文法", emoji: "📐" },
+  ]},
+  { type: "group", label: "檢定必備", emoji: "🎯", children: [
+    { id: "listen", label: "聽力", emoji: "🎧" },
+    { id: "read", label: "閱讀", emoji: "📖" },
+    { id: "write", label: "寫作", emoji: "✍️" },
+    { id: "speak", label: "口說", emoji: "🎤" },
+  ]},
+  { type: "item", id: "review", label: "複習・錯題本", emoji: "🔁" },
+  { type: "item", id: "stats", label: "學習統計", emoji: "📊" },
+  { type: "item", id: "settings", label: "設定", emoji: "⚙️" },
+];
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState("home");
@@ -2372,88 +2762,191 @@ export default function App() {
   const [aiKey, setAiKey] = useState("");
   const [users, setUsers] = useState(DEMO_USERS);
   const [myWords, setMyWords] = useState([]);
+  const [showLogin, setShowLogin] = useState(false);
+  const [loginNudge, setLoginNudge] = useState(false);
   const [submissions, setSubmissions] = useState([
     { promptId: "w1", studentId: "s002", studentName: "陳雅婷", title: "自我介紹", text: "Ich heiße Chen Yating. Ich bin 19 Jahre alt. Ich komme aus Taichung, Taiwan. Ich bin Studentin und ich lerne Deutsch.", grade: null, feedback: "" }
   ]);
-
-  if (!user) return <LoginPage onLogin={setUser} users={users} onRegister={(u) => setUsers(prev => [...prev, u])} />;
 
   const updateNickname = (newName) => {
     setUser(prev => ({ ...prev, name: newName }));
     setUsers(prev => prev.map(u => u.id === user.id ? { ...u, name: newName } : u));
   };
-
   const addWord = (w) => setMyWords(prev => [...prev, w]);
   const deleteWord = (idx) => setMyWords(prev => prev.filter((_, i) => i !== idx));
-
   const addSubmission = (sub) => setSubmissions(prev => [...prev, sub]);
   const gradeSubmission = (sub, grade, feedback) => {
     setSubmissions(prev => prev.map(s =>
-      s.promptId === sub.promptId && s.studentId === sub.studentId
-        ? { ...s, grade, feedback } : s
+      s.promptId === sub.promptId && s.studentId === sub.studentId ? { ...s, grade, feedback } : s
     ));
   };
 
-  return (
-    <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", background: C.soft, minHeight: "100vh", display: "flex", flexDirection: "column", maxWidth: 480, margin: "0 auto" }}>
-      {/* Header */}
-      <div style={{ background: `linear-gradient(135deg, ${C.purple}, ${C.pink})`, padding: "14px 18px", display: "flex", alignItems: "center", gap: 10 }}>
-        <span style={{ fontSize: 24 }}>🇩🇪</span>
-        <div>
-          <div style={{ color: "#fff", fontWeight: 900, fontSize: 16 }}>Sam 德語小屋</div>
-        </div>
-        <div style={{ marginLeft: "auto", textAlign: "right", display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => {
-            const k = window.prompt("輸入 AI 金鑰（Anthropic API Key，用於生成新題目）。部署後填入即可。", aiKey || "");
-            if (k !== null) setAiKey(k.trim());
-          }} style={{ background: aiKey ? "#ffffff33" : "#ffffff22", border: "none", borderRadius: 20, padding: "4px 10px", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
-            {aiKey ? "✨ AI已啟用" : "⚙️ AI設定"}
-          </button>
-          <div>
-            <button onClick={() => {
-              const n = window.prompt("修改暱稱（顯示名稱）：", user.name);
-              if (n !== null && n.trim()) updateNickname(n.trim());
-            }} style={{ background: "none", border: "none", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", padding: 0, display: "block", textAlign: "right" }}>
-              {user.name} ✏️
-            </button>
-            <button onClick={() => setUser(null)} style={{ background: "none", border: "none", color: "#ffffff99", fontSize: 11, cursor: "pointer", padding: 0 }}>登出</button>
+  // 受保護的內容頁籤（未登入點擊會被攔截）
+  const PROTECTED = ["vocab", "grammar", "listen", "read", "write", "speak", "exam", "system", "review", "stats", "guide", "threemin"];
+
+  // 切換頁籤：未登入且點受保護內容 → 提示登入
+  const go = (target) => {
+    if (!user && PROTECTED.includes(target)) {
+      setLoginNudge(true);
+      setShowLogin(true);
+      return;
+    }
+    setLoginNudge(false);
+    setTab(target);
+  };
+
+  // 老師批改台
+  if (user && user.role === "teacher") {
+    return (
+      <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", background: C.soft, minHeight: "100vh" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px 20px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div style={{ fontWeight: 900, fontSize: 20, color: C.purple }}>👩‍🏫 老師批改台</div>
+            <button onClick={() => setUser(null)} style={{ background: "none", border: "none", color: "#9CA3AF", cursor: "pointer" }}>登出</button>
           </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div style={{ flex: 1, padding: "18px 16px 90px", overflowY: "auto" }}>
-        {user.role === "teacher" ? (
           <TeacherPanel submissions={submissions} onGrade={gradeSubmission} />
-        ) : (
-          <>
-            {tab === "home" && <HomeScreen onPick={setTab} />}
-            {tab === "vocab" && <VocabModule myWords={myWords} onAddWord={addWord} onDeleteWord={deleteWord} />}
-            {tab === "grammar" && <GrammarModule aiKey={aiKey} />}
-            {tab === "listen" && <ListeningModule apiKey={apiKey} onSetApiKey={setApiKey} aiKey={aiKey} onSetAiKey={setAiKey} />}
-            {tab === "read" && <ReadingModule aiKey={aiKey} onSetAiKey={setAiKey} />}
-            {tab === "write" && <WritingModule user={user} submissions={submissions} onSubmit={addSubmission} aiKey={aiKey} onSetAiKey={setAiKey} />}
-            {tab === "speak" && <SpeakingModule apiKey={apiKey} aiKey={aiKey} onSetAiKey={setAiKey} />}
-          </>
+        </div>
+      </div>
+    );
+  }
+
+  // 登入彈窗
+  if (showLogin) {
+    return (
+      <div>
+        {loginNudge && (
+          <div style={{ background: "#FEE2E2", color: "#DC2626", textAlign: "center", padding: "12px", fontWeight: 800, fontSize: 15 }}>
+            ⚠️ 請先完成登錄獲取免費內容哦～
+          </div>
         )}
+        <LoginPage
+          onLogin={(u) => { setUser(u); setShowLogin(false); setLoginNudge(false); }}
+          users={users}
+          onRegister={(u) => setUsers(prev => [...prev, u])}
+        />
+        <div style={{ textAlign: "center", paddingBottom: 24 }}>
+          <button onClick={() => { setShowLogin(false); setLoginNudge(false); }} style={{ background: "none", border: "none", color: "#9CA3AF", fontSize: 13, cursor: "pointer" }}>← 先逛逛首頁</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", background: C.soft, minHeight: "100vh" }}>
+      <TopNav
+        tab={tab} setTab={go} user={user}
+        onLogin={() => { setLoginNudge(false); setShowLogin(true); }}
+        onLogout={() => { setUser(null); setTab("home"); }}
+        aiKey={aiKey} onSetAiKey={setAiKey}
+      />
+
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 24px 60px", boxSizing: "border-box" }}>
+        {tab === "home" && <HomeScreen onPick={go} user={user} myWords={myWords} onSpeakWord={(t) => speak(t)} />}
+        {tab === "vocab" && <VocabModule myWords={myWords} onAddWord={addWord} onDeleteWord={deleteWord} />}
+        {tab === "grammar" && <GrammarModule aiKey={aiKey} />}
+        {tab === "listen" && <ListeningModule apiKey={apiKey} onSetApiKey={setApiKey} aiKey={aiKey} onSetAiKey={setAiKey} />}
+        {tab === "read" && <ReadingModule aiKey={aiKey} onSetAiKey={setAiKey} />}
+        {tab === "write" && <WritingModule user={user} submissions={submissions} onSubmit={addSubmission} aiKey={aiKey} onSetAiKey={setAiKey} />}
+        {tab === "speak" && <SpeakingModule apiKey={apiKey} aiKey={aiKey} onSetAiKey={setAiKey} />}
+        {tab === "exam" && <ExamHub onPick={go} />}
+        {tab === "system" && <SystemHub onPick={go} />}
+        {tab === "review" && <SimpleScreen emoji="🔁" title="複習・錯題本" desc="這裡會收集你做錯的單字和題目，下次優先複習。功能開發中，敬請期待！" />}
+        {tab === "stats" && <SimpleScreen emoji="📊" title="學習統計" desc="這裡會顯示你的學習進度、連續天數、累積單字量。資料庫接通後即可記錄，敬請期待！" />}
+        {tab === "settings" && <SettingsScreen apiKey={apiKey} onSetApiKey={setApiKey} aiKey={aiKey} onSetAiKey={setAiKey} />}
+        {tab === "guide" && <SimpleScreen emoji="🧭" title="學習指南" desc="新手必看的學習攻略：怎麼規劃 A1-A2 備考、每天該練什麼、考試流程介紹。內容整理中，敬請期待！" />}
+        {tab === "threemin" && <SimpleScreen emoji="⏰" title="零基礎 3 分鐘" desc="每日 3 分鐘，輕鬆學一句德語、一個發音技巧。內容整理中，敬請期待！" />}
+        {tab === "community" && <SimpleScreen emoji="💬" title="社區" desc="未來這裡可以和其他同學交流、分享學習心得、提問。敬請期待！" />}
+        {tab === "ausbildung" && <SimpleScreen emoji="🎓" title="Ausbildung 職業培訓" desc="德國職業培訓（Ausbildung）相關德語與資訊。敬請期待！" />}
+        {tab === "business" && <SimpleScreen emoji="💼" title="商業德語" desc="商務場景、職場溝通、商業書信德語。敬請期待！" />}
+        {tab === "appinfo" && <SimpleScreen emoji="📱" title="App" desc="未來推出手機 App，隨時隨地學德語。敬請期待！" />}
       </div>
 
-      {/* Bottom Nav (students only) */}
-      {user.role === "student" && (
-        <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: 480, background: "#fff", borderTop: "2px solid #E9D5FF", display: "flex", justifyContent: "space-around", padding: "8px 0 6px", boxShadow: "0 -4px 20px #7C3AED22" }}>
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
-              background: tab === t.id ? "#EDE9FE" : "none", border: "none", cursor: "pointer",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 1,
-              color: tab === t.id ? C.purple : "#9CA3AF",
-              fontWeight: tab === t.id ? 800 : 600, fontSize: 11,
-              padding: "5px 4px", borderRadius: 10, transition: "all 0.2s"
-            }}>
-              <span style={{ fontSize: 22 }}>{t.emoji}</span>{t.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* 課程諮詢浮動按鈕（之後接 Line） */}
+      <button onClick={() => alert("課程諮詢即將開放，敬請期待！未來這裡會連到 Sam 老師的 Line。")}
+        style={{ position: "fixed", bottom: 24, right: 24, background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", border: "none", borderRadius: 30, padding: "12px 20px", fontWeight: 800, fontSize: 14, cursor: "pointer", boxShadow: "0 6px 20px #7C3AED66", zIndex: 30 }}>
+        💬 課程諮詢
+      </button>
+    </div>
+  );
+}
+
+// 檢定課程中心
+function ExamHub({ onPick }) {
+  const cards = [
+    { id: "listen", zh: "聽力 Hören", desc: "歌德陷阱題・語音朗讀・原文對照", emoji: "🎧", bg: "linear-gradient(135deg, #34D399, #10B981)" },
+    { id: "read", zh: "閱讀 Lesen", desc: "分級短文・干擾選項・陷阱解析", emoji: "📖", bg: "linear-gradient(135deg, #FBBF24, #F59E0B)" },
+    { id: "write", zh: "寫作 Schreiben", desc: "命題作文・老師批改", emoji: "✍️", bg: "linear-gradient(135deg, #F472B6, #EC4899)" },
+    { id: "speak", zh: "口說 Sprechen", desc: "錄音練習・範例答案", emoji: "🎤", bg: "linear-gradient(135deg, #C084FC, #A855F7)" },
+  ];
+  return (
+    <div>
+      <div style={{ fontSize: 22, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>🎯 檢定課程</div>
+      <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 20 }}>歌德 A1-A2 聽說讀寫，仿真題型實戰演練</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        {cards.map(c => (
+          <button key={c.id} onClick={() => onPick(c.id)} style={{ background: c.bg, borderRadius: 18, padding: "28px 24px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", alignItems: "center", gap: 18 }}>
+            <div style={{ fontSize: 44 }}>{c.emoji}</div>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 900 }}>{c.zh}</div>
+              <div style={{ fontSize: 13, opacity: 0.92, marginTop: 4 }}>{c.desc}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// 系統課程中心
+function SystemHub({ onPick }) {
+  const cards = [
+    { id: "vocab", zh: "必背單字", desc: "A1+A2 高頻字 321 個・個人生詞本・卡片模式", emoji: "📒", bg: "linear-gradient(135deg, #818CF8, #6366F1)" },
+    { id: "grammar", zh: "必考文法", desc: "19 課彩色記憶卡・考試應用・翻譯練習", emoji: "📐", bg: "linear-gradient(135deg, #A78BFA, #8B5CF6)" },
+  ];
+  return (
+    <div>
+      <div style={{ fontSize: 22, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>📚 系統課程</div>
+      <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 20 }}>單字和文法是地基，地基穩了，聽說讀寫自然輕鬆</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        {cards.map(c => (
+          <button key={c.id} onClick={() => onPick(c.id)} style={{ background: c.bg, borderRadius: 18, padding: "28px 24px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", alignItems: "center", gap: 18 }}>
+            <div style={{ fontSize: 44 }}>{c.emoji}</div>
+            <div>
+              <div style={{ fontSize: 20, fontWeight: 900 }}>{c.zh}</div>
+              <div style={{ fontSize: 13, opacity: 0.92, marginTop: 4 }}>{c.desc}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// 簡單佔位頁
+function SimpleScreen({ emoji, title, desc }) {
+  return (
+    <div style={{ textAlign: "center", padding: "60px 20px" }}>
+      <div style={{ fontSize: 48, marginBottom: 14 }}>{emoji}</div>
+      <div style={{ fontWeight: 900, fontSize: 20, color: "#1F2937", marginBottom: 8 }}>{title}</div>
+      <div style={{ color: "#9CA3AF", fontSize: 14, lineHeight: 1.7, maxWidth: 400, margin: "0 auto" }}>{desc}</div>
+    </div>
+  );
+}
+
+// 設定頁
+function SettingsScreen({ apiKey, onSetApiKey, aiKey, onSetAiKey }) {
+  return (
+    <div style={{ maxWidth: 560 }}>
+      <Card color={C.purple}>
+        <div style={{ fontWeight: 800, color: C.purple, fontSize: 15, marginBottom: 8 }}>🔊 Google 語音金鑰</div>
+        <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 10, lineHeight: 1.6 }}>填入後，聽力朗讀會使用高品質德語語音（手機也準）。不填則用瀏覽器免費語音。</div>
+        <button onClick={() => { const k = window.prompt("輸入 Google Cloud TTS 金鑰：", apiKey || ""); if (k !== null) onSetApiKey(k.trim()); }} style={btnStyle(C.purple)}>{apiKey ? "✅ 已設定（點此修改）" : "設定金鑰"}</button>
+      </Card>
+      <Card color={C.pink}>
+        <div style={{ fontWeight: 800, color: C.pink, fontSize: 15, marginBottom: 8 }}>✨ AI 金鑰（Anthropic）</div>
+        <div style={{ fontSize: 13, color: "#6B7280", marginBottom: 10, lineHeight: 1.6 }}>填入後，可使用 AI 生成新題目、翻譯批改等功能。不填則用現成題庫（免費）。</div>
+        <button onClick={() => { const k = window.prompt("輸入 Anthropic API 金鑰：", aiKey || ""); if (k !== null) onSetAiKey(k.trim()); }} style={btnStyle(C.pink)}>{aiKey ? "✅ 已設定（點此修改）" : "設定金鑰"}</button>
+      </Card>
     </div>
   );
 }
