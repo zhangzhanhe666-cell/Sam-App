@@ -2758,7 +2758,7 @@ const NAV_GROUPS = [
 export default function App() {
   const [user, setUser] = useState(null);
   const [tab, setTab] = useState("home");
-  const [apiKey, setApiKey] = useState("");
+  const [apiKey, setApiKey] = useState("AIzaSyAxe2GRARpByqXtk-r2HdIzXTz7Ng2JSWk");
   const [aiKey, setAiKey] = useState("");
   const [users, setUsers] = useState(DEMO_USERS);
   const [myWords, setMyWords] = useState([]);
