@@ -2868,64 +2868,59 @@ function GuideScreen() {
     { id: "intro", label: "認識德語檢定", emoji: "🌱" },
     { id: "compare", label: "主流考試對比", emoji: "🆚" },
     { id: "levels", label: "歌德各級別資訊表", emoji: "📋" },
+    { id: "speak", label: "口說評分標準", emoji: "🗣️" },
     { id: "report", label: "歌德成績單分析", emoji: "📊" },
-    { id: "digital", label: "機考須知・評分", emoji: "💻" },
-    { id: "process", label: "報考流程・費用", emoji: "📝" },
+    { id: "exam", label: "報考須知・評分・費用", emoji: "📝" },
+    { id: "howto", label: "如何使用本網站", emoji: "🧭" },
   ];
-  const th = { background: "#7C3AED", color: "#fff", padding: "10px 8px", fontSize: 13, fontWeight: 800, textAlign: "left", border: "1px solid #7C3AED" };
-  const td = { padding: "9px 8px", fontSize: 13, color: "#374151", border: "1px solid #E9D5FF", verticalAlign: "top", lineHeight: 1.5 };
-  const tdH = { ...td, fontWeight: 800, color: "#7C3AED", background: "#F5F3FF" };
+  const th = { background: "#7C3AED", color: "#fff", padding: "12px 12px", fontSize: 15, fontWeight: 800, textAlign: "left", border: "1px solid #7C3AED" };
+  const td = { padding: "12px 12px", fontSize: 15, color: "#374151", border: "1px solid #E9D5FF", verticalAlign: "top", lineHeight: 1.6 };
+  const tdH = { ...td, fontWeight: 800, color: "#7C3AED", background: "#F5F3FF", whiteSpace: "nowrap" };
+  const h3 = { color: "#7C3AED", fontWeight: 900, fontSize: 22, marginBottom: 10 };
+  const h4 = { color: "#EC4899", fontWeight: 800, fontSize: 18, marginTop: 22, marginBottom: 8 };
+  const p = { fontSize: 16, color: "#374151", lineHeight: 1.9 };
+  const li = { fontSize: 16, color: "#374151", lineHeight: 2 };
 
   return (
     <div>
-      <div style={{ fontSize: 22, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>🧭 新手攻略</div>
-      <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 18 }}>零基礎也能看懂的德語檢定完整指南</div>
+      <div style={{ fontSize: 26, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>🧭 新手攻略</div>
+      <div style={{ fontSize: 16, color: "#9CA3AF", marginBottom: 22 }}>零基礎也能看懂的德語檢定完整指南</div>
 
-      <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 28, alignItems: "flex-start", flexWrap: "wrap" }}>
         {/* 左側子選單 */}
-        <div style={{ width: 200, minWidth: 180, display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ width: 230, minWidth: 200, display: "flex", flexDirection: "column", gap: 8, position: "sticky", top: 80 }}>
           {MENU.map(m => {
             const active = sec === m.id;
             return (
               <button key={m.id} onClick={() => setSec(m.id)} style={{
-                display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 12,
+                display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 14,
                 background: active ? "linear-gradient(135deg, #EDE9FE, #FCE7F3)" : "#fff",
-                border: active ? "1.5px solid #C4B5FD" : "1.5px solid #F0F0F0", cursor: "pointer", textAlign: "left",
-                color: active ? "#7C3AED" : "#4B5563", fontWeight: active ? 800 : 600, fontSize: 14,
+                border: active ? "2px solid #C4B5FD" : "1.5px solid #F0F0F0", cursor: "pointer", textAlign: "left",
+                color: active ? "#7C3AED" : "#4B5563", fontWeight: active ? 800 : 600, fontSize: 16,
               }}>
-                <span style={{ fontSize: 18 }}>{m.emoji}</span>{m.label}
+                <span style={{ fontSize: 22 }}>{m.emoji}</span>{m.label}
               </button>
             );
           })}
         </div>
 
         {/* 右側內容 */}
-        <div style={{ flex: 1, minWidth: 280 }}>
+        <div style={{ flex: 1, minWidth: 320, maxWidth: 760 }}>
           {sec === "intro" && (
             <div>
-              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>🌱 為什麼要考德語檢定？</h3>
-              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.8 }}>
-                德語檢定不只是一張證書。考下來之後，你不僅可以在<b>德國</b>上學、移民、工作，還能去<b>奧地利、瑞士</b>等德語區留學與生活。德語區的機會，從這張證書開始。
-              </p>
-              <div style={{ background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 12, padding: 14, margin: "14px 0" }}>
-                <div style={{ fontWeight: 800, color: "#15803D", fontSize: 15, marginBottom: 6 }}>✨ 最大優勢：終身有效！</div>
-                <div style={{ fontSize: 14, color: "#166534", lineHeight: 1.7 }}>
-                  不同於托福、雅思這類英語考試（成績通常只有 2 年效期），<b>歌德證書（Goethe-Zertifikat）永久有效</b>，考一次受用終身！（部分院校或雇主可能要求近期成績，但證書本身不過期。）
-                </div>
-              </div>
-              <h3 style={{ color: "#EC4899", fontWeight: 900, fontSize: 17, marginTop: 20 }}>🎤 口說／寫作怎麼評分？這個網站能幫你什麼？</h3>
-              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.8 }}>
-                聽力、閱讀是<b>客觀題</b>（選擇、填空），電腦就能判分。但<b>口說和寫作是主觀題</b>，需要有人評斷——這正是最難自學、最需要老師的部分：
-              </p>
-              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, paddingLeft: 20 }}>
-                <li><b>寫作</b>：要看用詞、文法、結構、是否切題。錯一個冠詞、詞尾，都可能扣分。</li>
-                <li><b>口說</b>：歌德口說由<b>真人考官</b>當場評分（不是機器），看發音、流利度、表達是否得體。</li>
+              <h3 style={h3}>🌱 這張證書能幫你做什麼？</h3>
+              <p style={p}>德語檢定證書，是你打開德語區大門的鑰匙。考下來之後，你可以：</p>
+              <ul style={{ ...li, paddingLeft: 22 }}>
+                <li><b>留學</b>：去德國、奧地利、瑞士的大學讀書</li>
+                <li><b>移民・入籍</b>：德國永居、入籍多要求 B1 或以上語言證明</li>
+                <li><b>工作</b>：在德語區求職，語言證書是<b>面試的敲門磚</b></li>
+                <li><b>職業培訓（Ausbildung）</b>：申請德國 Ausbildung 通常需 B1-B2 德語</li>
+                <li><b>生活</b>：在德奧瑞日常溝通、看醫生、辦事都用得上</li>
               </ul>
-              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 14, padding: 16, marginTop: 14 }}>
-                <div style={{ fontWeight: 800, color: "#7C3AED", fontSize: 15, marginBottom: 8 }}>💜 我們能幫到你（1+1&gt;2）</div>
-                <div style={{ fontSize: 14, color: "#5B21B6", lineHeight: 1.8 }}>
-                  這個網站用<b>大量仿真題型</b>幫你練聽說讀寫，加上 <b>AI 對話</b>最大限度模擬真實考試場景；而口說、寫作這種需要人評的部分，由 <b>Sam 老師親自批改、給回饋</b>。<br />
-                  <b>網站自主練習 + 老師專業指導 = 1+1 大於 2 的效果。</b>
+              <div style={{ background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 14, padding: 18, margin: "18px 0" }}>
+                <div style={{ fontWeight: 800, color: "#15803D", fontSize: 18, marginBottom: 6 }}>✨ 最大優勢：終身有效！</div>
+                <div style={{ fontSize: 16, color: "#166534", lineHeight: 1.8 }}>
+                  不同於托福、雅思（成績通常只有 2 年效期），<b>歌德證書永久有效</b>，考一次，受用終身。
                 </div>
               </div>
             </div>
@@ -2933,26 +2928,24 @@ function GuideScreen() {
 
           {sec === "compare" && (
             <div>
-              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>🆚 主流德語考試對比</h3>
-              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, marginBottom: 12 }}>
-                這些考試都受<b>德國教育部門認可</b>，但用途、地區、評分方式不同。選對考試很重要：
-              </p>
+              <h3 style={h3}>🆚 主流德語考試對比</h3>
+              <p style={{ ...p, marginBottom: 14 }}>這些考試都受<b>德國教育部門認可</b>，但用途、地區、評分方式不同：</p>
               <div style={{ overflowX: "auto" }}>
-                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
+                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 600 }}>
                   <thead><tr>
                     <th style={th}>考試</th><th style={th}>級別</th><th style={th}>主要用途</th><th style={th}>口說評分</th><th style={th}>特點</th>
                   </tr></thead>
                   <tbody>
-                    <tr><td style={tdH}>Goethe-Zertifikat<br />歌德</td><td style={td}>A1–C2</td><td style={td}>留學、移民、工作、簽證</td><td style={td}>真人考官</td><td style={td}>全球認可度最高，終身有效；德奧瑞通用</td></tr>
-                    <tr><td style={tdH}>TestDaF</td><td style={td}>B2–C1</td><td style={td}>德國大學入學</td><td style={td}>真人考官評分</td><td style={td}>專為留學設計，學術德語為主</td></tr>
-                    <tr><td style={tdH}>telc</td><td style={td}>A1–C2</td><td style={td}>工作、移民、部分留學</td><td style={td}>真人考官</td><td style={td}>歐洲常見，考點多；<b>台灣地區較難找到考點</b></td></tr>
-                    <tr><td style={tdH}>DSH</td><td style={td}>B2–C2</td><td style={td}>德國大學入學</td><td style={td}>真人考官</td><td style={td}>由德國各大學自辦，通常需在德國考</td></tr>
+                    <tr><td style={tdH}>Goethe 歌德</td><td style={td}>A1–C2</td><td style={td}>留學、移民、工作、簽證</td><td style={td}>真人考官</td><td style={td}>全球認可度最高，終身有效；德奧瑞通用</td></tr>
+                    <tr><td style={tdH}>TestDaF</td><td style={td}>B2–C1</td><td style={td}>德國大學入學</td><td style={td}>真人考官</td><td style={td}>專為留學設計，學術德語為主</td></tr>
+                    <tr><td style={tdH}>telc</td><td style={td}>A1–C2</td><td style={td}>工作、移民、部分留學</td><td style={td}>真人考官</td><td style={td}>歐洲常見；<b>台灣較難找到考點</b></td></tr>
+                    <tr><td style={tdH}>DSH</td><td style={td}>B2–C2</td><td style={td}>德國大學入學</td><td style={td}>真人考官</td><td style={td}>德國各大學自辦，通常需在德國考</td></tr>
                   </tbody>
                 </table>
               </div>
-              <div style={{ background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 12, padding: 14, marginTop: 14 }}>
-                <div style={{ fontSize: 14, color: "#92400E", lineHeight: 1.7 }}>
-                  📍 <b>台灣地區建議：</b>telc 在台灣較難找到考點，<b>歌德（Goethe）是台灣最主流、最方便報考的選擇</b>。若目標是德國大學，也可考慮 TestDaF；DSH 通常要到德國當地考。
+              <div style={{ background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 14, padding: 16, marginTop: 16 }}>
+                <div style={{ fontSize: 16, color: "#92400E", lineHeight: 1.8 }}>
+                  📍 <b>台灣地區：</b>telc 較難找到考點，<b>歌德是台灣最主流、最方便報考的選擇</b>。目標德國大學也可考 TestDaF；DSH 通常要到德國當地考。
                 </div>
               </div>
             </div>
@@ -2960,144 +2953,185 @@ function GuideScreen() {
 
           {sec === "levels" && (
             <div>
-              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>📋 歌德各級別資訊表</h3>
-              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, marginBottom: 12 }}>
-                每個級別都考<b>聽、說、讀、寫</b>四個部分。A1-A2 是基礎，B1 是留學移民常見門檻，C1-C2 是高階。
-              </p>
+              <h3 style={h3}>📋 歌德各部分題型結構</h3>
+              <p style={{ ...p, marginBottom: 8 }}>每個級別都考<b>聽、說、讀、寫</b>，每個部分又分成幾個 <b>Teil（小部分）</b>。下面以 <b>A2</b> 為例，看清楚每個 Teil 考什麼：</p>
+
+              <h4 style={h4}>🎧 聽力 Hören（約 30 分鐘）</h4>
+              <div style={{ overflowX: "auto" }}><table style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
+                <thead><tr><th style={th}>Teil</th><th style={th}>題型</th><th style={th}>考什麼</th></tr></thead>
+                <tbody>
+                  <tr><td style={tdH}>Teil 1</td><td style={td}>短對話/廣播</td><td style={td}>聽簡短訊息，抓關鍵資訊（時間、地點、數字）</td></tr>
+                  <tr><td style={tdH}>Teil 2</td><td style={td}>獨白/通知</td><td style={td}>聽一段較長獨白，判斷對錯或選答案</td></tr>
+                  <tr><td style={tdH}>Teil 3</td><td style={td}>日常對話</td><td style={td}>聽兩人對話，理解細節與意圖</td></tr>
+                  <tr><td style={tdH}>Teil 4</td><td style={td}>訪談/討論</td><td style={td}>聽較長內容，綜合判斷</td></tr>
+                </tbody>
+              </table></div>
+
+              <h4 style={h4}>📖 閱讀 Lesen（約 30 分鐘）</h4>
+              <div style={{ overflowX: "auto" }}><table style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
+                <thead><tr><th style={th}>Teil</th><th style={th}>題型</th><th style={th}>考什麼</th></tr></thead>
+                <tbody>
+                  <tr><td style={tdH}>Teil 1</td><td style={td}>短文/郵件</td><td style={td}>讀短文章，判斷對錯</td></tr>
+                  <tr><td style={tdH}>Teil 2</td><td style={td}>廣告/告示</td><td style={td}>從多則廣告中配對需求（注意干擾選項）</td></tr>
+                  <tr><td style={tdH}>Teil 3</td><td style={td}>日常文本</td><td style={td}>讀通知、簡訊，理解細節</td></tr>
+                  <tr><td style={tdH}>Teil 4</td><td style={td}>觀點短文</td><td style={td}>讀不同人的意見，配對或判斷</td></tr>
+                </tbody>
+              </table></div>
+
+              <h4 style={h4}>✍️ 寫作 Schreiben（約 30 分鐘）</h4>
+              <div style={{ overflowX: "auto" }}><table style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
+                <thead><tr><th style={th}>Teil</th><th style={th}>題型</th><th style={th}>考什麼</th></tr></thead>
+                <tbody>
+                  <tr><td style={tdH}>Teil 1</td><td style={td}>短訊息/簡訊</td><td style={td}>寫簡短訊息（如約朋友、請假），注意格式</td></tr>
+                  <tr><td style={tdH}>Teil 2</td><td style={td}>郵件/短文</td><td style={td}>就某主題寫一段話，回應要點。<b>可在試卷打草稿</b></td></tr>
+                </tbody>
+              </table></div>
+
+              <h4 style={h4}>🗣️ 口說 Sprechen（約 15 分鐘・真人考官）</h4>
+              <div style={{ overflowX: "auto" }}><table style={{ borderCollapse: "collapse", width: "100%", minWidth: 520 }}>
+                <thead><tr><th style={th}>Teil</th><th style={th}>題型</th><th style={th}>考什麼</th></tr></thead>
+                <tbody>
+                  <tr><td style={tdH}>Teil 1</td><td style={td}>自我介紹</td><td style={td}>介紹自己（姓名、來自哪、職業、興趣等）</td></tr>
+                  <tr><td style={tdH}>Teil 2</td><td style={td}>提問與回答</td><td style={td}>就某主題互相提問、回答（如購物、休閒）</td></tr>
+                  <tr><td style={tdH}>Teil 3</td><td style={td}>共同協商</td><td style={td}>和對方一起商量、達成共識（如安排活動）</td></tr>
+                </tbody>
+              </table></div>
+              <p style={{ fontSize: 13, color: "#9CA3AF", marginTop: 12, lineHeight: 1.6 }}>※ 各級別與年份的 Teil 數量、時間、題數以歌德官方公告為準，此表供整體理解。</p>
+            </div>
+          )}
+
+          {sec === "speak" && (
+            <div>
+              <h3 style={h3}>🗣️ 口說評分標準（重點！）</h3>
+              <p style={{ ...p, marginBottom: 12 }}>口說是<b>真人考官</b>當場評分。考官主要看這幾項，你練口說時要往這幾個方向努力：</p>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
-                  <thead><tr>
-                    <th style={th}>級別</th><th style={th}>程度</th><th style={th}>能做什麼</th><th style={th}>常見用途</th>
-                  </tr></thead>
+                  <thead><tr><th style={th}>評分維度</th><th style={th}>看什麼</th></tr></thead>
                   <tbody>
-                    <tr><td style={tdH}>A1</td><td style={td}>入門</td><td style={td}>簡單自我介紹、日常問候、基本需求</td><td style={td}>配偶簽證、基礎證明</td></tr>
-                    <tr><td style={tdH}>A2</td><td style={td}>基礎</td><td style={td}>處理日常生活對話、購物、看醫生</td><td style={td}>移民基礎、生活溝通</td></tr>
-                    <tr><td style={tdH}>B1</td><td style={td}>進階基礎</td><td style={td}>應付旅行、工作、表達想法與經歷</td><td style={td}><b>移民、入籍常見門檻</b></td></tr>
-                    <tr><td style={tdH}>B2</td><td style={td}>中高階</td><td style={td}>流暢討論、理解較複雜文章</td><td style={td}>工作、職業培訓、部分大學</td></tr>
-                    <tr><td style={tdH}>C1</td><td style={td}>高階</td><td style={td}>學術與專業場合自如表達</td><td style={td}>大學入學、專業工作</td></tr>
-                    <tr><td style={tdH}>C2</td><td style={td}>精通</td><td style={td}>接近母語者，理解任何內容</td><td style={td}>德奧瑞大學免 TestDaF/DSH</td></tr>
+                    <tr><td style={tdH}>① 流利度</td><td style={td}>說話是否順暢、有沒有長時間卡頓、語速自然</td></tr>
+                    <tr><td style={tdH}>② 語法的<br />寬度與深度</td><td style={td}>會用<b>多少種句型</b>、句子有沒有層次（見下表各級別要求）</td></tr>
+                    <tr><td style={tdH}>③ 詞彙</td><td style={td}>用詞是否準確、豐富，能不能換不同說法</td></tr>
+                    <tr><td style={tdH}>④ 發音語調</td><td style={td}>發音清楚、語調自然，對方聽得懂</td></tr>
+                    <tr><td style={tdH}>⑤ 表達得體</td><td style={td}>場合用語恰當（禮貌、正式/非正式）、切題</td></tr>
                   </tbody>
                 </table>
               </div>
-              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15, marginTop: 18 }}>📝 A2 四部分考試結構（以歌德 A2 為例）</h4>
+
+              <h4 style={h4}>📐 各級別「語法寬度與深度」大致要求</h4>
               <div style={{ overflowX: "auto" }}>
-                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560, marginTop: 8 }}>
-                  <thead><tr>
-                    <th style={th}>部分</th><th style={th}>大致時間</th><th style={th}>要點</th>
-                  </tr></thead>
+                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
+                  <thead><tr><th style={th}>級別</th><th style={th}>句型使用達到的程度</th></tr></thead>
                   <tbody>
-                    <tr><td style={tdH}>🎧 聽力 Hören</td><td style={td}>約 30 分鐘</td><td style={td}>聽日常對話、廣播、留言。<b>會讀題</b>，注意只播放有限次數</td></tr>
-                    <tr><td style={tdH}>📖 閱讀 Lesen</td><td style={td}>約 30 分鐘</td><td style={td}>讀短文、廣告、郵件。有<b>讀題時間</b>，注意干擾選項</td></tr>
-                    <tr><td style={tdH}>✍️ 寫作 Schreiben</td><td style={td}>約 30 分鐘</td><td style={td}>寫短訊息、郵件。<b>可在試卷上打草稿</b>，但要注意時間</td></tr>
-                    <tr><td style={tdH}>🗣️ 口說 Sprechen</td><td style={td}>約 15 分鐘</td><td style={td}>自我介紹、問答、簡單對話。<b>真人考官</b>面對面，有短暫準備時間</td></tr>
+                    <tr><td style={tdH}>A1</td><td style={td}>能用<b>簡單句</b>（主+謂+賓），表達基本需求即可</td></tr>
+                    <tr><td style={tdH}>A2</td><td style={td}>能用<b>簡單句 + 並列句</b>（und, aber, oder 連接），開始用 weil 簡單說明原因</td></tr>
+                    <tr><td style={tdH}>B1</td><td style={td}>能<b>穩定使用複合句</b>（weil, dass, wenn 等從句），表達想法、經歷、原因</td></tr>
+                    <tr><td style={tdH}>B2</td><td style={td}>能用<b>多樣的複合句</b>，句子有層次，能論述、比較、表達觀點</td></tr>
+                    <tr><td style={tdH}>C1-C2</td><td style={td}>句型<b>豐富靈活</b>，能用高階連接、被動、虛擬式，表達精準自然</td></tr>
                   </tbody>
                 </table>
               </div>
-              <p style={{ fontSize: 12, color: "#9CA3AF", marginTop: 10, lineHeight: 1.6 }}>
-                ※ 各級別與年份的確切時間、題數以歌德官方公告為準，此表供整體理解用。
-              </p>
+              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 14, padding: 16, marginTop: 16 }}>
+                <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.8 }}>
+                  💡 <b>練口說重點：</b>不要只會「主謂賓」簡單句。A2 要會用 und/aber 連接，並開始用 weil；想拿高分、上 B1，就要練到能自然說出 <b>weil / dass / wenn</b> 這類複合句。本網站的文法模組正是按這個邏輯設計的。
+                </div>
+              </div>
             </div>
           )}
 
           {sec === "report" && (
             <div>
-              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>📊 歌德成績單怎麼看？</h3>
-              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, marginBottom: 14 }}>
-                歌德成績單會列出<b>四項技能各自的分數</b>與總成績。看懂成績單，才知道自己哪一項要加強。
-              </p>
-              {/* 仿成績單卡片 */}
-              <div style={{ border: "2px solid #E9D5FF", borderRadius: 16, overflow: "hidden", maxWidth: 480 }}>
-                <div style={{ background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", padding: "14px 18px" }}>
-                  <div style={{ fontWeight: 900, fontSize: 16 }}>Goethe-Zertifikat A2</div>
-                  <div style={{ fontSize: 12, opacity: 0.9 }}>成績單範例 Score Report（示意）</div>
+              <h3 style={h3}>📊 歌德成績單怎麼看？</h3>
+              <p style={{ ...p, marginBottom: 14 }}>歌德成績單會列出<b>四項技能各自的分數</b>與總成績。看懂它，才知道哪一項要加強。</p>
+              <div style={{ border: "2px solid #E9D5FF", borderRadius: 16, overflow: "hidden", maxWidth: 520 }}>
+                <div style={{ background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", padding: "16px 20px" }}>
+                  <div style={{ fontWeight: 900, fontSize: 18 }}>Goethe-Zertifikat A2</div>
+                  <div style={{ fontSize: 13, opacity: 0.9 }}>成績單範例（示意）</div>
                 </div>
-                <div style={{ padding: 18 }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                <div style={{ padding: 20 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
                     <div>
-                      <div style={{ fontSize: 13, color: "#6B7280" }}>考生 / 範例</div>
-                      <div style={{ fontWeight: 800, color: "#1F2937" }}>Sam 同學</div>
+                      <div style={{ fontSize: 14, color: "#6B7280" }}>考生 / 範例</div>
+                      <div style={{ fontWeight: 800, color: "#1F2937", fontSize: 18 }}>Sam 同學</div>
                     </div>
-                    <div style={{ textAlign: "center", background: "#F5F3FF", borderRadius: 12, padding: "8px 16px", border: "2px solid #C4B5FD" }}>
-                      <div style={{ fontSize: 11, color: "#7C3AED", fontWeight: 700 }}>總成績</div>
-                      <div style={{ fontSize: 28, fontWeight: 900, color: "#7C3AED" }}>82</div>
-                      <div style={{ fontSize: 10, color: "#9CA3AF" }}>滿分 100</div>
+                    <div style={{ textAlign: "center", background: "#F5F3FF", borderRadius: 14, padding: "10px 20px", border: "2px solid #C4B5FD" }}>
+                      <div style={{ fontSize: 12, color: "#7C3AED", fontWeight: 700 }}>總成績</div>
+                      <div style={{ fontSize: 32, fontWeight: 900, color: "#7C3AED" }}>82</div>
+                      <div style={{ fontSize: 11, color: "#9CA3AF" }}>滿分 100</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#374151", marginBottom: 10 }}>四項技能分</div>
+                  <div style={{ fontSize: 15, fontWeight: 800, color: "#374151", marginBottom: 12 }}>四項技能分</div>
                   {[["🎧 聽力 Hören", 22, 25, "#34D399"], ["📖 閱讀 Lesen", 20, 25, "#FBBF24"], ["✍️ 寫作 Schreiben", 18, 25, "#F472B6"], ["🗣️ 口說 Sprechen", 22, 25, "#C084FC"]].map(([label, val, max, color], i) => (
-                    <div key={i} style={{ marginBottom: 10 }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#374151", fontWeight: 600, marginBottom: 3 }}>
+                    <div key={i} style={{ marginBottom: 12 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 15, color: "#374151", fontWeight: 600, marginBottom: 4 }}>
                         <span>{label}</span><span>{val}/{max}</span>
                       </div>
-                      <div style={{ background: "#F3F4F6", borderRadius: 99, height: 8 }}>
+                      <div style={{ background: "#F3F4F6", borderRadius: 99, height: 10 }}>
                         <div style={{ width: `${val / max * 100}%`, background: color, height: "100%", borderRadius: 99 }} />
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div style={{ background: "#EEF2FF", border: "1.5px solid #818CF8", borderRadius: 12, padding: 14, marginTop: 14 }}>
-                <div style={{ fontSize: 14, color: "#3730A3", lineHeight: 1.7 }}>
-                  💡 <b>怎麼看：</b>A1/A2 通常需<b>達到滿分 60%</b> 才算通過，且四個部分都要參加。上面範例總分 82 為通過。看到哪一項偏低（如此例寫作較弱），就知道要重點加強那一項。
+              <div style={{ background: "#EEF2FF", border: "1.5px solid #818CF8", borderRadius: 14, padding: 16, marginTop: 16 }}>
+                <div style={{ fontSize: 16, color: "#3730A3", lineHeight: 1.8 }}>
+                  💡 <b>怎麼看：</b>A1/A2 通常需<b>達到滿分 60%</b> 才算通過，且四個部分都要參加。看到哪項偏低（如此例寫作較弱），就重點加強那一項。
                 </div>
               </div>
-              <p style={{ fontSize: 12, color: "#9CA3AF", marginTop: 10 }}>※ 以上為示意成績單，幫助理解結構，分數與配分以歌德官方為準。</p>
+              <p style={{ fontSize: 13, color: "#9CA3AF", marginTop: 10 }}>※ 示意成績單，配分以歌德官方為準。</p>
             </div>
           )}
 
-          {sec === "digital" && (
+          {sec === "exam" && (
             <div>
-              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>💻 機考須知與評分方式</h3>
-              <div style={{ background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 12, padding: 14, margin: "10px 0 16px" }}>
-                <div style={{ fontSize: 14, color: "#92400E", lineHeight: 1.7 }}>
-                  ⚠️ <b>重要：歌德目前沒有「在家網考」。</b>所謂「數字考試（digital exam）」是<b>到指定考點，用歌德的筆電考</b>——閱讀、寫作、聽力（戴耳機）在電腦上做，<b>口說仍是跟真人考官面對面</b>。所以<b>口說目前無法線上進行</b>。
+              <h3 style={h3}>📝 報考須知・評分・費用</h3>
+
+              <h4 style={{ ...h4, marginTop: 4 }}>💻 機考須知</h4>
+              <div style={{ background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 14, padding: 16, marginBottom: 14 }}>
+                <div style={{ fontSize: 16, color: "#92400E", lineHeight: 1.8 }}>
+                  ⚠️ <b>歌德目前沒有「在家網考」。</b>所謂數字考試是<b>到考點用歌德的筆電</b>考——閱讀、寫作、聽力（戴耳機）在電腦上做，<b>口說仍是真人考官面對面</b>。所以口說無法線上進行。
                 </div>
               </div>
-              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15 }}>🎧 聽力怎麼進行？</h4>
-              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.8, paddingLeft: 20 }}>
-                <li>機考時戴<b>耳機</b>，可自己調音量</li>
-                <li>每段音頻通常<b>只播放固定次數</b>，要邊聽邊抓重點</li>
-                <li>善用<b>讀題時間</b>先看問題，帶著問題去聽</li>
+              <ul style={{ ...li, paddingLeft: 22 }}>
+                <li><b>聽力</b>：戴耳機可調音量；音頻<b>只播固定次數</b>，善用讀題時間先看問題</li>
+                <li><b>麥克風</b>：口說前按監考指示測試，音量距離適中，有問題立刻舉手</li>
               </ul>
-              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15, marginTop: 14 }}>🎤 口說評分：真人 vs 算法</h4>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 480, marginTop: 8 }}>
-                  <thead><tr><th style={th}>考試</th><th style={th}>口說怎麼評</th></tr></thead>
-                  <tbody>
-                    <tr><td style={tdH}>歌德 Goethe</td><td style={td}><b>真人考官</b>面對面評分，看發音、流利度、表達得體與否</td></tr>
-                    <tr><td style={tdH}>TestDaF</td><td style={td}><b>真人考官</b>聽錄音評分（學術場景）</td></tr>
-                    <tr><td style={tdH}>部分機考型考試</td><td style={td}>有些用<b>算法/AI</b>評分（如某些英語類機考），但歌德口說是真人</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15, marginTop: 14 }}>🎙️ 機考前如何調試麥克風？</h4>
-              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.8, paddingLeft: 20 }}>
-                <li>提早到考場，按監考指示<b>測試麥克風與耳機</b></li>
-                <li>說話<b>音量適中、距離適當</b>，別太靠近或太遠</li>
-                <li>遇到設備問題<b>立刻舉手</b>告訴監考，別自己拖延</li>
+
+              <h4 style={h4}>💰 費用與報考</h4>
+              <ul style={{ ...li, paddingLeft: 22 }}>
+                <li><b>費用</b>：成人約 €155–€359，依級別而定；B1 以上四模組可分開報考（單模組約 €104–€139）</li>
+                <li><b>報名</b>：當地歌德學院或合作考點官網線上報名，建議<b>提前 2-3 個月</b></li>
+                <li><b>重考</b>：A1/A2 可無限次重考；B1-C2 各模組也可單獨重考</li>
+                <li><b>出成績</b>：通常 2 週到數週，數字考試一般更快；可登入 Mein Goethe.de 下載證書</li>
               </ul>
+              <p style={{ fontSize: 13, color: "#9CA3AF", marginTop: 12, lineHeight: 1.6 }}>※ 費用、流程以各地歌德學院/考點官方公告為準，可能依地區與年份調整。</p>
             </div>
           )}
 
-          {sec === "process" && (
+          {sec === "howto" && (
             <div>
-              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>📝 報考流程與費用</h3>
-              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, paddingLeft: 20 }}>
-                <li><b>費用：</b>成人歌德考試大約 €155–€359，依級別而定。B1 以上<b>四個模組（聽說讀寫）可分開報考</b>，單模組約 €104–€139。</li>
-                <li><b>報名：</b>到當地歌德學院或合作考點官網線上報名，建議<b>提前 2-3 個月</b>，高級別容易額滿。</li>
-                <li><b>重考：</b>A1/A2 可<b>無限次重考</b>；B1-C2 各模組也可單獨無限次重考。</li>
-                <li><b>出成績：</b>通常考後 <b>2 週到數週</b>內出，數字考試一般更快。</li>
-                <li><b>領證書：</b>可登入 Mein Goethe.de 下載數字證書。</li>
-              </ul>
-              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 14, padding: 16, marginTop: 14 }}>
-                <div style={{ fontWeight: 800, color: "#7C3AED", fontSize: 15, marginBottom: 6 }}>🚀 Sam 老師建議</div>
-                <div style={{ fontSize: 14, color: "#5B21B6", lineHeight: 1.8 }}>
-                  先用本網站<b>大量練習聽說讀寫 + AI 對話模擬</b>，把基礎打穩；口說寫作交給老師批改修正。準備充分後再報名，一次通過，省時省錢！
+              <h3 style={h3}>🧭 如何使用本網站？</h3>
+              <p style={{ ...p, marginBottom: 16 }}>根據你目前的階段，選對板塊，學習最有效率：</p>
+
+              <div style={{ background: "linear-gradient(135deg, #818CF8, #6366F1)", borderRadius: 16, padding: 20, color: "#fff", marginBottom: 16 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 8 }}>📚 還在學教材、打基礎？</div>
+                <div style={{ fontSize: 16, lineHeight: 1.8 }}>
+                  去「<b>系統課程</b>」板塊。這裡有<b>必背單字</b>（A1+A2 高頻字、個人生詞本）和<b>必考文法</b>（19 課彩色記憶卡、考試應用、翻譯練習），幫你把地基打穩。
                 </div>
               </div>
-              <p style={{ fontSize: 12, color: "#9CA3AF", marginTop: 12, lineHeight: 1.6 }}>
-                ※ 費用、流程、時間以各地歌德學院/考點官方公告為準，可能因地區與年份調整。
-              </p>
+
+              <div style={{ background: "linear-gradient(135deg, #EC4899, #DB2777)", borderRadius: 16, padding: 20, color: "#fff", marginBottom: 16 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 8 }}>🎯 已經在準備檢定、要衝刺？</div>
+                <div style={{ fontSize: 16, lineHeight: 1.8 }}>
+                  去「<b>檢定課程</b>」板塊。這裡有<b>聽說讀寫</b>四大題型的仿真練習，含歌德陷阱題、長篇聽力、原文對照、AI 對話模擬真實場景。
+                </div>
+              </div>
+
+              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 16, padding: 20 }}>
+                <div style={{ fontSize: 18, fontWeight: 900, color: "#7C3AED", marginBottom: 8 }}>💜 1 + 1 &gt; 2</div>
+                <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.8 }}>
+                  網站讓你<b>自主大量練習</b>聽說讀寫；口說、寫作這種需要人評的部分，由 <b>Sam 老師親自批改、給回饋</b>。網站練習 + 老師指導，效果加倍！
+                </div>
+              </div>
             </div>
           )}
         </div>
