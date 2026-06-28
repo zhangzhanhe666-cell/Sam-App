@@ -2735,6 +2735,24 @@ function HomeScreen({ onPick, user, myWords = [], onSpeakWord }) {
       {/* 每日一句 */}
       <DailyQuote />
 
+      {/* 5分鐘定位 + 練習陪伴 入口 */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginTop: 18 }}>
+        <button onClick={() => onPick("placement")} style={{ background: "linear-gradient(135deg, #34D399, #10B981)", borderRadius: 16, padding: "22px 20px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ fontSize: 38 }}>⏱️</div>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 900 }}>5 分鐘定位德語水平</div>
+            <div style={{ fontSize: 12, opacity: 0.92, marginTop: 2 }}>快速測出級別與弱項・即將上線</div>
+          </div>
+        </button>
+        <button onClick={() => onPick("companion")} style={{ background: "linear-gradient(135deg, #818CF8, #6366F1)", borderRadius: 16, padding: "22px 20px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ fontSize: 38 }}>🤝</div>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 900 }}>練習陪伴</div>
+            <div style={{ fontSize: 12, opacity: 0.92, marginTop: 2 }}>批改・刷題・檢測・階段目標・即將上線</div>
+          </div>
+        </button>
+      </div>
+
       {/* 2026 新版歌德考試課程 */}
       <div style={{ marginTop: 24, marginBottom: 8 }}>
         <div style={{ fontSize: 20, fontWeight: 900, color: "#1F2937" }}>2026 歌德檢定・聽說讀寫</div>
@@ -2804,8 +2822,10 @@ function HomeScreen({ onPick, user, myWords = [], onSpeakWord }) {
 // 頂部橫向導航（門戶式，像 PTE 首頁）
 const TOP_NAV = [
   { id: "home", label: "首頁" },
+  { id: "placement", label: "5分鐘定位" },
   { id: "system", label: "系統課程" },
   { id: "exam", label: "檢定課程" },
+  { id: "companion", label: "練習陪伴" },
   { id: "community", label: "社區" },
   { id: "ausbildung", label: "Ausbildung" },
   { id: "business", label: "商業德語" },
@@ -3233,6 +3253,195 @@ function GuideScreen() {
   );
 }
 
+// 練習陪伴（學習服務體系・多為即將上線）
+function CompanionScreen({ onPick }) {
+  const Soon = () => <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: "#C4B5FD", borderRadius: 8, padding: "2px 8px", marginLeft: 8 }}>即將上線</span>;
+  const card = (emoji, title, desc, opts = {}) => (
+    <button onClick={opts.onClick || (() => {})} style={{
+      display: "flex", alignItems: "flex-start", gap: 14, background: "#fff", border: "1.5px solid #F0EAFE",
+      borderRadius: 16, padding: "18px 18px", textAlign: "left", cursor: opts.onClick ? "pointer" : "default",
+      boxShadow: "0 2px 12px #7C3AED0D", width: "100%",
+    }}>
+      <div style={{ fontSize: 32 }}>{emoji}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 17, fontWeight: 800, color: "#1F2937", display: "flex", alignItems: "center" }}>
+          {title}{opts.soon && <Soon />}{opts.live && <span style={{ fontSize: 11, fontWeight: 800, color: "#fff", background: "#10B981", borderRadius: 8, padding: "2px 8px", marginLeft: 8 }}>可用</span>}
+        </div>
+        <div style={{ fontSize: 14, color: "#6B7280", lineHeight: 1.6, marginTop: 4, whiteSpace: "pre-line" }}>{desc}</div>
+      </div>
+      <div style={{ color: "#C4B5FD", fontSize: 20 }}>›</div>
+    </button>
+  );
+  const sec = { fontSize: 19, fontWeight: 900, color: "#7C3AED", margin: "26px 0 12px" };
+
+  return (
+    <div>
+      <div style={{ fontSize: 26, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>🤝 練習陪伴</div>
+      <div style={{ fontSize: 16, color: "#9CA3AF", marginBottom: 8 }}>從入學到考過，全程陪你一步步走</div>
+
+      <div style={sec}>📦 入學測試</div>
+      {card("🎒", "檢測入學基礎", "確定課程方案 + 基礎提升計畫\n5 分鐘測出你的當前水平與弱項", { live: true, onClick: () => onPick("placement") })}
+
+      <div style={sec}>🤝 練習陪伴</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        {card("📩", "每日作業批改", "不限次提交作業，每日批改\n口語糾音 / 語法糾錯 / 練習是否達標", { soon: true })}
+        {card("💬", "專屬學習群每日督促答疑", "多對一服務\n學習問題、報考問題、課程問題", { soon: true })}
+        {card("🎬", "刷題班", "聽說讀寫，每日直播帶練", { soon: true })}
+        {card("🔥", "學員專屬打卡群", "學習氛圍拉滿，和同學一起每日完成打卡任務，聽老師講解", { soon: true })}
+        {card("💎", "Sam 德語 VIP", "VIP 會員一路陪伴至出分", { soon: true })}
+      </div>
+
+      <div style={sec}>📊 定期檢測 & 調整</div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        {card("📈", "模考 / 真考分析", "薄弱項、錯誤原因、練習方法分析", { soon: true })}
+        {card("🎯", "階段目標", "貫穿整個學習階段，定期調整和更新階段學習重點和目標", { soon: true })}
+      </div>
+    </div>
+  );
+}
+
+// 5 分鐘定位（單字選擇題・難度遞進・無中文提示）
+const PLACEMENT_WORDS = [
+  // 由易到難：數字、基礎詞 → 連接詞 → 動詞變位 → 介詞/格 → 從句
+  { q: "drei", options: ["3", "5", "8", "10"], answer: "3", lvl: "A1" },
+  { q: "die Katze", options: ["貓", "狗", "鳥", "魚"], answer: "貓", lvl: "A1" },
+  { q: "rot", options: ["紅色", "藍色", "綠色", "黃色"], answer: "紅色", lvl: "A1" },
+  { q: "Wasser", options: ["水", "麵包", "牛奶", "咖啡"], answer: "水", lvl: "A1" },
+  { q: "Ich ___ Tee.（喝）", options: ["trinke", "trinkst", "trinkt", "trinken"], answer: "trinke", lvl: "A1" },
+  { q: "Er kommt ___ Deutschland.（來自）", options: ["aus", "in", "auf", "mit"], answer: "aus", lvl: "A1" },
+  { q: "Ich mag Kaffee ___ Tee.（和）", options: ["und", "aber", "oder", "weil"], answer: "und", lvl: "A1" },
+  { q: "Ich bleibe zu Hause, ___ es regnet.（因為）", options: ["weil", "und", "aber", "oder"], answer: "weil", lvl: "A2" },
+  { q: "Er ___ einen Apfel.（吃，不規則）", options: ["isst", "esst", "esse", "essen"], answer: "isst", lvl: "A2" },
+  { q: "Ich fahre ___ dem Bus.（用…交通工具）", options: ["mit", "in", "aus", "für"], answer: "mit", lvl: "A2" },
+  { q: "Ich gebe ___ das Buch.（給他，第三格）", options: ["ihm", "ihn", "er", "sein"], answer: "ihm", lvl: "A2" },
+  { q: "Ich habe gestern Fußball ___.（完成式）", options: ["gespielt", "spielen", "spielte", "spielt"], answer: "gespielt", lvl: "A2" },
+  { q: "Das ist der Mann, ___ Deutsch spricht.（關係代詞）", options: ["der", "die", "das", "dem"], answer: "der", lvl: "B1" },
+  { q: "Wenn ich Zeit ___, lerne ich Deutsch.（如果，動詞位置）", options: ["habe", "hat", "haben", "hast"], answer: "habe", lvl: "B1" },
+  { q: "Je mehr ich lerne, ___ besser verstehe ich.（越…越…）", options: ["desto", "als", "wie", "dass"], answer: "desto", lvl: "B1" },
+];
+
+function PlacementScreen() {
+  const [started, setStarted] = useState(false);
+  const [idx, setIdx] = useState(0);
+  const [chosen, setChosen] = useState(null);
+  const [correct, setCorrect] = useState(0);
+  const [levelCount, setLevelCount] = useState({ A1: 0, A2: 0, B1: 0 });
+  const [done, setDone] = useState(false);
+
+  const total = PLACEMENT_WORDS.length;
+  const q = PLACEMENT_WORDS[idx];
+
+  const pick = (opt) => {
+    if (chosen) return;
+    setChosen(opt);
+    if (opt === q.answer) {
+      setCorrect(c => c + 1);
+      setLevelCount(lc => ({ ...lc, [q.lvl]: lc[q.lvl] + 1 }));
+    }
+  };
+  const next = () => {
+    if (idx + 1 >= total) setDone(true);
+    else { setIdx(i => i + 1); setChosen(null); }
+  };
+
+  const estLevel = () => {
+    const pct = correct / total;
+    if (pct >= 0.85) return { lvl: "B1 或以上", emoji: "🏆", color: "#EF4444", note: "你的基礎很扎實！可以挑戰 B1 內容，衝刺檢定。" };
+    if (pct >= 0.6) return { lvl: "A2", emoji: "🎯", color: "#F59E0B", note: "你有不錯的 A2 基礎，繼續鞏固就能往 B1 前進。" };
+    if (pct >= 0.35) return { lvl: "A1–A2", emoji: "🌱", color: "#3B82F6", note: "你在 A1 到 A2 之間，把基礎單字和文法再打穩。" };
+    return { lvl: "A1 入門", emoji: "🐣", color: "#34D399", note: "從 A1 開始，跟著系統課程一步步學，很快就能進步！" };
+  };
+
+  // 開始畫面（眼前一亮）
+  if (!started) {
+    return (
+      <div style={{ textAlign: "center", padding: "40px 20px" }}>
+        <div style={{ fontSize: 64, marginBottom: 16, animation: "none" }}>⏱️</div>
+        <div style={{ fontSize: 34, fontWeight: 900, background: "linear-gradient(135deg, #7C3AED, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 12 }}>
+          5 分鐘，測出你的德語水平！
+        </div>
+        <div style={{ fontSize: 18, color: "#6B7280", lineHeight: 1.8, maxWidth: 460, margin: "0 auto 28px" }}>
+          {total} 道題，由淺入深。<br />答完立刻知道你目前大概的級別與弱項，<br />幫你找準學習起點。
+        </div>
+        <button onClick={() => setStarted(true)} style={{
+          background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", border: "none",
+          borderRadius: 30, padding: "16px 44px", fontSize: 20, fontWeight: 900, cursor: "pointer",
+          boxShadow: "0 8px 28px #7C3AED55",
+        }}>開始測試 →</button>
+      </div>
+    );
+  }
+
+  // 結果頁
+  if (done) {
+    const r = estLevel();
+    return (
+      <div style={{ textAlign: "center", padding: "30px 20px" }}>
+        <div style={{ fontSize: 60, marginBottom: 10 }}>{r.emoji}</div>
+        <div style={{ fontSize: 18, color: "#6B7280", marginBottom: 6 }}>你的當前水平大約是</div>
+        <div style={{ fontSize: 40, fontWeight: 900, color: r.color, marginBottom: 14 }}>{r.lvl}</div>
+        <div style={{ fontSize: 22, fontWeight: 800, color: "#1F2937", marginBottom: 8 }}>答對 {correct} / {total} 題</div>
+        <div style={{ fontSize: 16, color: "#6B7280", lineHeight: 1.8, maxWidth: 440, margin: "0 auto 24px" }}>{r.note}</div>
+        <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 16, padding: 20, maxWidth: 460, margin: "0 auto 20px" }}>
+          <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.8 }}>
+            💡 <b>下一步：</b>到「系統課程」打穩單字文法，到「檢定課程」針對弱項刷題。需要老師幫你定計畫？點右下角<b>課程諮詢</b>！
+          </div>
+        </div>
+        <button onClick={() => { setStarted(false); setIdx(0); setChosen(null); setCorrect(0); setDone(false); setLevelCount({ A1: 0, A2: 0, B1: 0 }); }}
+          style={{ background: "#fff", border: "2px solid #C4B5FD", color: "#7C3AED", borderRadius: 24, padding: "12px 32px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>再測一次</button>
+      </div>
+    );
+  }
+
+  // 答題頁
+  return (
+    <div style={{ maxWidth: 560, margin: "0 auto" }}>
+      {/* 進度條 */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+        <div style={{ flex: 1, background: "#EDE9FE", borderRadius: 99, height: 10, overflow: "hidden" }}>
+          <div style={{ width: `${(idx) / total * 100}%`, background: "linear-gradient(90deg, #7C3AED, #EC4899)", height: "100%", transition: "width 0.3s" }} />
+        </div>
+        <div style={{ fontSize: 15, fontWeight: 800, color: "#7C3AED" }}>{idx + 1}/{total}</div>
+      </div>
+
+      {/* 題目（大字亮字） */}
+      <div style={{ textAlign: "center", marginBottom: 28 }}>
+        <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 10 }}>選出正確的意思／答案</div>
+        <div style={{ fontSize: 40, fontWeight: 900, color: "#1F2937", lineHeight: 1.3 }}>{q.q}</div>
+      </div>
+
+      {/* 選項 */}
+      <div style={{ display: "grid", gap: 12 }}>
+        {q.options.map(opt => {
+          const isChosen = chosen === opt;
+          const isCorrect = opt === q.answer;
+          let bg = "#fff", border = "#E5E7EB", color = "#374151";
+          if (chosen) {
+            if (isCorrect) { bg = "#F0FDF4"; border = "#34D399"; color = "#15803D"; }
+            else if (isChosen) { bg = "#FEF2F2"; border = "#F87171"; color = "#DC2626"; }
+          }
+          return (
+            <button key={opt} onClick={() => pick(opt)} disabled={!!chosen} style={{
+              background: bg, border: `2px solid ${border}`, color, borderRadius: 14,
+              padding: "16px 18px", fontSize: 19, fontWeight: 700, cursor: chosen ? "default" : "pointer",
+              transition: "all 0.15s", textAlign: "center",
+            }}>
+              {opt}{chosen && isCorrect ? "  ✓" : ""}{chosen && isChosen && !isCorrect ? "  ✕" : ""}
+            </button>
+          );
+        })}
+      </div>
+
+      {chosen && (
+        <button onClick={next} style={{
+          marginTop: 24, width: "100%", background: "linear-gradient(135deg, #7C3AED, #EC4899)",
+          color: "#fff", border: "none", borderRadius: 16, padding: "15px", fontSize: 18, fontWeight: 900, cursor: "pointer",
+        }}>{idx + 1 >= total ? "看結果 🎉" : "下一題 →"}</button>
+      )}
+    </div>
+  );
+}
+
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 
 const TABS = [
@@ -3290,7 +3499,7 @@ export default function App() {
   };
 
   // 受保護的內容頁籤（未登入點擊會被攔截）
-  const PROTECTED = ["vocab", "grammar", "listen", "read", "write", "speak", "exam", "system", "review", "stats", "guide", "threemin"];
+  const PROTECTED = ["vocab", "grammar", "listen", "read", "write", "speak", "exam", "system", "review", "stats", "guide", "threemin", "placement", "companion"];
 
   // 切換頁籤：未登入且點受保護內容 → 提示登入
   const go = (target) => {
@@ -3367,6 +3576,8 @@ export default function App() {
         {tab === "ausbildung" && <SimpleScreen emoji="🎓" title="Ausbildung 職業培訓" desc="德國職業培訓（Ausbildung）相關德語與資訊。敬請期待！" />}
         {tab === "business" && <SimpleScreen emoji="💼" title="商業德語" desc="商務場景、職場溝通、商業書信德語。敬請期待！" />}
         {tab === "appinfo" && <SimpleScreen emoji="📱" title="App" desc="未來推出手機 App，隨時隨地學德語。敬請期待！" />}
+        {tab === "placement" && <PlacementScreen />}
+        {tab === "companion" && <CompanionScreen onPick={go} />}
       </div>
 
       {/* 課程諮詢浮動按鈕（之後接 Line） */}
