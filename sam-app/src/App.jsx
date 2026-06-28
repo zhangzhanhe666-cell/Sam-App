@@ -2753,48 +2753,6 @@ function HomeScreen({ onPick, user, myWords = [], onSpeakWord }) {
         </button>
       </div>
 
-      {/* 2026 新版歌德考試課程 */}
-      <div style={{ marginTop: 24, marginBottom: 8 }}>
-        <div style={{ fontSize: 20, fontWeight: 900, color: "#1F2937" }}>2026 歌德檢定・聽說讀寫</div>
-        <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 2 }}>四大題型，點進去開始練習</div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 28 }}>
-        {[
-          { id: "speak", zh: "口說", en: "Sprechen", emoji: "🎤", bg: "linear-gradient(135deg, #C084FC, #A855F7)" },
-          { id: "write", zh: "寫作", en: "Schreiben", emoji: "✍️", bg: "linear-gradient(135deg, #F472B6, #EC4899)" },
-          { id: "read", zh: "閱讀", en: "Lesen", emoji: "📖", bg: "linear-gradient(135deg, #FBBF24, #F59E0B)" },
-          { id: "listen", zh: "聽力", en: "Hören", emoji: "🎧", bg: "linear-gradient(135deg, #34D399, #10B981)" },
-        ].map(c => (
-          <button key={c.id} onClick={() => onPick(c.id)} style={{ background: c.bg, borderRadius: 16, padding: "20px 16px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", minHeight: 130, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div style={{ fontSize: 32 }}>{c.emoji}</div>
-            <div>
-              <div style={{ fontSize: 17, fontWeight: 900 }}>{c.zh}</div>
-              <div style={{ fontSize: 12, opacity: 0.9 }}>{c.en}</div>
-            </div>
-          </button>
-        ))}
-      </div>
-
-      {/* 系統課程：單字文法 */}
-      <div style={{ marginBottom: 8 }}>
-        <div style={{ fontSize: 20, fontWeight: 900, color: "#1F2937" }}>系統課程・打好基礎</div>
-        <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 2 }}>單字和文法是地基，地基穩了，聽說讀寫自然輕鬆</div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, marginBottom: 28 }}>
-        {[
-          { id: "vocab", zh: "必背單字", desc: "A1+A2 高頻字・個人生詞本", emoji: "📒", bg: "linear-gradient(135deg, #818CF8, #6366F1)" },
-          { id: "grammar", zh: "必考文法", desc: "19 課彩色記憶卡・考試應用", emoji: "📐", bg: "linear-gradient(135deg, #A78BFA, #8B5CF6)" },
-        ].map(c => (
-          <button key={c.id} onClick={() => onPick(c.id)} style={{ background: c.bg, borderRadius: 16, padding: "22px 20px", color: "#fff", textAlign: "left", cursor: "pointer", border: "none", display: "flex", alignItems: "center", gap: 16 }}>
-            <div style={{ fontSize: 38 }}>{c.emoji}</div>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 900 }}>{c.zh}</div>
-              <div style={{ fontSize: 12, opacity: 0.92, marginTop: 2 }}>{c.desc}</div>
-            </div>
-          </button>
-        ))}
-      </div>
-
       {/* VIP / 付費課程（佔位） */}
       <div style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ fontSize: 20, fontWeight: 900, color: "#1F2937" }}>VIP 精修課程</div>
@@ -2822,7 +2780,6 @@ function HomeScreen({ onPick, user, myWords = [], onSpeakWord }) {
 // 頂部橫向導航（門戶式，像 PTE 首頁）
 const TOP_NAV = [
   { id: "home", label: "首頁" },
-  { id: "placement", label: "5分鐘定位" },
   { id: "system", label: "系統課程" },
   { id: "exam", label: "檢定課程" },
   { id: "companion", label: "練習陪伴" },
@@ -3279,8 +3236,8 @@ function CompanionScreen({ onPick }) {
       <div style={{ fontSize: 26, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>🤝 練習陪伴</div>
       <div style={{ fontSize: 16, color: "#9CA3AF", marginBottom: 8 }}>從入學到考過，全程陪你一步步走</div>
 
-      <div style={sec}>📦 入學測試</div>
-      {card("🎒", "檢測入學基礎", "確定課程方案 + 基礎提升計畫\n5 分鐘測出你的當前水平與弱項", { live: true, onClick: () => onPick("placement") })}
+      <div style={sec}>📚 學習檢測</div>
+      {card("🎒", "5 分鐘檢測當前基礎", "確定課程方案 + 基礎提升計畫\n快速測出你的當前水平與弱項", { live: true, onClick: () => onPick("placement") })}
 
       <div style={sec}>🤝 練習陪伴</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
@@ -3293,121 +3250,284 @@ function CompanionScreen({ onPick }) {
 
       <div style={sec}>📊 定期檢測 & 調整</div>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-        {card("📈", "模考 / 真考分析", "薄弱項、錯誤原因、練習方法分析", { soon: true })}
+        {card("📈", "模考 / 真考分析", "定位：薄弱項、錯誤原因、上階段練習方法錯誤", { soon: true })}
         {card("🎯", "階段目標", "貫穿整個學習階段，定期調整和更新階段學習重點和目標", { soon: true })}
+        {card("📊", "口語提升目標", "規劃可行的口語提升路徑，一次解決一個問題", { soon: true })}
       </div>
     </div>
   );
 }
 
-// 5 分鐘定位（單字選擇題・難度遞進・無中文提示）
-const PLACEMENT_WORDS = [
-  // 由易到難：數字、基礎詞 → 連接詞 → 動詞變位 → 介詞/格 → 從句
-  { q: "drei", options: ["3", "5", "8", "10"], answer: "3", lvl: "A1" },
-  { q: "die Katze", options: ["貓", "狗", "鳥", "魚"], answer: "貓", lvl: "A1" },
-  { q: "rot", options: ["紅色", "藍色", "綠色", "黃色"], answer: "紅色", lvl: "A1" },
-  { q: "Wasser", options: ["水", "麵包", "牛奶", "咖啡"], answer: "水", lvl: "A1" },
-  { q: "Ich ___ Tee.（喝）", options: ["trinke", "trinkst", "trinkt", "trinken"], answer: "trinke", lvl: "A1" },
-  { q: "Er kommt ___ Deutschland.（來自）", options: ["aus", "in", "auf", "mit"], answer: "aus", lvl: "A1" },
-  { q: "Ich mag Kaffee ___ Tee.（和）", options: ["und", "aber", "oder", "weil"], answer: "und", lvl: "A1" },
-  { q: "Ich bleibe zu Hause, ___ es regnet.（因為）", options: ["weil", "und", "aber", "oder"], answer: "weil", lvl: "A2" },
-  { q: "Er ___ einen Apfel.（吃，不規則）", options: ["isst", "esst", "esse", "essen"], answer: "isst", lvl: "A2" },
-  { q: "Ich fahre ___ dem Bus.（用…交通工具）", options: ["mit", "in", "aus", "für"], answer: "mit", lvl: "A2" },
-  { q: "Ich gebe ___ das Buch.（給他，第三格）", options: ["ihm", "ihn", "er", "sein"], answer: "ihm", lvl: "A2" },
-  { q: "Ich habe gestern Fußball ___.（完成式）", options: ["gespielt", "spielen", "spielte", "spielt"], answer: "gespielt", lvl: "A2" },
-  { q: "Das ist der Mann, ___ Deutsch spricht.（關係代詞）", options: ["der", "die", "das", "dem"], answer: "der", lvl: "B1" },
-  { q: "Wenn ich Zeit ___, lerne ich Deutsch.（如果，動詞位置）", options: ["habe", "hat", "haben", "hast"], answer: "habe", lvl: "B1" },
-  { q: "Je mehr ich lerne, ___ besser verstehe ich.（越…越…）", options: ["desto", "als", "wie", "dass"], answer: "desto", lvl: "B1" },
+// ══ 德語水平測評・大題庫（全德文，無中文）・每次隨機抽題 ══
+const BANK_GRAMMAR = [
+  { q: "Wie viel ist „drei + zwei\"?", options: ["fünf", "vier", "sechs", "sieben"], answer: "fünf", lvl: "A1" },
+  { q: "___ heißt du?", options: ["Wie", "Was", "Wer", "Wo"], answer: "Wie", lvl: "A1" },
+  { q: "Ich ___ aus China.", options: ["komme", "kommst", "kommt", "kommen"], answer: "komme", lvl: "A1" },
+  { q: "Das ist ___ Apfel.", options: ["ein", "eine", "einen", "einem"], answer: "ein", lvl: "A1" },
+  { q: "___ du Kaffee oder Tee?", options: ["Trinkst", "Trinke", "Trinkt", "Trinken"], answer: "Trinkst", lvl: "A1" },
+  { q: "Wir ___ heute Deutsch.", options: ["lernen", "lerne", "lernst", "lernt"], answer: "lernen", lvl: "A1" },
+  { q: "Ich mag Tee ___ Kaffee.", options: ["und", "weil", "dass", "obwohl"], answer: "und", lvl: "A1" },
+  { q: "___ ist dein Vater? — Er ist 50.", options: ["Wie alt", "Was", "Wo", "Wann"], answer: "Wie alt", lvl: "A1" },
+  { q: "Er ___ jeden Morgen einen Apfel.", options: ["isst", "esst", "esse", "essen"], answer: "isst", lvl: "A2" },
+  { q: "Ich bleibe zu Hause, ___ es regnet.", options: ["weil", "und", "aber", "oder"], answer: "weil", lvl: "A2" },
+  { q: "Kannst du ___ bitte helfen?", options: ["mir", "mich", "ich", "mein"], answer: "mir", lvl: "A2" },
+  { q: "Das Buch gefällt ___ sehr.", options: ["mir", "mich", "ich", "meine"], answer: "mir", lvl: "A2" },
+  { q: "Ich gebe ___ das Geschenk.", options: ["ihm", "ihn", "er", "sein"], answer: "ihm", lvl: "A2" },
+  { q: "Siehst du den Mann? Ich kenne ___.", options: ["ihn", "ihm", "er", "sein"], answer: "ihn", lvl: "A2" },
+  { q: "Ich fahre ___ dem Bus zur Arbeit.", options: ["mit", "in", "aus", "für"], answer: "mit", lvl: "A2" },
+  { q: "Gestern ___ ich ins Kino gegangen.", options: ["bin", "habe", "war", "hatte"], answer: "bin", lvl: "A2" },
+  { q: "Wie ___ dir der Film? — Sehr gut!", options: ["gefällt", "gefallen", "gefällst", "gefalle"], answer: "gefällt", lvl: "A2" },
+  { q: "Der Lehrer hilft ___ Schülern.", options: ["den", "die", "der", "dem"], answer: "den", lvl: "A2" },
+  { q: "Das ist der Mann, ___ Deutsch unterrichtet.", options: ["der", "die", "das", "dem"], answer: "der", lvl: "B1" },
+  { q: "Ich weiß nicht, ___ er heute kommt.", options: ["ob", "wenn", "als", "dass"], answer: "ob", lvl: "B1" },
+  { q: "Wenn ich Zeit ___, würde ich mehr reisen.", options: ["hätte", "habe", "hatte", "haben"], answer: "hätte", lvl: "B1" },
+  { q: "Die Frau, ___ ich geholfen habe, ist Ärztin.", options: ["der", "die", "den", "dem"], answer: "der", lvl: "B1" },
+  { q: "Er tut so, ___ ob er alles wüsste.", options: ["als", "wenn", "dass", "weil"], answer: "als", lvl: "B1" },
+  { q: "Je mehr man übt, ___ besser wird man.", options: ["desto", "als", "wie", "so"], answer: "desto", lvl: "B1" },
+  { q: "Der Brief ___ gestern geschrieben.", options: ["wurde", "wird", "ist", "hat"], answer: "wurde", lvl: "B1" },
+  { q: "___ des schlechten Wetters fand das Spiel statt.", options: ["Trotz", "Wegen", "Während", "Statt"], answer: "Trotz", lvl: "B2" },
+  { q: "Er ärgert sich ___ den Stau.", options: ["über", "auf", "für", "an"], answer: "über", lvl: "B2" },
+  { q: "Ich freue mich ___ das Wochenende.", options: ["auf", "über", "für", "an"], answer: "auf", lvl: "B2" },
+  { q: "___ hart er auch arbeitet, er kommt nicht voran.", options: ["So sehr", "Obwohl", "Trotzdem", "Wenn"], answer: "So sehr", lvl: "B2" },
+  { q: "Das Projekt muss bis Freitag ___ werden.", options: ["abgeschlossen", "abschließen", "abschloss", "abzuschließen"], answer: "abgeschlossen", lvl: "C1" },
+  { q: "___ hätte er das jemals zugegeben.", options: ["Unter keinen Umständen", "Kein Fall", "Nicht Weise", "Auf keine Art"], answer: "Unter keinen Umständen", lvl: "C1" },
+  { q: "Es bleibt abzuwarten, ___ die Reform Erfolg hat.", options: ["inwiefern", "wiefern", "inwie", "wodurch"], answer: "inwiefern", lvl: "C1" },
+  { q: "Der Minister sah sich ___ Kritik ausgesetzt.", options: ["heftiger", "heftige", "heftigen", "heftigem"], answer: "heftiger", lvl: "C1" },
 ];
 
-function PlacementScreen() {
-  const [started, setStarted] = useState(false);
+const BANK_LISTEN = [
+  { tts: "Es ist jetzt acht Uhr.", q: "Wie spät ist es?", options: ["Acht Uhr", "Sechs Uhr", "Zehn Uhr", "Zwölf Uhr"], answer: "Acht Uhr", lvl: "A1" },
+  { tts: "Mein Name ist Anna. Ich komme aus Wien.", q: "Woher kommt Anna?", options: ["Aus Wien", "Aus Berlin", "Aus Bern", "Aus Bonn"], answer: "Aus Wien", lvl: "A1" },
+  { tts: "Heute ist Montag.", q: "Welcher Tag ist heute?", options: ["Montag", "Freitag", "Sonntag", "Mittwoch"], answer: "Montag", lvl: "A1" },
+  { tts: "Ich hätte gern ein Brot und zwei Brötchen.", q: "Was möchte die Person?", options: ["Brot und Brötchen", "Nur Brot", "Kuchen", "Milch"], answer: "Brot und Brötchen", lvl: "A1" },
+  { tts: "Der Bus fährt um halb neun ab.", q: "Wann fährt der Bus?", options: ["Um 8:30", "Um 9:30", "Um 9:00", "Um 8:00"], answer: "Um 8:30", lvl: "A2" },
+  { tts: "Der Zug nach Berlin fährt heute nicht von Gleis drei, sondern von Gleis fünf.", q: "Von welchem Gleis fährt der Zug?", options: ["Gleis fünf", "Gleis drei", "Gleis eins", "Gleis vier"], answer: "Gleis fünf", lvl: "A2" },
+  { tts: "Am Wochenende gehe ich gern wandern, aber nur wenn das Wetter schön ist.", q: "Wann geht die Person wandern?", options: ["Bei schönem Wetter", "Immer", "Bei Regen", "Nie"], answer: "Bei schönem Wetter", lvl: "A2" },
+  { tts: "Entschuldigung, wo ist die Post? — Gehen Sie geradeaus und dann links.", q: "Wohin muss man gehen?", options: ["Geradeaus und links", "Nur rechts", "Zurück", "Geradeaus und rechts"], answer: "Geradeaus und links", lvl: "A2" },
+  { tts: "Eigentlich wollte ich ins Kino, aber ich bin zu müde. Ich bleibe lieber zu Hause.", q: "Was macht die Person?", options: ["Sie bleibt zu Hause", "Sie geht ins Kino", "Sie geht arbeiten", "Sie trifft Freunde"], answer: "Sie bleibt zu Hause", lvl: "B1" },
+  { tts: "Die Konferenz wurde wegen technischer Probleme auf nächste Woche verschoben.", q: "Was ist passiert?", options: ["Die Konferenz wurde verschoben", "Die Konferenz fällt aus", "Die Konferenz ist früher", "Alles ist normal"], answer: "Die Konferenz wurde verschoben", lvl: "B1" },
+  { tts: "Ich hätte den Termin fast vergessen, zum Glück hat mich meine Kollegin erinnert.", q: "Warum hat die Person den Termin nicht vergessen?", options: ["Die Kollegin hat erinnert", "Sie hat es notiert", "Der Chef hat angerufen", "Sie vergisst nie"], answer: "Die Kollegin hat erinnert", lvl: "B1" },
+  { tts: "Obwohl die Mehrheit dafür gestimmt hat, wurde der Vorschlag letztlich nicht umgesetzt.", q: "Wurde der Vorschlag umgesetzt?", options: ["Nein, nicht umgesetzt", "Ja, umgesetzt", "Man stimmt noch ab", "Er wurde verschoben"], answer: "Nein, nicht umgesetzt", lvl: "B2" },
+  { tts: "Die neuen Maßnahmen stoßen bei den Bürgern auf gemischte Reaktionen.", q: "Wie reagieren die Bürger?", options: ["Unterschiedlich", "Alle positiv", "Alle negativ", "Gar nicht"], answer: "Unterschiedlich", lvl: "B2" },
+  { tts: "Hätte man frühzeitig reagiert, wäre der Schaden vermeidbar gewesen.", q: "Was sagt der Satz aus?", options: ["Der Schaden war vermeidbar", "Der Schaden war unvermeidbar", "Man hat reagiert", "Es gab keinen Schaden"], answer: "Der Schaden war vermeidbar", lvl: "C1" },
+  { tts: "Der Vortrag war zwar inhaltlich fundiert, ließ jedoch an Anschaulichkeit zu wünschen übrig.", q: "Wie war der Vortrag?", options: ["Fundiert, aber wenig anschaulich", "Perfekt", "Inhaltlich schwach", "Sehr anschaulich"], answer: "Fundiert, aber wenig anschaulich", lvl: "C1" },
+];
+
+const BANK_READ = [
+  { text: "Anna steht jeden Morgen um 7 Uhr auf.", q: "Wann steht Anna auf?", options: ["Um 7 Uhr", "Um 8 Uhr", "Um 6 Uhr", "Um 9 Uhr"], answer: "Um 7 Uhr", lvl: "A1" },
+  { text: "Das Geschäft ist von Montag bis Freitag geöffnet. Am Wochenende ist es geschlossen.", q: "Wann ist das Geschäft geschlossen?", options: ["Am Wochenende", "Am Montag", "Jeden Tag", "Am Freitag"], answer: "Am Wochenende", lvl: "A1" },
+  { text: "Max wohnt in Hamburg. Er hat einen Hund und eine Katze.", q: "Welche Tiere hat Max?", options: ["Hund und Katze", "Nur einen Hund", "Nur eine Katze", "Einen Vogel"], answer: "Hund und Katze", lvl: "A1" },
+  { text: "Tom sucht eine Wohnung. Sie soll nicht zu teuer sein und in der Nähe der Uni liegen.", q: "Was ist Tom wichtig?", options: ["Günstig und nah an der Uni", "Groß und teuer", "Im Zentrum", "Mit Garten"], answer: "Günstig und nah an der Uni", lvl: "A2" },
+  { text: "Liebe Lisa, leider kann ich morgen nicht kommen. Ich bin krank. Können wir uns nächste Woche treffen? Grüße, Maria", q: "Warum kann Maria nicht kommen?", options: ["Sie ist krank", "Sie hat keine Zeit", "Sie hat es vergessen", "Sie ist verreist"], answer: "Sie ist krank", lvl: "A2" },
+  { text: "Im Sommer fährt die Familie oft ans Meer. Dieses Jahr bleiben sie aber in den Bergen.", q: "Wohin fährt die Familie dieses Jahr?", options: ["In die Berge", "Ans Meer", "In die Stadt", "Ins Ausland"], answer: "In die Berge", lvl: "A2" },
+  { text: "Immer mehr Menschen fahren mit dem Fahrrad zur Arbeit. Das ist gut für die Gesundheit und die Umwelt. Allerdings fehlen in vielen Städten sichere Radwege.", q: "Was ist ein Problem?", options: ["Es fehlen sichere Radwege", "Es ist ungesund", "Es ist zu teuer", "Es gibt zu viele Räder"], answer: "Es fehlen sichere Radwege", lvl: "B1" },
+  { text: "Viele Studierende arbeiten neben dem Studium. Einerseits brauchen sie das Geld, andererseits bleibt weniger Zeit zum Lernen.", q: "Was ist der Nachteil?", options: ["Weniger Zeit zum Lernen", "Kein Geld", "Keine Arbeit", "Zu viele Kurse"], answer: "Weniger Zeit zum Lernen", lvl: "B1" },
+  { text: "Das Museum bietet ab September kostenlose Führungen an. Eine Anmeldung ist allerdings erforderlich, da die Plätze begrenzt sind.", q: "Was muss man tun?", options: ["Sich anmelden", "Eintritt zahlen", "Nichts tun", "Früh kommen"], answer: "Sich anmelden", lvl: "B1" },
+  { text: "Das neue Gesetz soll den Datenschutz stärken. Kritiker bemängeln jedoch, dass die Umsetzung für kleine Unternehmen zu kompliziert und teuer sei.", q: "Was kritisieren die Kritiker?", options: ["Zu kompliziert für kleine Firmen", "Zu wenig Schutz", "Zu einfach", "Keine Wirkung"], answer: "Zu kompliziert für kleine Firmen", lvl: "B2" },
+  { text: "Die Studie zeigt, dass regelmäßige Bewegung nicht nur die körperliche, sondern auch die geistige Leistungsfähigkeit deutlich verbessert.", q: "Was verbessert Bewegung?", options: ["Körper und Geist", "Nur den Körper", "Nur die Laune", "Den Schlaf"], answer: "Körper und Geist", lvl: "B2" },
+  { text: "Trotz wiederholter Warnungen seitens der Experten ignorierte die Regierung die Risiken, was letztlich zu erheblichen wirtschaftlichen Einbußen führte.", q: "Was war die Folge?", options: ["Erhebliche wirtschaftliche Einbußen", "Keine Folgen", "Die Experten entschuldigten sich", "Die Risiken verschwanden"], answer: "Erhebliche wirtschaftliche Einbußen", lvl: "C1" },
+  { text: "Die zunehmende Automatisierung wirft grundlegende Fragen auf: Inwiefern lässt sich menschliche Arbeit ersetzen, ohne dass soziale Strukturen nachhaltig erschüttert werden?", q: "Worum geht es im Text?", options: ["Folgen der Automatisierung für die Gesellschaft", "Preise von Robotern", "Reparatur von Maschinen", "Freude an der Arbeit"], answer: "Folgen der Automatisierung für die Gesellschaft", lvl: "C1" },
+];
+
+const LVL_ORDER = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
+function samplePT(bank, n) {
+  const arr = [...bank];
+  for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+  const picked = arr.slice(0, n);
+  picked.sort(function (a, b) { return LVL_ORDER[a.lvl] - LVL_ORDER[b.lvl]; });
+  return picked;
+}
+
+function PlacementScreen({ apiKey }) {
+  const [stage, setStage] = useState("intro"); // intro → test → done
+  const [part, setPart] = useState(0); // 0 grammar, 1 listen, 2 read
   const [idx, setIdx] = useState(0);
   const [chosen, setChosen] = useState(null);
-  const [correct, setCorrect] = useState(0);
-  const [levelCount, setLevelCount] = useState({ A1: 0, A2: 0, B1: 0 });
-  const [done, setDone] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [scores, setScores] = useState({ g: 0, l: 0, r: 0 });
+  const [lvlHits, setLvlHits] = useState({ A1: 0, A2: 0, B1: 0, B2: 0, C1: 0 });
+  // 每次進入隨機抽題（刷新／再測都換一批）
+  const [qg, setQg] = useState(() => samplePT(BANK_GRAMMAR, 12));
+  const [ql, setQl] = useState(() => samplePT(BANK_LISTEN, 8));
+  const [qr, setQr] = useState(() => samplePT(BANK_READ, 10));
+  const reroll = () => { setQg(samplePT(BANK_GRAMMAR, 12)); setQl(samplePT(BANK_LISTEN, 8)); setQr(samplePT(BANK_READ, 10)); };
 
-  const total = PLACEMENT_WORDS.length;
-  const q = PLACEMENT_WORDS[idx];
+  const parts = [
+    { key: "g", name: "Wortschatz & Grammatik", emoji: "📝", data: qg, color: "#8B5CF6" },
+    { key: "l", name: "Hören", emoji: "🎧", data: ql, color: "#10B981" },
+    { key: "r", name: "Lesen", emoji: "📖", data: qr, color: "#F59E0B" },
+  ];
+  const cur = parts[part];
+  const q = cur.data[idx];
+  const totalQ = qg.length + ql.length + qr.length;
+  const doneCount = (part === 0 ? idx : qg.length) + (part === 1 ? idx : part > 1 ? ql.length : 0) + (part === 2 ? idx : 0);
+
+  const playAudio = async (text) => {
+    setPlaying(true);
+    try {
+      if (apiKey) {
+        const audio = await speakGoogle(text, apiKey);
+        if (audio) { audio.onended = () => setPlaying(false); setTimeout(() => setPlaying(false), Math.max(3000, text.length * 95)); return; }
+      }
+      // 後備：瀏覽器語音
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = "de-DE"; u.rate = 0.85;
+      const v = pickGermanVoice(); if (v) u.voice = v;
+      u.onend = () => setPlaying(false);
+      window.speechSynthesis.speak(u);
+      setTimeout(() => setPlaying(false), Math.max(3000, text.length * 90));
+    } catch (e) { setPlaying(false); }
+  };
 
   const pick = (opt) => {
     if (chosen) return;
     setChosen(opt);
     if (opt === q.answer) {
-      setCorrect(c => c + 1);
-      setLevelCount(lc => ({ ...lc, [q.lvl]: lc[q.lvl] + 1 }));
+      setScores(s => ({ ...s, [cur.key]: s[cur.key] + 1 }));
+      setLvlHits(h => ({ ...h, [q.lvl]: h[q.lvl] + 1 }));
     }
   };
   const next = () => {
-    if (idx + 1 >= total) setDone(true);
-    else { setIdx(i => i + 1); setChosen(null); }
+    setChosen(null);
+    if (idx + 1 < cur.data.length) { setIdx(idx + 1); }
+    else if (part + 1 < parts.length) { setPart(part + 1); setIdx(0); }
+    else { setStage("done"); }
   };
 
+  const totalCorrect = scores.g + scores.l + scores.r;
   const estLevel = () => {
-    const pct = correct / total;
-    if (pct >= 0.85) return { lvl: "B1 或以上", emoji: "🏆", color: "#EF4444", note: "你的基礎很扎實！可以挑戰 B1 內容，衝刺檢定。" };
-    if (pct >= 0.6) return { lvl: "A2", emoji: "🎯", color: "#F59E0B", note: "你有不錯的 A2 基礎，繼續鞏固就能往 B1 前進。" };
-    if (pct >= 0.35) return { lvl: "A1–A2", emoji: "🌱", color: "#3B82F6", note: "你在 A1 到 A2 之間，把基礎單字和文法再打穩。" };
-    return { lvl: "A1 入門", emoji: "🐣", color: "#34D399", note: "從 A1 開始，跟著系統課程一步步學，很快就能進步！" };
+    const pct = totalCorrect / totalQ;
+    // 看高難度答對情況微調
+    const highOK = lvlHits.B2 + lvlHits.C1;
+    if (pct >= 0.85 && highOK >= 3) return { lvl: "B2–C1", emoji: "🏆", color: "#EF4444", note: "你的德語很強，已能在德國的學術、職場場合自如溝通與閱讀複雜文本。" };
+    if (pct >= 0.7) return { lvl: "B1", emoji: "🎯", color: "#8B5CF6", note: "你已具備獨立溝通能力，能在德國應付日常、工作與旅行——這也是移民、入籍常見的門檻。" };
+    if (pct >= 0.5) return { lvl: "A2", emoji: "🌟", color: "#F59E0B", note: "你能處理日常生活的基本溝通，繼續往 B1 邁進，就能更自如地在德語區生活。" };
+    if (pct >= 0.3) return { lvl: "A1–A2", emoji: "🌱", color: "#3B82F6", note: "你有基礎，把高頻單字與核心文法再打穩，很快能跨入 A2。" };
+    return { lvl: "A1 入門", emoji: "🐣", color: "#34D399", note: "從 A1 開始，跟著系統課程一步步學，穩紮穩打就能進步！" };
   };
 
-  // 開始畫面（眼前一亮）
-  if (!started) {
+  // ── 測前準備頁 ──
+  if (stage === "intro") {
     return (
-      <div style={{ textAlign: "center", padding: "40px 20px" }}>
-        <div style={{ fontSize: 64, marginBottom: 16, animation: "none" }}>⏱️</div>
-        <div style={{ fontSize: 34, fontWeight: 900, background: "linear-gradient(135deg, #7C3AED, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 12 }}>
-          5 分鐘，測出你的德語水平！
+      <div style={{ maxWidth: 560, margin: "0 auto", padding: "20px 0" }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 56, marginBottom: 10 }}>🎧</div>
+          <div style={{ fontSize: 30, fontWeight: 900, background: "linear-gradient(135deg, #7C3AED, #EC4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 8 }}>德語水平測評</div>
+          <div style={{ fontSize: 16, color: "#6B7280", marginBottom: 22 }}>約 5 分鐘・精準定位你的德語級別</div>
         </div>
-        <div style={{ fontSize: 18, color: "#6B7280", lineHeight: 1.8, maxWidth: 460, margin: "0 auto 28px" }}>
-          {total} 道題，由淺入深。<br />答完立刻知道你目前大概的級別與弱項，<br />幫你找準學習起點。
+        <div style={{ background: "#fff", border: "1.5px solid #EEE", borderRadius: 16, padding: 20, marginBottom: 16 }}>
+          <div style={{ fontWeight: 800, color: "#1F2937", fontSize: 16, marginBottom: 12 }}>📋 測試說明</div>
+          {[
+            ["共 30 題", "單字・文法 12 題 ＋ 聽力 8 題 ＋ 閱讀 10 題"],
+            ["難度遞進", "由淺入深，從 A1 到 C1，誠實作答最準"],
+            ["有聽力題", "請先戴好耳機，確認能聽到聲音"],
+          ].map(([t, d], i) => (
+            <div key={i} style={{ display: "flex", gap: 12, marginBottom: 10 }}>
+              <div style={{ minWidth: 8, height: 8, borderRadius: 4, background: "#A855F7", marginTop: 7 }} />
+              <div><b style={{ color: "#374151" }}>{t}</b><span style={{ color: "#6B7280", fontSize: 14 }}> — {d}</span></div>
+            </div>
+          ))}
         </div>
-        <button onClick={() => setStarted(true)} style={{
-          background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", border: "none",
-          borderRadius: 30, padding: "16px 44px", fontSize: 20, fontWeight: 900, cursor: "pointer",
-          boxShadow: "0 8px 28px #7C3AED55",
-        }}>開始測試 →</button>
+        {/* 耳機檢查 */}
+        <div style={{ background: "linear-gradient(135deg, #ECFDF5, #D1FAE5)", border: "1.5px solid #6EE7B7", borderRadius: 16, padding: 18, marginBottom: 20, textAlign: "center" }}>
+          <div style={{ fontWeight: 800, color: "#047857", fontSize: 15, marginBottom: 8 }}>🎧 聽力設備檢查</div>
+          <div style={{ fontSize: 14, color: "#065F46", marginBottom: 12 }}>戴上耳機，點下方按鈕，你應該聽到一句德語。</div>
+          <button onClick={() => playAudio("Hallo! Willkommen zum Deutschtest. Können Sie mich hören?")} disabled={playing}
+            style={{ background: playing ? "#A7F3D0" : "#10B981", color: "#fff", border: "none", borderRadius: 24, padding: "10px 24px", fontSize: 15, fontWeight: 800, cursor: "pointer" }}>
+            {playing ? "🔊 播放中…" : "🔊 測試聲音"}
+          </button>
+        </div>
+        <button onClick={() => setStage("test")} style={{ width: "100%", background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", border: "none", borderRadius: 16, padding: "16px", fontSize: 18, fontWeight: 900, cursor: "pointer", boxShadow: "0 8px 24px #7C3AED44" }}>
+          我已準備好，開始測試 →
+        </button>
       </div>
     );
   }
 
-  // 結果頁
-  if (done) {
+  // ── 結果頁 ──
+  if (stage === "done") {
     const r = estLevel();
+    const bars = [
+      { name: "單字・文法", val: scores.g, max: qg.length, color: "#8B5CF6" },
+      { name: "聽力", val: scores.l, max: ql.length, color: "#10B981" },
+      { name: "閱讀", val: scores.r, max: qr.length, color: "#F59E0B" },
+    ];
+    const maxBar = Math.max(...bars.map(b => b.max));
     return (
-      <div style={{ textAlign: "center", padding: "30px 20px" }}>
-        <div style={{ fontSize: 60, marginBottom: 10 }}>{r.emoji}</div>
-        <div style={{ fontSize: 18, color: "#6B7280", marginBottom: 6 }}>你的當前水平大約是</div>
-        <div style={{ fontSize: 40, fontWeight: 900, color: r.color, marginBottom: 14 }}>{r.lvl}</div>
-        <div style={{ fontSize: 22, fontWeight: 800, color: "#1F2937", marginBottom: 8 }}>答對 {correct} / {total} 題</div>
-        <div style={{ fontSize: 16, color: "#6B7280", lineHeight: 1.8, maxWidth: 440, margin: "0 auto 24px" }}>{r.note}</div>
-        <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 16, padding: 20, maxWidth: 460, margin: "0 auto 20px" }}>
-          <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.8 }}>
-            💡 <b>下一步：</b>到「系統課程」打穩單字文法，到「檢定課程」針對弱項刷題。需要老師幫你定計畫？點右下角<b>課程諮詢</b>！
+      <div style={{ maxWidth: 600, margin: "0 auto", padding: "10px 0", textAlign: "center" }}>
+        <div style={{ fontSize: 58, marginBottom: 8 }}>{r.emoji}</div>
+        <div style={{ fontSize: 17, color: "#6B7280" }}>你的德語水平大約是</div>
+        <div style={{ fontSize: 44, fontWeight: 900, color: r.color, marginBottom: 6 }}>{r.lvl}</div>
+        <div style={{ fontSize: 20, fontWeight: 800, color: "#1F2937", marginBottom: 6 }}>答對 {totalCorrect} / {totalQ} 題</div>
+        <div style={{ fontSize: 16, color: "#4B5563", lineHeight: 1.8, maxWidth: 460, margin: "0 auto 24px" }}>{r.note}</div>
+
+        {/* 柱狀圖 */}
+        <div style={{ background: "#fff", border: "1.5px solid #EEE", borderRadius: 16, padding: "24px 20px", marginBottom: 20 }}>
+          <div style={{ fontWeight: 800, color: "#1F2937", fontSize: 16, marginBottom: 20, textAlign: "left" }}>📊 各項能力分析</div>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-around", height: 180, gap: 16 }}>
+            {bars.map((b, i) => (
+              <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", height: "100%", justifyContent: "flex-end" }}>
+                <div style={{ fontSize: 18, fontWeight: 900, color: b.color, marginBottom: 4 }}>{b.val}/{b.max}</div>
+                <div style={{ width: "70%", maxWidth: 70, height: `${(b.val / maxBar) * 130 + 4}px`, background: `linear-gradient(to top, ${b.color}, ${b.color}99)`, borderRadius: "10px 10px 0 0", transition: "height 0.6s" }} />
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#374151", marginTop: 8 }}>{b.emoji}{b.name}</div>
+              </div>
+            ))}
           </div>
         </div>
-        <button onClick={() => { setStarted(false); setIdx(0); setChosen(null); setCorrect(0); setDone(false); setLevelCount({ A1: 0, A2: 0, B1: 0 }); }}
-          style={{ background: "#fff", border: "2px solid #C4B5FD", color: "#7C3AED", borderRadius: 24, padding: "12px 32px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>再測一次</button>
+
+        <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 16, padding: 20, marginBottom: 18, textAlign: "left" }}>
+          <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.9 }}>
+            💡 <b>下一步建議：</b>哪一項柱子最低，就重點補哪一項。到「<b>系統課程</b>」打穩單字文法，到「<b>檢定課程</b>」針對弱項刷題。想要老師幫你定學習計畫？點右下角 <b>課程諮詢</b>！
+          </div>
+        </div>
+        <button onClick={() => { reroll(); setStage("intro"); setPart(0); setIdx(0); setChosen(null); setScores({ g: 0, l: 0, r: 0 }); setLvlHits({ A1: 0, A2: 0, B1: 0, B2: 0, C1: 0 }); }}
+          style={{ background: "#fff", border: "2px solid #C4B5FD", color: "#7C3AED", borderRadius: 24, padding: "12px 32px", fontSize: 16, fontWeight: 800, cursor: "pointer" }}>再測一次（換一批題）</button>
       </div>
     );
   }
 
-  // 答題頁
+  // ── 答題頁 ──
   return (
-    <div style={{ maxWidth: 560, margin: "0 auto" }}>
-      {/* 進度條 */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-        <div style={{ flex: 1, background: "#EDE9FE", borderRadius: 99, height: 10, overflow: "hidden" }}>
-          <div style={{ width: `${(idx) / total * 100}%`, background: "linear-gradient(90deg, #7C3AED, #EC4899)", height: "100%", transition: "width 0.3s" }} />
+    <div style={{ maxWidth: 600, margin: "0 auto" }}>
+      {/* 部分標籤 + 進度 */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        {parts.map((pp, i) => (
+          <div key={i} style={{ flex: 1, textAlign: "center", padding: "8px 4px", borderRadius: 10, fontSize: 12, fontWeight: 800,
+            background: i === part ? pp.color : i < part ? `${pp.color}22` : "#F3F4F6",
+            color: i === part ? "#fff" : i < part ? pp.color : "#9CA3AF" }}>
+            {pp.emoji} {pp.key === "g" ? "Grammatik" : pp.name}{i < part ? " ✓" : ""}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
+        <div style={{ flex: 1, background: "#EDE9FE", borderRadius: 99, height: 8, overflow: "hidden" }}>
+          <div style={{ width: `${(doneCount / totalQ) * 100}%`, background: "linear-gradient(90deg, #7C3AED, #EC4899)", height: "100%", transition: "width 0.3s" }} />
         </div>
-        <div style={{ fontSize: 15, fontWeight: 800, color: "#7C3AED" }}>{idx + 1}/{total}</div>
+        <div style={{ fontSize: 14, fontWeight: 800, color: "#7C3AED" }}>{doneCount + 1}/{totalQ}</div>
       </div>
 
-      {/* 題目（大字亮字） */}
-      <div style={{ textAlign: "center", marginBottom: 28 }}>
-        <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 10 }}>選出正確的意思／答案</div>
-        <div style={{ fontSize: 40, fontWeight: 900, color: "#1F2937", lineHeight: 1.3 }}>{q.q}</div>
+      {/* 聽力：播放鈕 */}
+      {cur.key === "l" && (
+        <div style={{ textAlign: "center", marginBottom: 18 }}>
+          <button onClick={() => playAudio(q.tts)} disabled={playing}
+            style={{ background: playing ? "#A7F3D0" : "linear-gradient(135deg, #10B981, #059669)", color: "#fff", border: "none", borderRadius: 16, padding: "14px 30px", fontSize: 16, fontWeight: 800, cursor: "pointer", boxShadow: "0 4px 14px #10B98144" }}>
+            {playing ? "🔊 播放中…" : "▶️ 播放音頻"}
+          </button>
+          <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 8 }}>聽完再作答，可重複播放</div>
+        </div>
+      )}
+
+      {/* 閱讀：文章 */}
+      {cur.key === "r" && (
+        <div style={{ background: "#FFFBEB", border: "1.5px solid #FCD34D", borderRadius: 14, padding: "14px 16px", marginBottom: 16, fontSize: 16, color: "#1F2937", lineHeight: 1.8 }}>
+          {q.text}
+        </div>
+      )}
+
+      {/* 題目 */}
+      <div style={{ fontSize: cur.key === "g" ? 26 : 18, fontWeight: 800, color: "#1F2937", marginBottom: 18, textAlign: cur.key === "g" ? "center" : "left", lineHeight: 1.4 }}>
+        {q.q}
       </div>
 
       {/* 選項 */}
@@ -3423,8 +3543,7 @@ function PlacementScreen() {
           return (
             <button key={opt} onClick={() => pick(opt)} disabled={!!chosen} style={{
               background: bg, border: `2px solid ${border}`, color, borderRadius: 14,
-              padding: "16px 18px", fontSize: 19, fontWeight: 700, cursor: chosen ? "default" : "pointer",
-              transition: "all 0.15s", textAlign: "center",
+              padding: "15px 18px", fontSize: 17, fontWeight: 700, cursor: chosen ? "default" : "pointer", textAlign: "left",
             }}>
               {opt}{chosen && isCorrect ? "  ✓" : ""}{chosen && isChosen && !isCorrect ? "  ✕" : ""}
             </button>
@@ -3433,10 +3552,9 @@ function PlacementScreen() {
       </div>
 
       {chosen && (
-        <button onClick={next} style={{
-          marginTop: 24, width: "100%", background: "linear-gradient(135deg, #7C3AED, #EC4899)",
-          color: "#fff", border: "none", borderRadius: 16, padding: "15px", fontSize: 18, fontWeight: 900, cursor: "pointer",
-        }}>{idx + 1 >= total ? "看結果 🎉" : "下一題 →"}</button>
+        <button onClick={next} style={{ marginTop: 22, width: "100%", background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", border: "none", borderRadius: 16, padding: "15px", fontSize: 18, fontWeight: 900, cursor: "pointer" }}>
+          {doneCount + 1 >= totalQ ? "看結果 🎉" : "下一題 →"}
+        </button>
       )}
     </div>
   );
@@ -3576,7 +3694,7 @@ export default function App() {
         {tab === "ausbildung" && <SimpleScreen emoji="🎓" title="Ausbildung 職業培訓" desc="德國職業培訓（Ausbildung）相關德語與資訊。敬請期待！" />}
         {tab === "business" && <SimpleScreen emoji="💼" title="商業德語" desc="商務場景、職場溝通、商業書信德語。敬請期待！" />}
         {tab === "appinfo" && <SimpleScreen emoji="📱" title="App" desc="未來推出手機 App，隨時隨地學德語。敬請期待！" />}
-        {tab === "placement" && <PlacementScreen />}
+        {tab === "placement" && <PlacementScreen apiKey={apiKey} />}
         {tab === "companion" && <CompanionScreen onPick={go} />}
       </div>
 
