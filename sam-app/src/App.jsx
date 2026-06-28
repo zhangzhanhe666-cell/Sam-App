@@ -28,6 +28,47 @@ const DAILY_QUOTES = [
 ];
 
 
+// 長篇聽力（仿 A2 真實題型：聽一整段，回答多題）。全原創，不抄任何教材。
+const LISTENING_LONG = [
+  {
+    id: "ll1", level: "A2.1", title: "電話留言：取消約會", emoji: "📞",
+    source: "仿歌德 A2 聽力・原創長篇（參考真實題型結構）",
+    intro: "你會聽到一段電話留言。請聽完整段，再回答下面 3 題。",
+    tts: "Hallo Markus, hier ist Lena. Ich rufe an, weil wir uns ja morgen um sechs im Café treffen wollten. Leider muss ich absagen, denn ich habe morgen doch einen Termin beim Arzt. Können wir vielleicht auf Freitag verschieben? Am Freitag hätte ich ab vier Uhr Zeit. Und noch etwas: Bring bitte das Buch mit, das ich dir letzte Woche geliehen habe. Ich brauche es für die Uni. Ruf mich einfach kurz zurück. Bis dann, tschüss!",
+    ttsZh: "哈囉 Markus，我是 Lena。我打來是因為我們本來明天六點要在咖啡廳見面。可惜我得取消，因為我明天臨時有醫生的預約。我們可以改到週五嗎？週五我四點以後有空。還有一件事：請把上週借你的那本書帶來，我大學要用。回我個電話就好。再見，掰掰！",
+    questions: [
+      { q: "Warum sagt Lena das Treffen ab?", qZh: "Lena 為什麼取消約會？", options: ["Sie ist krank", "Sie hat einen Arzttermin", "Sie hat keine Zeit am Wochenende", "Sie hat das Café vergessen"], answer: "Sie hat einen Arzttermin", trap: "陷阱:她說 doch einen Termin beim Arzt(臨時有醫生預約),不是自己生病" },
+      { q: "Wann möchte Lena sich neu treffen?", qZh: "Lena 想改到何時？", options: ["Morgen um sechs", "Freitag ab vier", "Freitag um sechs", "Donnerstag"], answer: "Freitag ab vier", trap: "陷阱:六點是原本明天的時間;新時間是週五四點以後(ab vier)" },
+      { q: "Was soll Markus mitbringen?", qZh: "Markus 該帶什麼？", options: ["Ein Geschenk", "Das geliehene Buch", "Kaffee", "Ihren Laptop"], answer: "Das geliehene Buch", trap: "陷阱:是『上週借他的那本書』,不是其他東西" },
+    ]
+  },
+  {
+    id: "ll2", level: "A2.1", title: "廣播通知：火車誤點", emoji: "🚉",
+    source: "仿歌德 A2 聽力・原創長篇（參考真實題型結構）",
+    intro: "你會聽到車站的廣播。請聽完整段，再回答下面 3 題。",
+    tts: "Sehr geehrte Fahrgäste, wir informieren Sie über eine Änderung. Der Zug nach München, Abfahrt eigentlich um vierzehn Uhr zwanzig, hat heute leider Verspätung. Der Zug fährt nicht von Gleis drei, sondern von Gleis sieben ab. Die neue Abfahrtszeit ist vierzehn Uhr fünfzig. Der Grund ist ein technisches Problem. Reisende mit Anschlusszügen wenden Sie sich bitte an den Informationsschalter in der Halle. Wir danken für Ihr Verständnis.",
+    ttsZh: "各位旅客您好，我們通知您一項變更。原訂十四點二十分發車、開往慕尼黑的列車，今天很抱歉誤點。列車不從三號月台發車，而是改從七號月台。新的發車時間是十四點五十分。原因是技術問題。需要轉乘的旅客請洽大廳的服務台。感謝您的諒解。",
+    questions: [
+      { q: "Wohin fährt der Zug?", qZh: "列車開往哪裡？", options: ["Berlin", "München", "Hamburg", "Köln"], answer: "München", trap: "直接資訊,但要在長段落中抓到" },
+      { q: "Von welchem Gleis fährt der Zug jetzt ab?", qZh: "列車現在從幾號月台發車？", options: ["Gleis 3", "Gleis 7", "Gleis 14", "Gleis 50"], answer: "Gleis 7", trap: "陷阱:nicht von Gleis drei, sondern Gleis sieben(三號被否定,改七號)" },
+      { q: "Wann fährt der Zug jetzt ab?", qZh: "列車現在幾點發車？", options: ["14:20", "14:50", "15:00", "14:15"], answer: "14:50", trap: "陷阱:14:20是原訂(eigentlich),新時間14:50" },
+    ]
+  },
+  {
+    id: "ll3", level: "A2.2", title: "對話：週末計畫", emoji: "🗓️",
+    source: "仿歌德 A2 聽力・原創長篇（參考真實題型結構）",
+    intro: "你會聽到 Tom 和 Anna 的對話。請聽完整段，再回答下面 4 題。",
+    tts: "Tom: Anna, hast du am Wochenende schon etwas vor? Anna: Eigentlich wollte ich am Samstag wandern gehen, aber das Wetter soll schlecht werden. Tom: Ja, ich habe auch gehört, dass es regnen soll. Wollen wir stattdessen ins Museum gehen? Anna: Gute Idee! Aber nicht am Samstag, da muss ich arbeiten. Geht es bei dir am Sonntag? Tom: Sonntag passt mir gut. Treffen wir uns um elf? Anna: Elf ist mir ein bisschen früh. Sagen wir lieber halb eins, dann können wir danach zusammen Mittag essen. Tom: Perfekt, dann bis Sonntag um halb eins!",
+    ttsZh: "Tom：Anna，你週末有計畫了嗎？Anna：我本來想週六去健行，但天氣好像會變差。Tom：對，我也聽說會下雨。我們改去博物館好嗎？Anna：好主意！但別週六，我那天要上班。你週日可以嗎？Tom：週日我可以。我們十一點見？Anna：十一點對我有點早。不如說十二點半，這樣之後我們可以一起吃午餐。Tom：完美，那週日十二點半見！",
+    questions: [
+      { q: "Was wollte Anna ursprünglich am Samstag machen?", qZh: "Anna 原本週六想做什麼？", options: ["Ins Museum gehen", "Wandern gehen", "Arbeiten", "Mittag essen"], answer: "Wandern gehen", trap: "陷阱:eigentlich wollte ich wandern(原本想健行),但因天氣放棄" },
+      { q: "Warum gehen sie nicht wandern?", qZh: "他們為什麼不去健行？", options: ["Anna muss arbeiten", "Das Wetter wird schlecht", "Tom hat keine Zeit", "Es ist zu teuer"], answer: "Das Wetter wird schlecht", trap: "陷阱:健行取消是因為天氣(soll schlecht werden),週六上班是『不能週六去博物館』的原因" },
+      { q: "An welchem Tag treffen sie sich?", qZh: "他們哪天見面？", options: ["Samstag", "Sonntag", "Freitag", "Montag"], answer: "Sonntag", trap: "陷阱:Samstag Anna要上班,改週日" },
+      { q: "Um wie viel Uhr treffen sie sich?", qZh: "他們幾點見面？", options: ["11:00", "12:30", "13:00", "11:30"], answer: "12:30", trap: "陷阱:11點被嫌太早,改 halb eins(12:30)" },
+    ]
+  },
+];
+
 const LISTENING_TOPICS = [
   {
     id: "lt1", level: "A1.1", topic: "數字陷阱 Zahlen", emoji: "🔢",
@@ -922,6 +963,9 @@ function LoginPage({ onLogin, users, onRegister }) {
 
 function ListeningModule({ apiKey, onSetApiKey, aiKey, onSetAiKey }) {
   const [topic, setTopic] = useState(null);
+  const [longP, setLongP] = useState(null);
+  const [longAns, setLongAns] = useState({});
+  const [longDone, setLongDone] = useState(false);
   const [idx, setIdx] = useState(0);
   const [chosen, setChosen] = useState(null);
   const [score, setScore] = useState(0);
@@ -970,6 +1014,78 @@ function ListeningModule({ apiKey, onSetApiKey, aiKey, onSetAiKey }) {
     }
   };
 
+  // 長篇聽力播放頁
+  if (longP) {
+    const allAnswered = longP.questions.every((_, i) => longAns[i]);
+    const correct = longP.questions.filter((qq, i) => longAns[i] === qq.answer).length;
+    return (
+      <div>
+        <button onClick={() => { setLongP(null); setLongAns({}); setLongDone(false); }} style={{ background: "none", border: "none", color: C.purple, cursor: "pointer", fontWeight: 700, marginBottom: 10 }}>← 返回</button>
+        <h2 style={{ fontWeight: 800, color: C.purple, fontSize: 18 }}>{longP.emoji} {longP.title}</h2>
+        <SourceBadge text={longP.source} />
+        <p style={{ color: "#6B7280", fontSize: 13, margin: "8px 0 14px" }}>{longP.intro}</p>
+
+        <div style={{ textAlign: "center", marginBottom: 16 }}>
+          <button onClick={() => playTTS(longP.tts)} disabled={playing}
+            style={{ background: playing ? "#C4B5FD" : `linear-gradient(135deg, ${C.purple}, ${C.pink})`, color: "#fff", border: "none", borderRadius: 16, padding: "14px 28px", fontSize: 16, fontWeight: 800, cursor: playing ? "default" : "pointer", boxShadow: "0 4px 16px #7C3AED44" }}>
+            {playing ? "🔊 播放中…" : "▶️ 播放整段聽力"}
+          </button>
+          {ttsErr && <div style={{ color: "#DC2626", fontSize: 12, marginTop: 8 }}>{ttsErr}</div>}
+        </div>
+
+        {longP.questions.map((qq, i) => {
+          const chosen = longAns[i];
+          return (
+            <Card key={i} color={C.blue}>
+              <div style={{ fontWeight: 800, color: "#1E3A5F", fontSize: 14, marginBottom: 2 }}>{i + 1}. {qq.q}</div>
+              <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>{qq.qZh}</div>
+              <div style={{ display: "grid", gap: 8 }}>
+                {qq.options.map(opt => {
+                  const isChosen = chosen === opt;
+                  const showResult = longDone;
+                  const isCorrect = opt === qq.answer;
+                  let bg = "#fff", border = "#E5E7EB", color = "#374151";
+                  if (showResult && isCorrect) { bg = "#F0FDF4"; border = "#86EFAC"; color = "#166534"; }
+                  else if (showResult && isChosen && !isCorrect) { bg = "#FEF2F2"; border = "#FCA5A5"; color = "#DC2626"; }
+                  else if (isChosen) { bg = "#EDE9FE"; border = C.purple; color = C.purple; }
+                  return (
+                    <button key={opt} disabled={longDone} onClick={() => setLongAns(s => ({ ...s, [i]: opt }))}
+                      style={{ background: bg, border: `1.5px solid ${border}`, color, borderRadius: 10, padding: "10px 12px", fontSize: 14, fontWeight: 700, cursor: longDone ? "default" : "pointer", textAlign: "left" }}>
+                      {opt}{showResult && isCorrect ? " ✓" : ""}
+                    </button>
+                  );
+                })}
+              </div>
+              {longDone && qq.trap && (
+                <div style={{ marginTop: 8, background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#92400E", lineHeight: 1.6 }}>
+                  ⚠️ <b>陷阱解析：</b>{qq.trap}
+                </div>
+              )}
+            </Card>
+          );
+        })}
+
+        {!longDone ? (
+          <button onClick={() => setLongDone(true)} disabled={!allAnswered}
+            style={{ ...btnStyle(allAnswered ? C.blue : "#C4B5FD"), width: "100%", marginTop: 8 }}>
+            {allAnswered ? "提交作答 ✓" : "請先回答所有題目"}
+          </button>
+        ) : (
+          <div>
+            <div style={{ background: "#EEF2FF", border: "1.5px solid #818CF8", borderRadius: 12, padding: 14, marginTop: 10 }}>
+              <div style={{ fontWeight: 800, color: "#4F46E5", fontSize: 16, marginBottom: 6 }}>答對 {correct}/{longP.questions.length} 題</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#4F46E5", marginBottom: 4 }}>📝 聽力原文</div>
+              <div style={{ fontSize: 14, color: "#1F2937", lineHeight: 1.7 }}>{longP.tts}</div>
+              {longP.ttsZh && <div style={{ fontSize: 13, color: "#6B7280", marginTop: 6, lineHeight: 1.7 }}>{longP.ttsZh}</div>}
+              <button onClick={() => playTTS(longP.tts)} disabled={playing} style={{ marginTop: 8, background: "#fff", border: "1.5px solid #818CF8", borderRadius: 8, padding: "5px 14px", fontSize: 12, fontWeight: 700, color: "#4F46E5", cursor: "pointer" }}>🔊 再聽一次</button>
+            </div>
+            <button onClick={() => { setLongP(null); setLongAns({}); setLongDone(false); }} style={{ ...btnStyle(C.purple, true), width: "100%", marginTop: 10 }}>← 返回聽力列表</button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   if (!topic) {
     const baseTopics = LISTENING_TOPICS.filter(t => level === "all" || t.level === level);
     const allTopics = [...aiTopics, ...baseTopics];
@@ -988,6 +1104,26 @@ function ListeningModule({ apiKey, onSetApiKey, aiKey, onSetAiKey }) {
         setAiTopics(prev => [newTopic, ...prev]);
       }} />
       <p style={{ color: "#7C3AED", fontSize: 13, marginBottom: 18 }}>選擇主題開始練習</p>
+
+      {/* 長篇聽力（仿真題型：聽一整段，答多題）*/}
+      <div style={{ fontWeight: 800, color: C.purple, fontSize: 15, margin: "4px 0 10px" }}>📻 長篇聽力（仿 A2 真實題型）</div>
+      {LISTENING_LONG.filter(t => level === "all" || t.level === level).map(t => (
+        <Card key={t.id} color={C.purple}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 32 }}>{t.emoji}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 800, color: C.purple, fontSize: 15 }}>{t.title}</div>
+              <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
+                <Badge text={t.level} color={LEVEL_COLORS[t.level] || C.purple} />
+                <Badge text={`整段 + ${t.questions.length} 題`} color="#6B7280" />
+              </div>
+            </div>
+            <button onClick={() => { setLongP(t); setLongAns({}); setLongDone(false); setPlayed(false); }} style={btnStyle(C.purple)}>開始</button>
+          </div>
+        </Card>
+      ))}
+
+      <div style={{ fontWeight: 800, color: C.blue, fontSize: 15, margin: "18px 0 10px" }}>🎯 單句陷阱題</div>
       {allTopics.map(t => (
         <Card key={t.id} color={C.blue}>
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -2725,6 +2861,251 @@ function TopNav({ tab, setTab, user, onLogin, onLogout, aiKey, onSetAiKey }) {
   );
 }
 
+// 新手攻略（學習指南）
+function GuideScreen() {
+  const [sec, setSec] = useState("intro");
+  const MENU = [
+    { id: "intro", label: "認識德語檢定", emoji: "🌱" },
+    { id: "compare", label: "主流考試對比", emoji: "🆚" },
+    { id: "levels", label: "歌德各級別資訊表", emoji: "📋" },
+    { id: "report", label: "歌德成績單分析", emoji: "📊" },
+    { id: "digital", label: "機考須知・評分", emoji: "💻" },
+    { id: "process", label: "報考流程・費用", emoji: "📝" },
+  ];
+  const th = { background: "#7C3AED", color: "#fff", padding: "10px 8px", fontSize: 13, fontWeight: 800, textAlign: "left", border: "1px solid #7C3AED" };
+  const td = { padding: "9px 8px", fontSize: 13, color: "#374151", border: "1px solid #E9D5FF", verticalAlign: "top", lineHeight: 1.5 };
+  const tdH = { ...td, fontWeight: 800, color: "#7C3AED", background: "#F5F3FF" };
+
+  return (
+    <div>
+      <div style={{ fontSize: 22, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>🧭 新手攻略</div>
+      <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 18 }}>零基礎也能看懂的德語檢定完整指南</div>
+
+      <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
+        {/* 左側子選單 */}
+        <div style={{ width: 200, minWidth: 180, display: "flex", flexDirection: "column", gap: 6 }}>
+          {MENU.map(m => {
+            const active = sec === m.id;
+            return (
+              <button key={m.id} onClick={() => setSec(m.id)} style={{
+                display: "flex", alignItems: "center", gap: 10, padding: "11px 14px", borderRadius: 12,
+                background: active ? "linear-gradient(135deg, #EDE9FE, #FCE7F3)" : "#fff",
+                border: active ? "1.5px solid #C4B5FD" : "1.5px solid #F0F0F0", cursor: "pointer", textAlign: "left",
+                color: active ? "#7C3AED" : "#4B5563", fontWeight: active ? 800 : 600, fontSize: 14,
+              }}>
+                <span style={{ fontSize: 18 }}>{m.emoji}</span>{m.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 右側內容 */}
+        <div style={{ flex: 1, minWidth: 280 }}>
+          {sec === "intro" && (
+            <div>
+              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>🌱 為什麼要考德語檢定？</h3>
+              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.8 }}>
+                德語檢定不只是一張證書。考下來之後，你不僅可以在<b>德國</b>上學、移民、工作，還能去<b>奧地利、瑞士</b>等德語區留學與生活。德語區的機會，從這張證書開始。
+              </p>
+              <div style={{ background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 12, padding: 14, margin: "14px 0" }}>
+                <div style={{ fontWeight: 800, color: "#15803D", fontSize: 15, marginBottom: 6 }}>✨ 最大優勢：終身有效！</div>
+                <div style={{ fontSize: 14, color: "#166534", lineHeight: 1.7 }}>
+                  不同於托福、雅思這類英語考試（成績通常只有 2 年效期），<b>歌德證書（Goethe-Zertifikat）永久有效</b>，考一次受用終身！（部分院校或雇主可能要求近期成績，但證書本身不過期。）
+                </div>
+              </div>
+              <h3 style={{ color: "#EC4899", fontWeight: 900, fontSize: 17, marginTop: 20 }}>🎤 口說／寫作怎麼評分？這個網站能幫你什麼？</h3>
+              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.8 }}>
+                聽力、閱讀是<b>客觀題</b>（選擇、填空），電腦就能判分。但<b>口說和寫作是主觀題</b>，需要有人評斷——這正是最難自學、最需要老師的部分：
+              </p>
+              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, paddingLeft: 20 }}>
+                <li><b>寫作</b>：要看用詞、文法、結構、是否切題。錯一個冠詞、詞尾，都可能扣分。</li>
+                <li><b>口說</b>：歌德口說由<b>真人考官</b>當場評分（不是機器），看發音、流利度、表達是否得體。</li>
+              </ul>
+              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 14, padding: 16, marginTop: 14 }}>
+                <div style={{ fontWeight: 800, color: "#7C3AED", fontSize: 15, marginBottom: 8 }}>💜 我們能幫到你（1+1&gt;2）</div>
+                <div style={{ fontSize: 14, color: "#5B21B6", lineHeight: 1.8 }}>
+                  這個網站用<b>大量仿真題型</b>幫你練聽說讀寫，加上 <b>AI 對話</b>最大限度模擬真實考試場景；而口說、寫作這種需要人評的部分，由 <b>Sam 老師親自批改、給回饋</b>。<br />
+                  <b>網站自主練習 + 老師專業指導 = 1+1 大於 2 的效果。</b>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {sec === "compare" && (
+            <div>
+              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>🆚 主流德語考試對比</h3>
+              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, marginBottom: 12 }}>
+                這些考試都受<b>德國教育部門認可</b>，但用途、地區、評分方式不同。選對考試很重要：
+              </p>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
+                  <thead><tr>
+                    <th style={th}>考試</th><th style={th}>級別</th><th style={th}>主要用途</th><th style={th}>口說評分</th><th style={th}>特點</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr><td style={tdH}>Goethe-Zertifikat<br />歌德</td><td style={td}>A1–C2</td><td style={td}>留學、移民、工作、簽證</td><td style={td}>真人考官</td><td style={td}>全球認可度最高，終身有效；德奧瑞通用</td></tr>
+                    <tr><td style={tdH}>TestDaF</td><td style={td}>B2–C1</td><td style={td}>德國大學入學</td><td style={td}>真人考官評分</td><td style={td}>專為留學設計，學術德語為主</td></tr>
+                    <tr><td style={tdH}>telc</td><td style={td}>A1–C2</td><td style={td}>工作、移民、部分留學</td><td style={td}>真人考官</td><td style={td}>歐洲常見，考點多；<b>台灣地區較難找到考點</b></td></tr>
+                    <tr><td style={tdH}>DSH</td><td style={td}>B2–C2</td><td style={td}>德國大學入學</td><td style={td}>真人考官</td><td style={td}>由德國各大學自辦，通常需在德國考</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 12, padding: 14, marginTop: 14 }}>
+                <div style={{ fontSize: 14, color: "#92400E", lineHeight: 1.7 }}>
+                  📍 <b>台灣地區建議：</b>telc 在台灣較難找到考點，<b>歌德（Goethe）是台灣最主流、最方便報考的選擇</b>。若目標是德國大學，也可考慮 TestDaF；DSH 通常要到德國當地考。
+                </div>
+              </div>
+            </div>
+          )}
+
+          {sec === "levels" && (
+            <div>
+              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>📋 歌德各級別資訊表</h3>
+              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, marginBottom: 12 }}>
+                每個級別都考<b>聽、說、讀、寫</b>四個部分。A1-A2 是基礎，B1 是留學移民常見門檻，C1-C2 是高階。
+              </p>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
+                  <thead><tr>
+                    <th style={th}>級別</th><th style={th}>程度</th><th style={th}>能做什麼</th><th style={th}>常見用途</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr><td style={tdH}>A1</td><td style={td}>入門</td><td style={td}>簡單自我介紹、日常問候、基本需求</td><td style={td}>配偶簽證、基礎證明</td></tr>
+                    <tr><td style={tdH}>A2</td><td style={td}>基礎</td><td style={td}>處理日常生活對話、購物、看醫生</td><td style={td}>移民基礎、生活溝通</td></tr>
+                    <tr><td style={tdH}>B1</td><td style={td}>進階基礎</td><td style={td}>應付旅行、工作、表達想法與經歷</td><td style={td}><b>移民、入籍常見門檻</b></td></tr>
+                    <tr><td style={tdH}>B2</td><td style={td}>中高階</td><td style={td}>流暢討論、理解較複雜文章</td><td style={td}>工作、職業培訓、部分大學</td></tr>
+                    <tr><td style={tdH}>C1</td><td style={td}>高階</td><td style={td}>學術與專業場合自如表達</td><td style={td}>大學入學、專業工作</td></tr>
+                    <tr><td style={tdH}>C2</td><td style={td}>精通</td><td style={td}>接近母語者，理解任何內容</td><td style={td}>德奧瑞大學免 TestDaF/DSH</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15, marginTop: 18 }}>📝 A2 四部分考試結構（以歌德 A2 為例）</h4>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560, marginTop: 8 }}>
+                  <thead><tr>
+                    <th style={th}>部分</th><th style={th}>大致時間</th><th style={th}>要點</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr><td style={tdH}>🎧 聽力 Hören</td><td style={td}>約 30 分鐘</td><td style={td}>聽日常對話、廣播、留言。<b>會讀題</b>，注意只播放有限次數</td></tr>
+                    <tr><td style={tdH}>📖 閱讀 Lesen</td><td style={td}>約 30 分鐘</td><td style={td}>讀短文、廣告、郵件。有<b>讀題時間</b>，注意干擾選項</td></tr>
+                    <tr><td style={tdH}>✍️ 寫作 Schreiben</td><td style={td}>約 30 分鐘</td><td style={td}>寫短訊息、郵件。<b>可在試卷上打草稿</b>，但要注意時間</td></tr>
+                    <tr><td style={tdH}>🗣️ 口說 Sprechen</td><td style={td}>約 15 分鐘</td><td style={td}>自我介紹、問答、簡單對話。<b>真人考官</b>面對面，有短暫準備時間</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p style={{ fontSize: 12, color: "#9CA3AF", marginTop: 10, lineHeight: 1.6 }}>
+                ※ 各級別與年份的確切時間、題數以歌德官方公告為準，此表供整體理解用。
+              </p>
+            </div>
+          )}
+
+          {sec === "report" && (
+            <div>
+              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>📊 歌德成績單怎麼看？</h3>
+              <p style={{ fontSize: 14, color: "#374151", lineHeight: 1.7, marginBottom: 14 }}>
+                歌德成績單會列出<b>四項技能各自的分數</b>與總成績。看懂成績單，才知道自己哪一項要加強。
+              </p>
+              {/* 仿成績單卡片 */}
+              <div style={{ border: "2px solid #E9D5FF", borderRadius: 16, overflow: "hidden", maxWidth: 480 }}>
+                <div style={{ background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", padding: "14px 18px" }}>
+                  <div style={{ fontWeight: 900, fontSize: 16 }}>Goethe-Zertifikat A2</div>
+                  <div style={{ fontSize: 12, opacity: 0.9 }}>成績單範例 Score Report（示意）</div>
+                </div>
+                <div style={{ padding: 18 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                    <div>
+                      <div style={{ fontSize: 13, color: "#6B7280" }}>考生 / 範例</div>
+                      <div style={{ fontWeight: 800, color: "#1F2937" }}>Sam 同學</div>
+                    </div>
+                    <div style={{ textAlign: "center", background: "#F5F3FF", borderRadius: 12, padding: "8px 16px", border: "2px solid #C4B5FD" }}>
+                      <div style={{ fontSize: 11, color: "#7C3AED", fontWeight: 700 }}>總成績</div>
+                      <div style={{ fontSize: 28, fontWeight: 900, color: "#7C3AED" }}>82</div>
+                      <div style={{ fontSize: 10, color: "#9CA3AF" }}>滿分 100</div>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: "#374151", marginBottom: 10 }}>四項技能分</div>
+                  {[["🎧 聽力 Hören", 22, 25, "#34D399"], ["📖 閱讀 Lesen", 20, 25, "#FBBF24"], ["✍️ 寫作 Schreiben", 18, 25, "#F472B6"], ["🗣️ 口說 Sprechen", 22, 25, "#C084FC"]].map(([label, val, max, color], i) => (
+                    <div key={i} style={{ marginBottom: 10 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#374151", fontWeight: 600, marginBottom: 3 }}>
+                        <span>{label}</span><span>{val}/{max}</span>
+                      </div>
+                      <div style={{ background: "#F3F4F6", borderRadius: 99, height: 8 }}>
+                        <div style={{ width: `${val / max * 100}%`, background: color, height: "100%", borderRadius: 99 }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ background: "#EEF2FF", border: "1.5px solid #818CF8", borderRadius: 12, padding: 14, marginTop: 14 }}>
+                <div style={{ fontSize: 14, color: "#3730A3", lineHeight: 1.7 }}>
+                  💡 <b>怎麼看：</b>A1/A2 通常需<b>達到滿分 60%</b> 才算通過，且四個部分都要參加。上面範例總分 82 為通過。看到哪一項偏低（如此例寫作較弱），就知道要重點加強那一項。
+                </div>
+              </div>
+              <p style={{ fontSize: 12, color: "#9CA3AF", marginTop: 10 }}>※ 以上為示意成績單，幫助理解結構，分數與配分以歌德官方為準。</p>
+            </div>
+          )}
+
+          {sec === "digital" && (
+            <div>
+              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>💻 機考須知與評分方式</h3>
+              <div style={{ background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 12, padding: 14, margin: "10px 0 16px" }}>
+                <div style={{ fontSize: 14, color: "#92400E", lineHeight: 1.7 }}>
+                  ⚠️ <b>重要：歌德目前沒有「在家網考」。</b>所謂「數字考試（digital exam）」是<b>到指定考點，用歌德的筆電考</b>——閱讀、寫作、聽力（戴耳機）在電腦上做，<b>口說仍是跟真人考官面對面</b>。所以<b>口說目前無法線上進行</b>。
+                </div>
+              </div>
+              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15 }}>🎧 聽力怎麼進行？</h4>
+              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.8, paddingLeft: 20 }}>
+                <li>機考時戴<b>耳機</b>，可自己調音量</li>
+                <li>每段音頻通常<b>只播放固定次數</b>，要邊聽邊抓重點</li>
+                <li>善用<b>讀題時間</b>先看問題，帶著問題去聽</li>
+              </ul>
+              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15, marginTop: 14 }}>🎤 口說評分：真人 vs 算法</h4>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 480, marginTop: 8 }}>
+                  <thead><tr><th style={th}>考試</th><th style={th}>口說怎麼評</th></tr></thead>
+                  <tbody>
+                    <tr><td style={tdH}>歌德 Goethe</td><td style={td}><b>真人考官</b>面對面評分，看發音、流利度、表達得體與否</td></tr>
+                    <tr><td style={tdH}>TestDaF</td><td style={td}><b>真人考官</b>聽錄音評分（學術場景）</td></tr>
+                    <tr><td style={tdH}>部分機考型考試</td><td style={td}>有些用<b>算法/AI</b>評分（如某些英語類機考），但歌德口說是真人</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <h4 style={{ color: "#EC4899", fontWeight: 800, fontSize: 15, marginTop: 14 }}>🎙️ 機考前如何調試麥克風？</h4>
+              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.8, paddingLeft: 20 }}>
+                <li>提早到考場，按監考指示<b>測試麥克風與耳機</b></li>
+                <li>說話<b>音量適中、距離適當</b>，別太靠近或太遠</li>
+                <li>遇到設備問題<b>立刻舉手</b>告訴監考，別自己拖延</li>
+              </ul>
+            </div>
+          )}
+
+          {sec === "process" && (
+            <div>
+              <h3 style={{ color: "#7C3AED", fontWeight: 900, fontSize: 18 }}>📝 報考流程與費用</h3>
+              <ul style={{ fontSize: 14, color: "#374151", lineHeight: 1.9, paddingLeft: 20 }}>
+                <li><b>費用：</b>成人歌德考試大約 €155–€359，依級別而定。B1 以上<b>四個模組（聽說讀寫）可分開報考</b>，單模組約 €104–€139。</li>
+                <li><b>報名：</b>到當地歌德學院或合作考點官網線上報名，建議<b>提前 2-3 個月</b>，高級別容易額滿。</li>
+                <li><b>重考：</b>A1/A2 可<b>無限次重考</b>；B1-C2 各模組也可單獨無限次重考。</li>
+                <li><b>出成績：</b>通常考後 <b>2 週到數週</b>內出，數字考試一般更快。</li>
+                <li><b>領證書：</b>可登入 Mein Goethe.de 下載數字證書。</li>
+              </ul>
+              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 14, padding: 16, marginTop: 14 }}>
+                <div style={{ fontWeight: 800, color: "#7C3AED", fontSize: 15, marginBottom: 6 }}>🚀 Sam 老師建議</div>
+                <div style={{ fontSize: 14, color: "#5B21B6", lineHeight: 1.8 }}>
+                  先用本網站<b>大量練習聽說讀寫 + AI 對話模擬</b>，把基礎打穩；口說寫作交給老師批改修正。準備充分後再報名，一次通過，省時省錢！
+                </div>
+              </div>
+              <p style={{ fontSize: 12, color: "#9CA3AF", marginTop: 12, lineHeight: 1.6 }}>
+                ※ 費用、流程、時間以各地歌德學院/考點官方公告為準，可能因地區與年份調整。
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 
 const TABS = [
@@ -2853,7 +3234,7 @@ export default function App() {
         {tab === "review" && <SimpleScreen emoji="🔁" title="複習・錯題本" desc="這裡會收集你做錯的單字和題目，下次優先複習。功能開發中，敬請期待！" />}
         {tab === "stats" && <SimpleScreen emoji="📊" title="學習統計" desc="這裡會顯示你的學習進度、連續天數、累積單字量。資料庫接通後即可記錄，敬請期待！" />}
         {tab === "settings" && <SettingsScreen apiKey={apiKey} onSetApiKey={setApiKey} aiKey={aiKey} onSetAiKey={setAiKey} />}
-        {tab === "guide" && <SimpleScreen emoji="🧭" title="學習指南" desc="新手必看的學習攻略：怎麼規劃 A1-A2 備考、每天該練什麼、考試流程介紹。內容整理中，敬請期待！" />}
+        {tab === "guide" && <GuideScreen />}
         {tab === "threemin" && <SimpleScreen emoji="⏰" title="零基礎 3 分鐘" desc="每日 3 分鐘，輕鬆學一句德語、一個發音技巧。內容整理中，敬請期待！" />}
         {tab === "community" && <SimpleScreen emoji="💬" title="社區" desc="未來這裡可以和其他同學交流、分享學習心得、提問。敬請期待！" />}
         {tab === "ausbildung" && <SimpleScreen emoji="🎓" title="Ausbildung 職業培訓" desc="德國職業培訓（Ausbildung）相關德語與資訊。敬請期待！" />}
