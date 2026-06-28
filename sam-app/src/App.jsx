@@ -2868,7 +2868,7 @@ function GuideScreen() {
     { id: "use", label: "各級別證書的用途", emoji: "🎯" },
     { id: "compare", label: "主流考試對比", emoji: "🆚" },
     { id: "structure", label: "歌德 A1／A2 題型結構", emoji: "📋" },
-    { id: "speak", label: "口說考什麼・評分", emoji: "🗣️" },
+    { id: "speak", label: "口說・寫作評分", emoji: "🗣️" },
     { id: "report", label: "成績單分析", emoji: "📊" },
     { id: "howto", label: "如何使用本網站", emoji: "🧭" },
   ];
@@ -3007,7 +3007,7 @@ function GuideScreen() {
                 <li><b>Teil 2</b>：寫<b>半正式訊息</b>（處理事情，如向某機構說明、請求）。<b>可在試卷打草稿</b></li>
               </ul>
               <h4 style={h4}>🗣️ 口說 Sprechen（約 15 分鐘・3 個 Teil・見下一頁詳解）</h4>
-              <p style={{ ...p }}>A2 口說考什麼、怎麼評分、怎麼舉例，請看左側「<b>口說考什麼・評分</b>」。</p>
+              <p style={{ ...p }}>A2 口說考什麼、怎麼評分、怎麼舉例，請看左側「<b>口說評分</b>」。</p>
               <p style={{ fontSize: 13, color: "#9CA3AF", marginTop: 12, lineHeight: 1.6 }}>※ Teil 數量、時間、題數以歌德官方公告為準，此處供整體理解。</p>
             </div>
           )}
@@ -3067,6 +3067,36 @@ function GuideScreen() {
               <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 14, padding: 16, marginTop: 14 }}>
                 <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.9 }}>
                   🤖 <b>本網站怎麼幫你：</b>你可以和網站的 <b>AI 對話</b>反覆練口說，模擬真實問答；<b>未來將支援自動測評</b>，指出你說的句子裡的<b>語法、發音問題</b>，讓你練到能自由表達、不靠模板。
+                </div>
+              </div>
+
+              {/* 寫作評分標準 */}
+              <h3 style={{ ...h3, marginTop: 32 }}>✍️ 歌德寫作評分標準</h3>
+              <p style={{ ...p, marginBottom: 8 }}>以<b>歌德 A2 寫作</b>為例（約 30 分鐘，2 個 Teil：寫私人訊息 + 半正式訊息）。考官按這幾個維度評分：</p>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 560 }}>
+                  <thead><tr><th style={th}>維度</th><th style={th}>考官看什麼</th></tr></thead>
+                  <tbody>
+                    <tr><td style={tdH}>① 完成任務<br/>Erfüllung</td><td style={td}>有沒有把題目<b>要求的每個要點</b>都寫到；<b>字數是否達標</b>（A2 約需 ~50 詞，太少直接扣很重）</td></tr>
+                    <tr><td style={tdH}>② 語言功能<br/>Sprachfunktion</td><td style={td}>該<b>邀請、道歉、提建議、請求</b>等有沒有表達到位（如「我想邀請你…」要寫清楚）</td></tr>
+                    <tr><td style={tdH}>③ 語域<br/>Register</td><td style={td}>對象不同，<b>正式／非正式要用對</b>：寫朋友用 du，寫機構／陌生人用 Sie</td></tr>
+                    <tr><td style={tdH}>④ 連貫性<br/>Kohärenz</td><td style={td}>句子之間有沒有<b>連接詞銜接</b>（und, aber, weil, deshalb…），讀起來通順不跳</td></tr>
+                    <tr><td style={tdH}>⑤ 詞彙<br/>Wortschatz</td><td style={td}>用詞是否準確、夠用，<b>有沒有重複用同一個詞</b></td></tr>
+                    <tr><td style={tdH}>⑥ 語法結構<br/>Strukturen</td><td style={td}>句型、語法錯誤是否<b>多到影響理解</b>（冠詞、詞尾、動詞位置等）</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 14, padding: 16, marginTop: 16 }}>
+                <div style={{ fontSize: 16, color: "#92400E", lineHeight: 1.9 }}>
+                  📝 <b>寫作三大常見失分點：</b><br/>
+                  ① <b>漏要點</b>：題目給了 3-4 個必寫點，漏一個就扣分 → 動筆前先圈出所有要點。<br/>
+                  ② <b>du / Sie 用錯</b>：寫朋友卻用 Sie，或寫機構卻用 du → 語域錯。<br/>
+                  ③ <b>字數不夠</b>：寫太少直接重扣 → 每個要點都展開 1-2 句。
+                </div>
+              </div>
+              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 14, padding: 16, marginTop: 14 }}>
+                <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.9 }}>
+                  💜 <b>本網站怎麼幫你：</b>寫作這種需要人評的部分，由 <b>Sam 老師親自批改</b>，逐句指出漏要點、語域、語法問題，比自己埋頭寫進步快得多。
                 </div>
               </div>
             </div>
@@ -3131,19 +3161,69 @@ function GuideScreen() {
           {sec === "howto" && (
             <div>
               <h3 style={h3}>🧭 如何使用本網站？</h3>
-              <p style={{ ...p, marginBottom: 16 }}>根據你目前的階段，選對板塊，學習最有效率：</p>
-              <div style={{ background: "linear-gradient(135deg, #818CF8, #6366F1)", borderRadius: 16, padding: 20, color: "#fff", marginBottom: 16 }}>
-                <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 8 }}>📚 還在學教材、打基礎？</div>
-                <div style={{ fontSize: 16, lineHeight: 1.8 }}>去「<b>系統課程</b>」板塊：<b>必背單字</b>（A1+A2 高頻字、生詞本）和<b>必考文法</b>（19 課彩色記憶卡、考試應用、翻譯練習），把地基打穩。</div>
+              <p style={{ ...p, marginBottom: 18 }}>很多人備考的痛點是：<b>不知道自己弱在哪、不知道該練什麼、找資料花太多時間</b>。本網站就是來解決這三件事的——<b>先診斷，再對症下藥。</b></p>
+
+              {/* 步驟 1 自測 */}
+              <div style={{ background: "linear-gradient(135deg, #34D399, #10B981)", borderRadius: 16, padding: 22, color: "#fff", marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 800, opacity: 0.9, marginBottom: 4 }}>STEP 1</div>
+                <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>🎯 先自測，找出你的弱點</div>
+                <div style={{ fontSize: 16, lineHeight: 1.9 }}>
+                  花幾分鐘做<b>能力自測</b>，從<b>聽、說、讀、寫四個部分</b>幫你<b>精準定位弱點</b>，並估出你目前大概的級別。不用再憑感覺瞎練——<b>先知道自己缺什麼，才知道該補什麼。</b>
+                </div>
               </div>
-              <div style={{ background: "linear-gradient(135deg, #EC4899, #DB2777)", borderRadius: 16, padding: 20, color: "#fff", marginBottom: 16 }}>
-                <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 8 }}>🎯 已經在準備檢定、要衝刺？</div>
-                <div style={{ fontSize: 16, lineHeight: 1.8 }}>去「<b>檢定課程</b>」板塊：<b>聽說讀寫</b>四大題型仿真練習，含歌德陷阱題、長篇聽力、原文對照、AI 對話模擬真實場景。</div>
+
+              {/* 步驟 2 針對性刷題 */}
+              <div style={{ background: "linear-gradient(135deg, #EC4899, #DB2777)", borderRadius: 16, padding: 22, color: "#fff", marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 800, opacity: 0.9, marginBottom: 4 }}>STEP 2</div>
+                <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>📚 針對弱點，精準刷題</div>
+                <div style={{ fontSize: 16, lineHeight: 1.9 }}>
+                  知道弱點後，到「<b>檢定課程</b>」針對性刷題：<b>聽說讀寫四大題型</b>仿真練習，含歌德陷阱題、長篇聽力、原文對照、AI 對話模擬真實場景。<b>哪裡弱練哪裡，效率最高。</b>
+                </div>
               </div>
-              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 16, padding: 20 }}>
-                <div style={{ fontSize: 18, fontWeight: 900, color: "#7C3AED", marginBottom: 8 }}>💜 1 + 1 &gt; 2</div>
-                <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.8 }}>網站讓你<b>自主大量練習</b>；口說、寫作這種需要人評的部分，由 <b>Sam 老師親自批改、給回饋</b>。網站 + 老師 = 效果加倍！</div>
+
+              {/* 常考話題總結 */}
+              <div style={{ background: "linear-gradient(135deg, #F59E0B, #FBBF24)", borderRadius: 16, padding: 22, color: "#fff", marginBottom: 16 }}>
+                <div style={{ fontSize: 22, fontWeight: 900, marginBottom: 8 }}>📌 常考話題總結，幫你省時間</div>
+                <div style={{ fontSize: 16, lineHeight: 1.9 }}>
+                  我們<b>歸納整理了各級別的常考話題</b>（家庭、購物、旅行、工作、健康…）和<b>高分句型</b>，涵蓋口說、寫作、閱讀、聽力。<b>你不用自己花幾十小時去翻資料找重點——我們幫你總結好了，直接練。</b>
+                </div>
               </div>
+
+              {/* 還在學教材 */}
+              <div style={{ background: "linear-gradient(135deg, #818CF8, #6366F1)", borderRadius: 16, padding: 22, color: "#fff", marginBottom: 16 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, marginBottom: 8 }}>📖 還是零基礎、在學教材？</div>
+                <div style={{ fontSize: 16, lineHeight: 1.9 }}>先到「<b>系統課程</b>」：<b>必背單字</b>（A1+A2 高頻字、生詞本）和<b>必考文法</b>（19 課彩色記憶卡、考試應用、翻譯練習），把地基打穩，再去刷題。</div>
+              </div>
+
+              {/* 1+1>2 */}
+              <div style={{ background: "linear-gradient(135deg, #EDE9FE, #FCE7F3)", borderRadius: 16, padding: 22 }}>
+                <div style={{ fontSize: 20, fontWeight: 900, color: "#7C3AED", marginBottom: 8 }}>💜 1 + 1 &gt; 2</div>
+                <div style={{ fontSize: 16, color: "#5B21B6", lineHeight: 1.9 }}>聽力、閱讀你<b>在網站自主刷題</b>；口說、寫作這種需要人評的部分，由 <b>Sam 老師親自批改 + AI 練習</b>。<b>網站精準練習 + 老師專業指導 = 效果加倍。</b></div>
+              </div>
+
+              {/* 學習路徑流程圖 */}
+              <h3 style={{ ...h3, marginTop: 32 }}>🗺️ 你的學習路徑（一步步跟著走）</h3>
+              {[
+                { n: "1", t: "入學測試", d: "聽說讀寫四項自測，定位你的起點與弱項", c: "#34D399" },
+                { n: "2", t: "練習陪伴", d: "每日作業批改 ＋ 針對弱項刷題，天天有進度", c: "#60A5FA" },
+                { n: "3", t: "定期檢測 ＋ 調整", d: "階段模考，看進步、找新弱點，隨時調整方向", c: "#A78BFA" },
+                { n: "4", t: "結合課堂・有效輸出", d: "把課上學的，用口說寫作真正說出來、寫出來", c: "#EC4899" },
+                { n: "🎯", t: "通過檢定", d: "穩紮穩打，一次考過！", c: "#F59E0B" },
+              ].map((s, i, arr) => (
+                <div key={i}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, background: "#fff", border: `2px solid ${s.c}`, borderRadius: 16, padding: "16px 18px" }}>
+                    <div style={{ minWidth: 44, width: 44, height: 44, borderRadius: "50%", background: s.c, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 900 }}>{s.n}</div>
+                    <div>
+                      <div style={{ fontSize: 18, fontWeight: 900, color: "#1F2937" }}>{s.t}</div>
+                      <div style={{ fontSize: 15, color: "#6B7280", lineHeight: 1.6, marginTop: 2 }}>{s.d}</div>
+                    </div>
+                  </div>
+                  {i < arr.length - 1 && (
+                    <div style={{ textAlign: "center", color: "#C4B5FD", fontSize: 26, lineHeight: 1, margin: "4px 0" }}>↓</div>
+                  )}
+                </div>
+              ))}
+
               <p style={{ fontSize: 14, color: "#9CA3AF", marginTop: 16, lineHeight: 1.7 }}>📌 報考時間、費用、考點等資訊，請直接登入<b>歌德官方網站（goethe.de）</b>查詢最新公告。</p>
             </div>
           )}
