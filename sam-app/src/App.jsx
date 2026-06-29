@@ -167,7 +167,7 @@ const READING_TEXTS = [
     gloss: true,
     text: `In den letzten Jahren hat sich die Arbeitswelt stark verändert. Immer mehr Menschen arbeiten heute zumindest teilweise von zu Hause aus. Diese Form der Arbeit nennt man Homeoffice. Vor allem seit vielen Firmen ihren Mitarbeitern erlauben, nicht jeden Tag ins Büro zu kommen, ist das Homeoffice sehr beliebt geworden.\n\nDie Vorteile liegen auf der Hand. Wer zu Hause arbeitet, spart sich den oft langen Weg zur Arbeit und hat dadurch mehr Zeit für die Familie oder für Hobbys. Außerdem kann man sich die Arbeit flexibler einteilen. Manche Menschen sind in einer ruhigen Umgebung sogar produktiver als im Büro, wo sie ständig von Kollegen unterbrochen werden.\n\nTrotzdem gibt es auch Schwierigkeiten. Zu Hause fällt es vielen schwer, Arbeit und Privatleben zu trennen. Manche arbeiten länger als nötig, andere lassen sich leicht ablenken. Ein weiteres Problem ist der fehlende Kontakt zu den Kollegen. Wer immer allein zu Hause sitzt, fühlt sich mit der Zeit oft einsam und vermisst den persönlichen Austausch.\n\nViele Experten sind deshalb der Meinung, dass eine Mischung am besten ist. Wenn man einige Tage zu Hause und einige Tage im Büro arbeitet, kann man die Vorteile beider Welten nutzen. So bleibt man mit den Kollegen in Kontakt und genießt trotzdem die Flexibilität des Homeoffice. Die Zukunft der Arbeit wird also wahrscheinlich flexibler sein als früher.`,
     questions: [
-      { q: "Was bedeutet „Homeoffice"?", options: ["Von zu Hause aus arbeiten", "Ein neues Büro", "Eine Firma gründen", "Im Ausland arbeiten"], answer: "Von zu Hause aus arbeiten" },
+      { q: "Was bedeutet Homeoffice?", options: ["Von zu Hause aus arbeiten", "Ein neues Büro", "Eine Firma gründen", "Im Ausland arbeiten"], answer: "Von zu Hause aus arbeiten" },
       { q: "Welchen Vorteil nennt der Text?", options: ["Man spart den Arbeitsweg", "Man verdient mehr Geld", "Man hat mehr Kollegen", "Man arbeitet weniger"], answer: "Man spart den Arbeitsweg" },
       { q: "Welches Problem wird genannt?", options: ["Man fühlt sich oft einsam", "Das Internet ist zu langsam", "Die Arbeit ist zu leicht", "Es gibt kein Büro"], answer: "Man fühlt sich oft einsam" },
       { q: "Was halten viele Experten für am besten?", options: ["Eine Mischung aus Büro und Homeoffice", "Nur im Büro arbeiten", "Nur zu Hause arbeiten", "Gar nicht arbeiten"], answer: "Eine Mischung aus Büro und Homeoffice" },
@@ -1297,7 +1297,7 @@ function GlossText({ text }) {
         {tokens.map((tok, i) => {
           if (tok === "\n") return <br key={i} />;
           if (/^\s+$/.test(tok)) return tok;
-          const clean = tok.replace(/[.,!?;:„""()]/g, "");
+          const clean = tok.replace(/[.,!?;:()]/g, "").replace(/[\u201E\u201C\u201D]/g, "");
           const zh = GLOSS[clean];
           if (zh) {
             return <span key={i} onClick={() => setPop(pop && pop.i === i ? null : { i, word: clean, zh })}
@@ -3279,19 +3279,19 @@ function GuideScreen() {
               <h4 style={h4}>Teil 1：就個人提問與回答</h4>
               <p style={p}>拿到寫著關鍵詞的卡片（如 <b>Beruf?（職業）、Wohnort?（住哪）、Hobby?（興趣）、Geburtstag?（生日）</b>），你和搭檔<b>互相提問、回答</b>。</p>
               <div style={{ background: "#F5F3FF", borderRadius: 10, padding: 12, fontSize: 15, color: "#5B21B6", lineHeight: 1.8 }}>
-                💬 <b>舉例：</b>卡片是「Hobby?」→ 你問：<b>„Was sind deine Hobbys?"</b>　對方答：<b>„Ich spiele gern Fußball und höre Musik."</b>
+                💬 <b>舉例：</b>卡片是「Hobby?」→ 你問：<b>「Was sind deine Hobbys?"</b>　對方答：<b>「Ich spiele gern Fußball und höre Musik."</b>
               </div>
 
               <h4 style={h4}>Teil 2：談自己和生活</h4>
               <p style={p}>根據一張引導卡片（如主題「Wochenende 週末」「Geld 用錢」），<b>講一段關於自己生活的話</b>，考官可能追問。</p>
               <div style={{ background: "#F5F3FF", borderRadius: 10, padding: 12, fontSize: 15, color: "#5B21B6", lineHeight: 1.8 }}>
-                💬 <b>舉例：</b>主題「Mein Wochenende」→ <b>„Am Wochenende stehe ich spät auf. Samstags gehe ich einkaufen und treffe Freunde. Sonntags koche ich gern."</b>
+                💬 <b>舉例：</b>主題「Mein Wochenende」→ <b>「Am Wochenende stehe ich spät auf. Samstags gehe ich einkaufen und treffe Freunde. Sonntags koche ich gern.」</b>
               </div>
 
               <h4 style={h4}>Teil 3：共同規劃一件事</h4>
               <p style={p}>和搭檔<b>一起商量、安排</b>一個日常情境（如一起買生日禮物、約騎車），要提出建議、回應對方、達成共識。</p>
               <div style={{ background: "#F5F3FF", borderRadius: 10, padding: 12, fontSize: 15, color: "#5B21B6", lineHeight: 1.8 }}>
-                💬 <b>舉例：</b>一起約時間 → <b>„Wann hast du Zeit? Ich kann am Mittwoch."</b>　對方：<b>„Mittwoch passt mir nicht, geht es am Freitag?"</b>
+                💬 <b>舉例：</b>一起約時間 → <b>「Wann hast du Zeit? Ich kann am Mittwoch."</b>　對方：<b>「Mittwoch passt mir nicht, geht es am Freitag?"</b>
               </div>
 
               <h4 style={h4}>📐 評分標準（歌德官方兩大塊）</h4>
@@ -3310,10 +3310,10 @@ function GuideScreen() {
                 <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 600 }}>
                   <thead><tr><th style={th}>級別</th><th style={th}>該用的句型</th><th style={th}>例句</th></tr></thead>
                   <tbody>
-                    <tr><td style={tdH}>A1</td><td style={td}>簡單句</td><td style={td}>„Ich spiele Fußball."（我踢足球）</td></tr>
-                    <tr><td style={tdH}>A2</td><td style={td}>簡單句 + 並列句<br/>(und/aber/oder) + 開始用 weil</td><td style={td}>„Ich spiele Fußball und ich höre gern Musik."<br/>„Ich bleibe zu Hause, weil es regnet."（因為下雨）</td></tr>
-                    <tr><td style={tdH}>B1</td><td style={td}>穩定使用複合句<br/>(weil/dass/wenn)</td><td style={td}>„Ich glaube, dass Deutsch wichtig ist."<br/>„Wenn ich Zeit habe, lerne ich Deutsch."</td></tr>
-                    <tr><td style={tdH}>B2+</td><td style={td}>多樣複合句、被動、<br/>關係從句</td><td style={td}>„Das ist der Kurs, den ich empfehlen würde."</td></tr>
+                    <tr><td style={tdH}>A1</td><td style={td}>簡單句</td><td style={td}>「Ich spiele Fußball.」（我踢足球）</td></tr>
+                    <tr><td style={tdH}>A2</td><td style={td}>簡單句 + 並列句<br/>(und/aber/oder) + 開始用 weil</td><td style={td}>「Ich spiele Fußball und ich höre gern Musik."<br/>「Ich bleibe zu Hause, weil es regnet."（因為下雨）</td></tr>
+                    <tr><td style={tdH}>B1</td><td style={td}>穩定使用複合句<br/>(weil/dass/wenn)</td><td style={td}>「Ich glaube, dass Deutsch wichtig ist."<br/>「Wenn ich Zeit habe, lerne ich Deutsch."</td></tr>
+                    <tr><td style={tdH}>B2+</td><td style={td}>多樣複合句、被動、<br/>關係從句</td><td style={td}>「Das ist der Kurs, den ich empfehlen würde.」</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -3542,7 +3542,7 @@ function CompanionScreen({ onPick }) {
 
 // ══ 德語水平測評・大題庫（全德文，無中文）・每次隨機抽題 ══
 const BANK_GRAMMAR = [
-  { q: "Wie viel ist „drei + zwei\"?", options: ["fünf", "vier", "sechs", "sieben"], answer: "fünf", lvl: "A1" },
+  { q: "Wie viel ist drei plus zwei?", options: ["fünf", "vier", "sechs", "sieben"], answer: "fünf", lvl: "A1" },
   { q: "___ heißt du?", options: ["Wie", "Was", "Wer", "Wo"], answer: "Wie", lvl: "A1" },
   { q: "Ich ___ aus China.", options: ["komme", "kommst", "kommt", "kommen"], answer: "komme", lvl: "A1" },
   { q: "Das ist ___ Apfel.", options: ["ein", "eine", "einen", "einem"], answer: "ein", lvl: "A1" },
