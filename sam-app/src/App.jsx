@@ -1997,6 +1997,30 @@ function VocabModule({ myWords = [], onAddWord, onDeleteWord }) {
       </div>
       )}
 
+      {/* 可分動詞前綴・句框講解 */}
+      <details style={{ marginBottom: 14, background: "#F0FDFA", border: "1.5px solid #5EEAD4", borderRadius: 14, padding: "12px 16px" }}>
+        <summary style={{ fontWeight: 800, color: "#0D9488", fontSize: 14, cursor: "pointer" }}>🔧 可分動詞前綴 & 句框（點開必看）</summary>
+        <div style={{ marginTop: 10, fontSize: 13, color: "#374151", lineHeight: 1.8 }}>
+          <div style={{ marginBottom: 8 }}>德語有些動詞帶「<b>可分前綴</b>」，造句時前綴會<b>跑到句子最後面</b>。常見前綴：</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10 }}>
+            {["auf-", "ein-", "an-", "aus-", "ab-", "mit-", "zu-", "vor-", "fern-", "zurück-", "weg-", "um-"].map(p => (
+              <span key={p} style={{ background: "#CCFBF1", color: "#0F766E", borderRadius: 6, padding: "2px 8px", fontSize: 12, fontWeight: 800 }}>{p}</span>
+            ))}
+          </div>
+          <div style={{ background: "#fff", borderRadius: 10, padding: "10px 12px", marginBottom: 8 }}>
+            <div style={{ fontWeight: 800, color: "#0D9488", marginBottom: 6 }}>📦 句框 Satzklammer（重要！）</div>
+            <div style={{ marginBottom: 4 }}>動詞變位部分放<b>第二位</b>，可分前綴放<b>句尾</b>，中間的內容被「框」起來：</div>
+            <div style={{ fontFamily: "monospace", fontSize: 13, background: "#F0FDFA", borderRadius: 8, padding: "8px 10px", lineHeight: 2 }}>
+              Ich <b style={{ color: "#DC2626" }}>stehe</b> jeden Tag um 7 Uhr <b style={{ color: "#0D9488" }}>auf</b>.<br />
+              <span style={{ color: "#9CA3AF", fontSize: 12 }}>(aufstehen 起床：stehe…auf 把時間地點框在中間)</span>
+            </div>
+          </div>
+          <div style={{ background: "#FEF3C7", borderRadius: 10, padding: "8px 12px", color: "#92400E" }}>
+            💡 <b>口訣兩條：</b>① 可分前綴 → 句尾　② <b>時間狀語盡量提前</b>（放句首或主詞後）。例：<b>Morgen</b> rufe ich dich <b>an</b>.（明天我打給你）
+          </div>
+        </div>
+      </details>
+
       {/* My words view */}
       {sortMode === "mine" && (
         <div>
@@ -2139,9 +2163,18 @@ function RoleLegend({ roles }) {
   );
 }
 
+// 文法大類（點開看分支）
+const GRAMMAR_CATS = [
+  { id: "noun", emoji: "📦", name: "名詞・冠詞・代詞", color: "#6366F1" },
+  { id: "verb", emoji: "⚡", name: "動詞・時態", color: "#F59E0B" },
+  { id: "case", emoji: "🎯", name: "格與介詞", color: "#10B981" },
+  { id: "adj", emoji: "🌈", name: "形容詞・比較", color: "#EC4899" },
+  { id: "sentence", emoji: "🔗", name: "句子・連詞・從句", color: "#8B5CF6" },
+];
+
 const GRAMMAR_LESSONS = [
   {
-    id: "g1", level: "A1.1", emoji: "🎀", title: "冠詞：der / die / das / ein",
+    id: "g1", cat: "noun", level: "A1.1", emoji: "🎀", title: "冠詞：der / die / das / ein",
     color: "#FF6B9D",
     intro: "德語每個名詞都有「性別」，冠詞要跟著變。這是德語最基礎、也最多人卡關的地方——把這張卡記熟，後面所有格位變化都好懂！",
     blocks: [
@@ -2180,7 +2213,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g1b", level: "A1.1", emoji: "👨‍👩‍👧", title: "物主代詞：我的、你的、他的",
+    id: "g1b", cat: "noun", level: "A1.1", emoji: "👨‍👩‍👧", title: "物主代詞：我的、你的、他的",
     color: "#A855F7",
     intro: "「我的書、你的車、他的狗」——這些 mein/dein/sein 就是物主代詞。它跟著後面名詞的性別變化，規則其實跟 ein 一模一樣！",
     blocks: [
@@ -2232,7 +2265,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g1c", level: "A1.2", emoji: "🔄", title: "人稱代詞四格變化",
+    id: "g1c", cat: "noun", level: "A1.2", emoji: "🔄", title: "人稱代詞四格變化",
     color: "#0EA5E9",
     intro: "「我 ich、我（受詞）mich、給我 mir」——人稱代詞在不同「格」會變身。這是德語核心難點，但只要記住這張表，聽說讀寫都通！",
     blocks: [
@@ -2276,7 +2309,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g1d", level: "A1.2", emoji: "📚", title: "名詞變複數",
+    id: "g1d", cat: "noun", level: "A1.2", emoji: "📚", title: "名詞變複數",
     color: "#0D9488",
     intro: "德語名詞變複數不像英語只加 s，它有好幾種變法（加 -e、-er、-en、-s，有時還要變母音 ä/ö/ü）。記住這幾類規律，複數就不慌！",
     blocks: [
@@ -2321,7 +2354,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g1e", level: "A1.2", emoji: "❓", title: "疑問詞（W-Fragen）",
+    id: "g1e", cat: "sentence", level: "A1.2", emoji: "❓", title: "疑問詞（W-Fragen）",
     color: "#DB2777",
     intro: "wer, was, wann, wo, wie... 這些「W 開頭」的疑問詞是德語提問的核心。歌德口說考試就是圍繞這些疑問詞互相問答！搞懂它們，口說、聽力都通。",
     blocks: [
@@ -2368,7 +2401,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g2", level: "A1.1", emoji: "⚡", title: "現在式動詞變位（含不規則・可分動詞）",
+    id: "g2", cat: "verb", level: "A1.1", emoji: "⚡", title: "現在式動詞變位（含不規則・可分動詞）",
     color: "#EF4444",
     intro: "德語動詞會跟著主語變詞尾，而且動詞永遠在第二位！這課還要教你考試最容易錯的『不規則變音』和『可分動詞』——這兩個是 A1-A2 必考重點。",
     blocks: [
@@ -2423,7 +2456,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g3", level: "A1.1", emoji: "🌟", title: "sein 和 haben",
+    id: "g3", cat: "verb", level: "A1.1", emoji: "🌟", title: "sein 和 haben",
     color: "#F59E0B",
     intro: "最重要的兩個不規則動詞，一定要背熟！",
     blocks: [
@@ -2448,7 +2481,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g4", level: "A1.2", emoji: "💪", title: "情態動詞",
+    id: "g4", cat: "verb", level: "A1.2", emoji: "💪", title: "情態動詞",
     color: "#FACC15",
     intro: "情態動詞（können, müssen...）放第二位，真正的動詞變成原形跑到句尾！",
     blocks: [
@@ -2474,7 +2507,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g5", level: "A1.2", emoji: "🎯", title: "第四格 Akkusativ",
+    id: "g5", cat: "case", level: "A1.2", emoji: "🎯", title: "第四格 Akkusativ",
     color: "#10B981",
     intro: "第四格是動作的直接受詞。主要變化在陽性冠詞上！",
     blocks: [
@@ -2497,7 +2530,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g6", level: "A1.2", emoji: "🚫", title: "否定 nicht 和 kein",
+    id: "g6", cat: "noun", level: "A1.2", emoji: "🚫", title: "否定 nicht 和 kein",
     color: "#6366F1",
     intro: "nicht 否定動詞/形容詞；kein 否定名詞。",
     blocks: [
@@ -2520,7 +2553,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g7", level: "A2.1", emoji: "🔗", title: "並列句連接詞",
+    id: "g7", cat: "sentence", level: "A2.1", emoji: "🔗", title: "並列句連接詞",
     color: "#F59E0B",
     intro: "und, aber, oder, denn 連接兩個句子，不改變語序（動詞還是第二位）。",
     blocks: [
@@ -2543,7 +2576,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g8", level: "A2.1", emoji: "📐", title: "介詞",
+    id: "g8", cat: "case", level: "A2.1", emoji: "📐", title: "介詞",
     color: "#F97316",
     intro: "介詞表示位置、方向、時間。常見介詞要記搭配。",
     blocks: [
@@ -2568,7 +2601,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g9", level: "A2.1", emoji: "🧩", title: "從句 weil / dass",
+    id: "g9", cat: "sentence", level: "A2.1", emoji: "🧩", title: "從句 weil / dass",
     color: "#10B981",
     intro: "weil(因為), dass(那) 引導從句——動詞要跑到句尾！",
     blocks: [
@@ -2589,7 +2622,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g10", level: "A2.2", emoji: "⏰", title: "完成式 Perfekt (過去)",
+    id: "g10", cat: "verb", level: "A2.2", emoji: "⏰", title: "完成式 Perfekt (過去)",
     color: "#06B6D4",
     intro: "說過去發生的事，用 haben/sein + 過去分詞。過去分詞放句尾！",
     blocks: [
@@ -2613,7 +2646,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g11", level: "A2.2", emoji: "🌧️", title: "從句 wenn (當/如果)",
+    id: "g11", cat: "sentence", level: "A2.2", emoji: "🌧️", title: "從句 wenn (當/如果)",
     color: "#3B82F6",
     intro: "wenn 表示『當...時』或『如果...』，動詞一樣跑句尾！",
     blocks: [
@@ -2630,7 +2663,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
 {
-    id: "g12", level: "A2.1", emoji: "🎁", title: "第三格 Dativ",
+    id: "g12", cat: "case", level: "A2.1", emoji: "🎁", title: "第三格 Dativ",
     color: "#14B8A6",
     intro: "第三格是『間接受詞』——給誰、向誰。常跟 geben, helfen, danken 等動詞一起出現。",
     blocks: [
@@ -2653,7 +2686,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g13", level: "A2.2", emoji: "🌈", title: "形容詞詞尾變化（三大表）",
+    id: "g13", cat: "adj", level: "A2.2", emoji: "🌈", title: "形容詞詞尾變化（三大表）",
     color: "#F472B6",
     intro: "形容詞放名詞前面時，詞尾會跟著「冠詞種類 + 性別 + 格」變化。這是德語最複雜的語法之一，但只要記住這三張表，連 A1 文章裡的 ein gutes Buch 你都秒懂！橫看性別、直看格位。",
     blocks: [
@@ -2702,7 +2735,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g14", level: "A2.1", emoji: "📊", title: "比較級與最高級",
+    id: "g14", cat: "adj", level: "A2.1", emoji: "📊", title: "比較級與最高級",
     color: "#FB923C",
     intro: "比較兩樣東西用比較級，三者以上最厲害的用最高級。",
     blocks: [
@@ -2726,7 +2759,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g15", level: "A2.2", emoji: "🕰️", title: "從句 als (過去的當時)",
+    id: "g15", cat: "sentence", level: "A2.2", emoji: "🕰️", title: "從句 als (過去的當時)",
     color: "#8B5CF6",
     intro: "als 表示過去『當...的時候』（一次性的過去事件）。注意：過去常態用 wenn，過去一次用 als。",
     blocks: [
@@ -2747,7 +2780,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g16", level: "A2.2", emoji: "❓", title: "從句 ob 與間接問句",
+    id: "g16", cat: "sentence", level: "A2.2", emoji: "❓", title: "從句 ob 與間接問句",
     color: "#06B6D4",
     intro: "ob = 是否（yes/no 問題變間接）。疑問詞(wann, wo...)也能引導間接問句，動詞都跑句尾。",
     blocks: [
@@ -2768,7 +2801,7 @@ const GRAMMAR_LESSONS = [
     ]
   },
   {
-    id: "g17", level: "A2.2", emoji: "➡️", title: "連接副詞 deshalb / trotzdem",
+    id: "g17", cat: "sentence", level: "A2.2", emoji: "➡️", title: "連接副詞 deshalb / trotzdem",
     color: "#EF4444",
     intro: "deshalb(因此)、trotzdem(儘管如此)放句首時，動詞緊跟在後(第二位)——和 weil 不同！",
     blocks: [
@@ -2790,6 +2823,46 @@ const GRAMMAR_LESSONS = [
       { q: "Welches Wort heißt『因此』?", options: ["trotzdem", "deshalb", "obwohl"], answer: "deshalb", hint: "deshalb=因此" },
     ]
   },
+  {
+    id: "g18", cat: "verb", level: "A2.2", emoji: "🔄", title: "動詞變名詞",
+    color: "#F59E0B",
+    intro: "德語很多名詞是從動詞變來的。學會這些變化規律，背單字快一倍，閱讀也更好懂——看到動詞就能猜出對應名詞！",
+    blocks: [
+      { type: "card", title: "動詞 → 名詞的常見方法", subtitle: "記住規律，舉一反三", headers: ["方法", "規則", "例子（動詞→名詞）"], rows: [
+        ["① 直接當名詞", "動詞原形大寫，中性 das", "essen → das Essen 吃飯/食物"],
+        ["② 加 -ung", "多為陰性 die", "wohnen → die Wohnung 住所"],
+        ["③ 加 -er", "表『做…的人』陽性 der", "lehren → der Lehrer 老師"],
+        ["④ 去字尾", "字根變名詞", "arbeiten → die Arbeit 工作"],
+        ["⑤ 加 -e", "常為陰性", "fragen → die Frage 問題"],
+      ], foot: "最常考的是 -ung（陰性）和 -er（人）。看到 -ung 結尾八成是 die！" },
+      { type: "card", title: "更多例子（背單字超好用）", headers: ["動詞", "名詞", "中文"], rows: [
+        ["arbeiten", "die Arbeit", "工作"],
+        ["leben", "das Leben", "生活"],
+        ["fahren", "die Fahrt", "行程"],
+        ["meinen", "die Meinung", "意見"],
+        ["übung → üben", "die Übung", "練習"],
+        ["besuchen", "der Besuch", "拜訪"],
+        ["beginnen", "der Beginn", "開始"],
+      ], foot: "建議：背動詞時順便記它的名詞形，一次學兩個！" },
+      { type: "tip", title: "閱讀小技巧", text: "看到不認識的名詞，試著找它的動詞字根。例如 die Bedeutung → bedeuten(意味著)，就能猜出『意義』。die Entscheidung → entscheiden(決定)→『決定』。" },
+      { type: "examTip", points: [
+        { skill: "閱讀", text: "認出動詞字根，就能猜出陌生名詞的意思。" },
+        { skill: "寫作", text: "名詞化能讓句子更正式：Ich entscheide → meine Entscheidung。" },
+        { skill: "單字", text: "-ung→陰性、-er→人，記住詞性規律，冠詞不再猜。" },
+      ]},
+    ],
+    quiz: [
+      { q: "wohnen（居住）→ 名詞是？", options: ["die Wohnung", "das Wohnen", "der Wohner"], answer: "die Wohnung", hint: "加-ung→die Wohnung 住所" },
+      { q: "arbeiten（工作）→ 名詞是？", options: ["die Arbeit", "das Arbeit", "der Arbeit"], answer: "die Arbeit", hint: "die Arbeit,陰性" },
+      { q: "lehren（教）→『老師』是？", options: ["der Lehrer", "die Lehrung", "das Lehren"], answer: "der Lehrer", hint: "加-er表人→der Lehrer" },
+      { q: "essen（吃）→『食物/吃飯』是？", options: ["das Essen", "die Essung", "der Esser"], answer: "das Essen", hint: "動詞原形大寫當名詞→das Essen" },
+      { q: "meinen（認為）→『意見』是？", options: ["die Meinung", "das Meinen", "der Meiner"], answer: "die Meinung", hint: "加-ung→die Meinung。口說meiner Meinung nach常用!" },
+    ],
+    trans: [
+      { zh: "依我的意見，學德語很有用。", scene: "歌德口說／寫作：表達觀點", de: "Meiner Meinung nach ist Deutschlernen sehr nützlich.", note: "die Meinung(來自meinen);Meiner Meinung nach=依我看,高頻句型" },
+      { zh: "我在找一個住所和一份工作。", scene: "歌德 A2：生活情境", de: "Ich suche eine Wohnung und eine Arbeit.", note: "die Wohnung(來自wohnen);die Arbeit(來自arbeiten)" },
+    ]
+  },
 ];
 
 
@@ -2798,6 +2871,7 @@ const GRAMMAR_LESSONS = [
 function GrammarModule({ aiKey }) {
   const [lesson, setLesson] = useState(null);
   const [level, setLevel] = useState("all");
+  const [openCat, setOpenCat] = useState(null);
   const [quizAns, setQuizAns] = useState({});
   const [aiQuiz, setAiQuiz] = useState([]);
   const [transShow, setTransShow] = useState({});
@@ -2805,22 +2879,42 @@ function GrammarModule({ aiKey }) {
 
   if (!lesson) {
     const filtered = GRAMMAR_LESSONS.filter(g => level === "all" || g.level === level);
+    // 按大類分組
+    const grouped = {};
+    filtered.forEach(g => { const c = g.cat || "其他"; (grouped[c] = grouped[c] || []).push(g); });
+    const catNames = GRAMMAR_CATS.filter(c => grouped[c.id]);
     return (
       <div>
         <h2 style={{ fontWeight: 800, color: C.purple, fontSize: 20, marginBottom: 4 }}>📐 必考文法</h2>
-        <p style={{ color: "#7C3AED", fontSize: 13, marginBottom: 12 }}>彩色標重點・每課附小練習</p>
+        <p style={{ color: "#7C3AED", fontSize: 13, marginBottom: 12 }}>分大類整理・點開看分支・每課附小練習</p>
         <LevelFilter current={level} onChange={setLevel} />
-        {filtered.map(g => (
-          <Card key={g.id} color={g.color}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 32 }}>{g.emoji}</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 800, color: "#1F2937", fontSize: 15 }}>{g.title}</div>
-                <Badge text={g.level} color={LEVEL_COLORS[g.level] || g.color} />
+        {catNames.map(cat => (
+          <div key={cat.id} style={{ marginBottom: 12 }}>
+            <button onClick={() => setOpenCat(openCat === cat.id ? null : cat.id)} style={{
+              width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
+              background: `linear-gradient(135deg, ${cat.color}, ${cat.color}DD)`, color: "#fff", border: "none",
+              borderRadius: 16, padding: "16px 18px", cursor: "pointer", textAlign: "left",
+            }}>
+              <span style={{ fontSize: 16, fontWeight: 900 }}>{cat.emoji} {cat.name}　<span style={{ fontSize: 13, opacity: 0.9, fontWeight: 600 }}>({grouped[cat.id].length})</span></span>
+              <span style={{ fontSize: 16 }}>{openCat === cat.id ? "▲" : "▼"}</span>
+            </button>
+            {openCat === cat.id && (
+              <div style={{ marginTop: 8 }}>
+                {grouped[cat.id].map(g => (
+                  <Card key={g.id} color={g.color}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <span style={{ fontSize: 28 }}>{g.emoji}</span>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 800, color: "#1F2937", fontSize: 15 }}>{g.title}</div>
+                        <Badge text={g.level} color={LEVEL_COLORS[g.level] || g.color} />
+                      </div>
+                      <button onClick={() => { setLesson(g); setQuizAns({}); setAiQuiz([]); setTransShow({}); setTransInput({}); }} style={btnStyle(g.color)}>學習</button>
+                    </div>
+                  </Card>
+                ))}
               </div>
-              <button onClick={() => { setLesson(g); setQuizAns({}); setAiQuiz([]); setTransShow({}); setTransInput({}); }} style={btnStyle(g.color)}>學習</button>
-            </div>
-          </Card>
+            )}
+          </div>
         ))}
       </div>
     );
@@ -3542,73 +3636,85 @@ function CompanionScreen({ onPick }) {
 
 // ══ 德語水平測評・大題庫（全德文，無中文）・每次隨機抽題 ══
 const BANK_GRAMMAR = [
-  { q: "Wie viel ist drei plus zwei?", options: ["fünf", "vier", "sechs", "sieben"], answer: "fünf", lvl: "A1" },
-  { q: "___ heißt du?", options: ["Wie", "Was", "Wer", "Wo"], answer: "Wie", lvl: "A1" },
-  { q: "Ich ___ aus China.", options: ["komme", "kommst", "kommt", "kommen"], answer: "komme", lvl: "A1" },
-  { q: "Das ist ___ Apfel.", options: ["ein", "eine", "einen", "einem"], answer: "ein", lvl: "A1" },
-  { q: "___ du Kaffee oder Tee?", options: ["Trinkst", "Trinke", "Trinkt", "Trinken"], answer: "Trinkst", lvl: "A1" },
-  { q: "Wir ___ heute Deutsch.", options: ["lernen", "lerne", "lernst", "lernt"], answer: "lernen", lvl: "A1" },
-  { q: "Ich mag Tee ___ Kaffee.", options: ["und", "weil", "dass", "obwohl"], answer: "und", lvl: "A1" },
-  { q: "___ ist dein Vater? — Er ist 50.", options: ["Wie alt", "Was", "Wo", "Wann"], answer: "Wie alt", lvl: "A1" },
-  { q: "Er ___ jeden Morgen einen Apfel.", options: ["isst", "esst", "esse", "essen"], answer: "isst", lvl: "A2" },
-  { q: "Ich bleibe zu Hause, ___ es regnet.", options: ["weil", "und", "aber", "oder"], answer: "weil", lvl: "A2" },
-  { q: "Kannst du ___ bitte helfen?", options: ["mir", "mich", "ich", "mein"], answer: "mir", lvl: "A2" },
-  { q: "Das Buch gefällt ___ sehr.", options: ["mir", "mich", "ich", "meine"], answer: "mir", lvl: "A2" },
-  { q: "Ich gebe ___ das Geschenk.", options: ["ihm", "ihn", "er", "sein"], answer: "ihm", lvl: "A2" },
-  { q: "Siehst du den Mann? Ich kenne ___.", options: ["ihn", "ihm", "er", "sein"], answer: "ihn", lvl: "A2" },
-  { q: "Ich fahre ___ dem Bus zur Arbeit.", options: ["mit", "in", "aus", "für"], answer: "mit", lvl: "A2" },
-  { q: "Gestern ___ ich ins Kino gegangen.", options: ["bin", "habe", "war", "hatte"], answer: "bin", lvl: "A2" },
-  { q: "Wie ___ dir der Film? — Sehr gut!", options: ["gefällt", "gefallen", "gefällst", "gefalle"], answer: "gefällt", lvl: "A2" },
-  { q: "Der Lehrer hilft ___ Schülern.", options: ["den", "die", "der", "dem"], answer: "den", lvl: "A2" },
-  { q: "Das ist der Mann, ___ Deutsch unterrichtet.", options: ["der", "die", "das", "dem"], answer: "der", lvl: "B1" },
-  { q: "Ich weiß nicht, ___ er heute kommt.", options: ["ob", "wenn", "als", "dass"], answer: "ob", lvl: "B1" },
-  { q: "Wenn ich Zeit ___, würde ich mehr reisen.", options: ["hätte", "habe", "hatte", "haben"], answer: "hätte", lvl: "B1" },
-  { q: "Die Frau, ___ ich geholfen habe, ist Ärztin.", options: ["der", "die", "den", "dem"], answer: "der", lvl: "B1" },
-  { q: "Er tut so, ___ ob er alles wüsste.", options: ["als", "wenn", "dass", "weil"], answer: "als", lvl: "B1" },
-  { q: "Je mehr man übt, ___ besser wird man.", options: ["desto", "als", "wie", "so"], answer: "desto", lvl: "B1" },
-  { q: "Der Brief ___ gestern geschrieben.", options: ["wurde", "wird", "ist", "hat"], answer: "wurde", lvl: "B1" },
-  { q: "___ des schlechten Wetters fand das Spiel statt.", options: ["Trotz", "Wegen", "Während", "Statt"], answer: "Trotz", lvl: "B2" },
-  { q: "Er ärgert sich ___ den Stau.", options: ["über", "auf", "für", "an"], answer: "über", lvl: "B2" },
-  { q: "Ich freue mich ___ das Wochenende.", options: ["auf", "über", "für", "an"], answer: "auf", lvl: "B2" },
-  { q: "___ hart er auch arbeitet, er kommt nicht voran.", options: ["So sehr", "Obwohl", "Trotzdem", "Wenn"], answer: "So sehr", lvl: "B2" },
-  { q: "Das Projekt muss bis Freitag ___ werden.", options: ["abgeschlossen", "abschließen", "abschloss", "abzuschließen"], answer: "abgeschlossen", lvl: "C1" },
-  { q: "___ hätte er das jemals zugegeben.", options: ["Unter keinen Umständen", "Kein Fall", "Nicht Weise", "Auf keine Art"], answer: "Unter keinen Umständen", lvl: "C1" },
-  { q: "Es bleibt abzuwarten, ___ die Reform Erfolg hat.", options: ["inwiefern", "wiefern", "inwie", "wodurch"], answer: "inwiefern", lvl: "C1" },
-  { q: "Der Minister sah sich ___ Kritik ausgesetzt.", options: ["heftiger", "heftige", "heftigen", "heftigem"], answer: "heftiger", lvl: "C1" },
+  // 形容詞詞尾
+  { q: "Ich trinke ___ Kaffee.（heiß，無冠詞陽性第四格）", options: ["heißen", "heiße", "heißem", "heißer"], answer: "heißen", lvl: "A2" },
+  { q: "Das ist ein ___ Auto.（neu，不定冠詞中性）", options: ["neues", "neue", "neuen", "neuer"], answer: "neues", lvl: "A2" },
+  { q: "Die ___ Frau ist meine Lehrerin.（jung，定冠詞陰性）", options: ["junge", "jungen", "junger", "junges"], answer: "junge", lvl: "A2" },
+  { q: "Ich wohne in einem ___ Haus.（groß，不定冠詞中性第三格）", options: ["großen", "große", "großes", "großer"], answer: "großen", lvl: "B1" },
+  { q: "Er trägt einen ___ Mantel.（schwarz，不定冠詞陽性第四格）", options: ["schwarzen", "schwarze", "schwarzes", "schwarzer"], answer: "schwarzen", lvl: "B1" },
+  { q: "Mit ___ Wetter gehen wir spazieren.（schön，無冠詞中性第三格）", options: ["schönem", "schöne", "schönen", "schönes"], answer: "schönem", lvl: "B1" },
+  // 以上皆非 題型（E 選項，選了要手動填）
+  { q: "Welche Form ist KORREKT für『我幫助他』?", options: ["Ich helfe ihn", "Ich helfe er", "Ich helfe sein", "Ich helfe seinen", "以上皆非（請自己寫出正確答案）"], answer: "以上皆非（請自己寫出正確答案）", correct: "Ich helfe ihm", lvl: "A2", noneType: true },
+  { q: "Welcher Artikel ist richtig: ___ Mädchen?", options: ["der Mädchen", "die Mädchen (單數)", "dem Mädchen", "den Mädchen", "以上皆非（請自己寫出正確答案）"], answer: "以上皆非（請自己寫出正確答案）", correct: "das Mädchen", lvl: "A2", noneType: true },
+  { q: "Perfekt von『gehen』: Ich ___ gegangen.", options: ["habe", "wurde", "werde", "hatte", "以上皆非（請自己寫出正確答案）"], answer: "以上皆非（請自己寫出正確答案）", correct: "bin", lvl: "B1", noneType: true },
+
+  { q: "Wie viel ist drei plus zwei?", options: ["sechs", "vier", "sieben", "fünf"], answer: "fünf", lvl: "A1" },
+  { q: "___ heißt du?", options: ["Wo", "Wer", "Wie", "Was"], answer: "Wie", lvl: "A1" },
+  { q: "Ich ___ aus China.", options: ["kommst", "kommen", "kommt", "komme"], answer: "komme", lvl: "A1" },
+  { q: "Das ist ___ Apfel.", options: ["eine", "einen", "ein", "einem"], answer: "ein", lvl: "A1" },
+  { q: "___ du Kaffee oder Tee?", options: ["Trinke", "Trinkt", "Trinken", "Trinkst"], answer: "Trinkst", lvl: "A1" },
+  { q: "Wir ___ heute Deutsch.", options: ["lerne", "lernt", "lernst", "lernen"], answer: "lernen", lvl: "A1" },
+  { q: "Ich mag Tee ___ Kaffee.", options: ["dass", "weil", "und", "obwohl"], answer: "und", lvl: "A1" },
+  { q: "___ ist dein Vater? — Er ist 50.", options: ["Was", "Wann", "Wie alt", "Wo"], answer: "Wie alt", lvl: "A1" },
+  { q: "Er ___ jeden Morgen einen Apfel.", options: ["isst", "esse", "esst", "essen"], answer: "isst", lvl: "A2" },
+  { q: "Ich bleibe zu Hause, ___ es regnet.", options: ["aber", "oder", "weil", "und"], answer: "weil", lvl: "A2" },
+  { q: "Kannst du ___ bitte helfen?", options: ["ich", "mich", "mein", "mir"], answer: "mir", lvl: "A2" },
+  { q: "Das Buch gefällt ___ sehr.", options: ["meine", "ich", "mich", "mir"], answer: "mir", lvl: "A2" },
+  { q: "Ich gebe ___ das Geschenk.", options: ["sein", "ihn", "ihm", "er"], answer: "ihm", lvl: "A2" },
+  { q: "Siehst du den Mann? Ich kenne ___.", options: ["er", "sein", "ihm", "ihn"], answer: "ihn", lvl: "A2" },
+  { q: "Ich fahre ___ dem Bus zur Arbeit.", options: ["mit", "in", "für", "aus"], answer: "mit", lvl: "A2" },
+  { q: "Gestern ___ ich ins Kino gegangen.", options: ["hatte", "bin", "war", "habe"], answer: "bin", lvl: "A2" },
+  { q: "Wie ___ dir der Film? — Sehr gut!", options: ["gefallen", "gefalle", "gefällst", "gefällt"], answer: "gefällt", lvl: "A2" },
+  { q: "Der Lehrer hilft ___ Schülern.", options: ["die", "dem", "den", "der"], answer: "den", lvl: "A2" },
+  { q: "Das ist der Mann, ___ Deutsch unterrichtet.", options: ["dem", "das", "die", "der"], answer: "der", lvl: "B1" },
+  { q: "Ich weiß nicht, ___ er heute kommt.", options: ["ob", "als", "dass", "wenn"], answer: "ob", lvl: "B1" },
+  { q: "Wenn ich Zeit ___, würde ich mehr reisen.", options: ["hätte", "haben", "hatte", "habe"], answer: "hätte", lvl: "B1" },
+  { q: "Die Frau, ___ ich geholfen habe, ist Ärztin.", options: ["die", "dem", "den", "der"], answer: "der", lvl: "B1" },
+  { q: "Er tut so, ___ ob er alles wüsste.", options: ["dass", "weil", "als", "wenn"], answer: "als", lvl: "B1" },
+  { q: "Je mehr man übt, ___ besser wird man.", options: ["wie", "desto", "als", "so"], answer: "desto", lvl: "B1" },
+  { q: "Der Brief ___ gestern geschrieben.", options: ["wird", "hat", "wurde", "ist"], answer: "wurde", lvl: "B1" },
+  { q: "___ des schlechten Wetters fand das Spiel statt.", options: ["Statt", "Während", "Wegen", "Trotz"], answer: "Trotz", lvl: "B2" },
+  { q: "Er ärgert sich ___ den Stau.", options: ["auf", "an", "über", "für"], answer: "über", lvl: "B2" },
+  { q: "Ich freue mich ___ das Wochenende.", options: ["an", "über", "auf", "für"], answer: "auf", lvl: "B2" },
+  { q: "___ hart er auch arbeitet, er kommt nicht voran.", options: ["Trotzdem", "So sehr", "Wenn", "Obwohl"], answer: "So sehr", lvl: "B2" },
+  { q: "Das Projekt muss bis Freitag ___ werden.", options: ["abgeschlossen", "abzuschließen", "abschloss", "abschließen"], answer: "abgeschlossen", lvl: "C1" },
+  { q: "___ hätte er das jemals zugegeben.", options: ["Kein Fall", "Auf keine Art", "Unter keinen Umständen", "Nicht Weise"], answer: "Unter keinen Umständen", lvl: "C1" },
+  { q: "Es bleibt abzuwarten, ___ die Reform Erfolg hat.", options: ["wiefern", "inwie", "inwiefern", "wodurch"], answer: "inwiefern", lvl: "C1" },
+  { q: "Der Minister sah sich ___ Kritik ausgesetzt.", options: ["heftige", "heftigen", "heftigem", "heftiger"], answer: "heftiger", lvl: "C1" },
 ];
 
 const BANK_LISTEN = [
-  { tts: "Es ist jetzt acht Uhr.", q: "Wie spät ist es?", options: ["Acht Uhr", "Sechs Uhr", "Zehn Uhr", "Zwölf Uhr"], answer: "Acht Uhr", lvl: "A1" },
-  { tts: "Mein Name ist Anna. Ich komme aus Wien.", q: "Woher kommt Anna?", options: ["Aus Wien", "Aus Berlin", "Aus Bern", "Aus Bonn"], answer: "Aus Wien", lvl: "A1" },
-  { tts: "Heute ist Montag.", q: "Welcher Tag ist heute?", options: ["Montag", "Freitag", "Sonntag", "Mittwoch"], answer: "Montag", lvl: "A1" },
-  { tts: "Ich hätte gern ein Brot und zwei Brötchen.", q: "Was möchte die Person?", options: ["Brot und Brötchen", "Nur Brot", "Kuchen", "Milch"], answer: "Brot und Brötchen", lvl: "A1" },
-  { tts: "Der Bus fährt um halb neun ab.", q: "Wann fährt der Bus?", options: ["Um 8:30", "Um 9:30", "Um 9:00", "Um 8:00"], answer: "Um 8:30", lvl: "A2" },
-  { tts: "Der Zug nach Berlin fährt heute nicht von Gleis drei, sondern von Gleis fünf.", q: "Von welchem Gleis fährt der Zug?", options: ["Gleis fünf", "Gleis drei", "Gleis eins", "Gleis vier"], answer: "Gleis fünf", lvl: "A2" },
-  { tts: "Am Wochenende gehe ich gern wandern, aber nur wenn das Wetter schön ist.", q: "Wann geht die Person wandern?", options: ["Bei schönem Wetter", "Immer", "Bei Regen", "Nie"], answer: "Bei schönem Wetter", lvl: "A2" },
-  { tts: "Entschuldigung, wo ist die Post? — Gehen Sie geradeaus und dann links.", q: "Wohin muss man gehen?", options: ["Geradeaus und links", "Nur rechts", "Zurück", "Geradeaus und rechts"], answer: "Geradeaus und links", lvl: "A2" },
-  { tts: "Eigentlich wollte ich ins Kino, aber ich bin zu müde. Ich bleibe lieber zu Hause.", q: "Was macht die Person?", options: ["Sie bleibt zu Hause", "Sie geht ins Kino", "Sie geht arbeiten", "Sie trifft Freunde"], answer: "Sie bleibt zu Hause", lvl: "B1" },
-  { tts: "Die Konferenz wurde wegen technischer Probleme auf nächste Woche verschoben.", q: "Was ist passiert?", options: ["Die Konferenz wurde verschoben", "Die Konferenz fällt aus", "Die Konferenz ist früher", "Alles ist normal"], answer: "Die Konferenz wurde verschoben", lvl: "B1" },
-  { tts: "Ich hätte den Termin fast vergessen, zum Glück hat mich meine Kollegin erinnert.", q: "Warum hat die Person den Termin nicht vergessen?", options: ["Die Kollegin hat erinnert", "Sie hat es notiert", "Der Chef hat angerufen", "Sie vergisst nie"], answer: "Die Kollegin hat erinnert", lvl: "B1" },
-  { tts: "Obwohl die Mehrheit dafür gestimmt hat, wurde der Vorschlag letztlich nicht umgesetzt.", q: "Wurde der Vorschlag umgesetzt?", options: ["Nein, nicht umgesetzt", "Ja, umgesetzt", "Man stimmt noch ab", "Er wurde verschoben"], answer: "Nein, nicht umgesetzt", lvl: "B2" },
-  { tts: "Die neuen Maßnahmen stoßen bei den Bürgern auf gemischte Reaktionen.", q: "Wie reagieren die Bürger?", options: ["Unterschiedlich", "Alle positiv", "Alle negativ", "Gar nicht"], answer: "Unterschiedlich", lvl: "B2" },
-  { tts: "Hätte man frühzeitig reagiert, wäre der Schaden vermeidbar gewesen.", q: "Was sagt der Satz aus?", options: ["Der Schaden war vermeidbar", "Der Schaden war unvermeidbar", "Man hat reagiert", "Es gab keinen Schaden"], answer: "Der Schaden war vermeidbar", lvl: "C1" },
-  { tts: "Der Vortrag war zwar inhaltlich fundiert, ließ jedoch an Anschaulichkeit zu wünschen übrig.", q: "Wie war der Vortrag?", options: ["Fundiert, aber wenig anschaulich", "Perfekt", "Inhaltlich schwach", "Sehr anschaulich"], answer: "Fundiert, aber wenig anschaulich", lvl: "C1" },
+  { tts: "Es ist jetzt acht Uhr.", q: "Wie spät ist es?", options: ["Sechs Uhr", "Acht Uhr", "Zehn Uhr", "Zwölf Uhr"], answer: "Acht Uhr", lvl: "A1" },
+  { tts: "Mein Name ist Anna. Ich komme aus Wien.", q: "Woher kommt Anna?", options: ["Aus Wien", "Aus Bern", "Aus Berlin", "Aus Bonn"], answer: "Aus Wien", lvl: "A1" },
+  { tts: "Heute ist Montag.", q: "Welcher Tag ist heute?", options: ["Freitag", "Montag", "Mittwoch", "Sonntag"], answer: "Montag", lvl: "A1" },
+  { tts: "Ich hätte gern ein Brot und zwei Brötchen.", q: "Was möchte die Person?", options: ["Milch", "Nur Brot", "Kuchen", "Brot und Brötchen"], answer: "Brot und Brötchen", lvl: "A1" },
+  { tts: "Der Bus fährt um halb neun ab.", q: "Wann fährt der Bus?", options: ["Um 8:00", "Um 9:30", "Um 8:30", "Um 9:00"], answer: "Um 8:30", lvl: "A2" },
+  { tts: "Der Zug nach Berlin fährt heute nicht von Gleis drei, sondern von Gleis fünf.", q: "Von welchem Gleis fährt der Zug?", options: ["Gleis eins", "Gleis drei", "Gleis fünf", "Gleis vier"], answer: "Gleis fünf", lvl: "A2" },
+  { tts: "Am Wochenende gehe ich gern wandern, aber nur wenn das Wetter schön ist.", q: "Wann geht die Person wandern?", options: ["Nie", "Immer", "Bei Regen", "Bei schönem Wetter"], answer: "Bei schönem Wetter", lvl: "A2" },
+  { tts: "Entschuldigung, wo ist die Post? — Gehen Sie geradeaus und dann links.", q: "Wohin muss man gehen?", options: ["Geradeaus und rechts", "Geradeaus und links", "Zurück", "Nur rechts"], answer: "Geradeaus und links", lvl: "A2" },
+  { tts: "Eigentlich wollte ich ins Kino, aber ich bin zu müde. Ich bleibe lieber zu Hause.", q: "Was macht die Person?", options: ["Sie geht ins Kino", "Sie bleibt zu Hause", "Sie trifft Freunde", "Sie geht arbeiten"], answer: "Sie bleibt zu Hause", lvl: "B1" },
+  { tts: "Die Konferenz wurde wegen technischer Probleme auf nächste Woche verschoben.", q: "Was ist passiert?", options: ["Die Konferenz ist früher", "Die Konferenz wurde verschoben", "Alles ist normal", "Die Konferenz fällt aus"], answer: "Die Konferenz wurde verschoben", lvl: "B1" },
+  { tts: "Ich hätte den Termin fast vergessen, zum Glück hat mich meine Kollegin erinnert.", q: "Warum hat die Person den Termin nicht vergessen?", options: ["Sie vergisst nie", "Sie hat es notiert", "Der Chef hat angerufen", "Die Kollegin hat erinnert"], answer: "Die Kollegin hat erinnert", lvl: "B1" },
+  { tts: "Obwohl die Mehrheit dafür gestimmt hat, wurde der Vorschlag letztlich nicht umgesetzt.", q: "Wurde der Vorschlag umgesetzt?", options: ["Ja, umgesetzt", "Man stimmt noch ab", "Nein, nicht umgesetzt", "Er wurde verschoben"], answer: "Nein, nicht umgesetzt", lvl: "B2" },
+  { tts: "Die neuen Maßnahmen stoßen bei den Bürgern auf gemischte Reaktionen.", q: "Wie reagieren die Bürger?", options: ["Gar nicht", "Unterschiedlich", "Alle positiv", "Alle negativ"], answer: "Unterschiedlich", lvl: "B2" },
+  { tts: "Hätte man frühzeitig reagiert, wäre der Schaden vermeidbar gewesen.", q: "Was sagt der Satz aus?", options: ["Der Schaden war unvermeidbar", "Man hat reagiert", "Es gab keinen Schaden", "Der Schaden war vermeidbar"], answer: "Der Schaden war vermeidbar", lvl: "C1" },
+  { tts: "Der Vortrag war zwar inhaltlich fundiert, ließ jedoch an Anschaulichkeit zu wünschen übrig.", q: "Wie war der Vortrag?", options: ["Sehr anschaulich", "Perfekt", "Inhaltlich schwach", "Fundiert, aber wenig anschaulich"], answer: "Fundiert, aber wenig anschaulich", lvl: "C1" },
 ];
 
 const BANK_READ = [
-  { text: "Anna steht jeden Morgen um 7 Uhr auf.", q: "Wann steht Anna auf?", options: ["Um 7 Uhr", "Um 8 Uhr", "Um 6 Uhr", "Um 9 Uhr"], answer: "Um 7 Uhr", lvl: "A1" },
-  { text: "Das Geschäft ist von Montag bis Freitag geöffnet. Am Wochenende ist es geschlossen.", q: "Wann ist das Geschäft geschlossen?", options: ["Am Wochenende", "Am Montag", "Jeden Tag", "Am Freitag"], answer: "Am Wochenende", lvl: "A1" },
-  { text: "Max wohnt in Hamburg. Er hat einen Hund und eine Katze.", q: "Welche Tiere hat Max?", options: ["Hund und Katze", "Nur einen Hund", "Nur eine Katze", "Einen Vogel"], answer: "Hund und Katze", lvl: "A1" },
-  { text: "Tom sucht eine Wohnung. Sie soll nicht zu teuer sein und in der Nähe der Uni liegen.", q: "Was ist Tom wichtig?", options: ["Günstig und nah an der Uni", "Groß und teuer", "Im Zentrum", "Mit Garten"], answer: "Günstig und nah an der Uni", lvl: "A2" },
-  { text: "Liebe Lisa, leider kann ich morgen nicht kommen. Ich bin krank. Können wir uns nächste Woche treffen? Grüße, Maria", q: "Warum kann Maria nicht kommen?", options: ["Sie ist krank", "Sie hat keine Zeit", "Sie hat es vergessen", "Sie ist verreist"], answer: "Sie ist krank", lvl: "A2" },
-  { text: "Im Sommer fährt die Familie oft ans Meer. Dieses Jahr bleiben sie aber in den Bergen.", q: "Wohin fährt die Familie dieses Jahr?", options: ["In die Berge", "Ans Meer", "In die Stadt", "Ins Ausland"], answer: "In die Berge", lvl: "A2" },
-  { text: "Immer mehr Menschen fahren mit dem Fahrrad zur Arbeit. Das ist gut für die Gesundheit und die Umwelt. Allerdings fehlen in vielen Städten sichere Radwege.", q: "Was ist ein Problem?", options: ["Es fehlen sichere Radwege", "Es ist ungesund", "Es ist zu teuer", "Es gibt zu viele Räder"], answer: "Es fehlen sichere Radwege", lvl: "B1" },
-  { text: "Viele Studierende arbeiten neben dem Studium. Einerseits brauchen sie das Geld, andererseits bleibt weniger Zeit zum Lernen.", q: "Was ist der Nachteil?", options: ["Weniger Zeit zum Lernen", "Kein Geld", "Keine Arbeit", "Zu viele Kurse"], answer: "Weniger Zeit zum Lernen", lvl: "B1" },
-  { text: "Das Museum bietet ab September kostenlose Führungen an. Eine Anmeldung ist allerdings erforderlich, da die Plätze begrenzt sind.", q: "Was muss man tun?", options: ["Sich anmelden", "Eintritt zahlen", "Nichts tun", "Früh kommen"], answer: "Sich anmelden", lvl: "B1" },
-  { text: "Das neue Gesetz soll den Datenschutz stärken. Kritiker bemängeln jedoch, dass die Umsetzung für kleine Unternehmen zu kompliziert und teuer sei.", q: "Was kritisieren die Kritiker?", options: ["Zu kompliziert für kleine Firmen", "Zu wenig Schutz", "Zu einfach", "Keine Wirkung"], answer: "Zu kompliziert für kleine Firmen", lvl: "B2" },
-  { text: "Die Studie zeigt, dass regelmäßige Bewegung nicht nur die körperliche, sondern auch die geistige Leistungsfähigkeit deutlich verbessert.", q: "Was verbessert Bewegung?", options: ["Körper und Geist", "Nur den Körper", "Nur die Laune", "Den Schlaf"], answer: "Körper und Geist", lvl: "B2" },
-  { text: "Trotz wiederholter Warnungen seitens der Experten ignorierte die Regierung die Risiken, was letztlich zu erheblichen wirtschaftlichen Einbußen führte.", q: "Was war die Folge?", options: ["Erhebliche wirtschaftliche Einbußen", "Keine Folgen", "Die Experten entschuldigten sich", "Die Risiken verschwanden"], answer: "Erhebliche wirtschaftliche Einbußen", lvl: "C1" },
-  { text: "Die zunehmende Automatisierung wirft grundlegende Fragen auf: Inwiefern lässt sich menschliche Arbeit ersetzen, ohne dass soziale Strukturen nachhaltig erschüttert werden?", q: "Worum geht es im Text?", options: ["Folgen der Automatisierung für die Gesellschaft", "Preise von Robotern", "Reparatur von Maschinen", "Freude an der Arbeit"], answer: "Folgen der Automatisierung für die Gesellschaft", lvl: "C1" },
+  { text: "Anna steht jeden Morgen um 7 Uhr auf.", q: "Wann steht Anna auf?", options: ["Um 8 Uhr", "Um 9 Uhr", "Um 6 Uhr", "Um 7 Uhr"], answer: "Um 7 Uhr", lvl: "A1" },
+  { text: "Das Geschäft ist von Montag bis Freitag geöffnet. Am Wochenende ist es geschlossen.", q: "Wann ist das Geschäft geschlossen?", options: ["Am Wochenende", "Am Freitag", "Jeden Tag", "Am Montag"], answer: "Am Wochenende", lvl: "A1" },
+  { text: "Max wohnt in Hamburg. Er hat einen Hund und eine Katze.", q: "Welche Tiere hat Max?", options: ["Hund und Katze", "Nur eine Katze", "Einen Vogel", "Nur einen Hund"], answer: "Hund und Katze", lvl: "A1" },
+  { text: "Tom sucht eine Wohnung. Sie soll nicht zu teuer sein und in der Nähe der Uni liegen.", q: "Was ist Tom wichtig?", options: ["Mit Garten", "Günstig und nah an der Uni", "Im Zentrum", "Groß und teuer"], answer: "Günstig und nah an der Uni", lvl: "A2" },
+  { text: "Liebe Lisa, leider kann ich morgen nicht kommen. Ich bin krank. Können wir uns nächste Woche treffen? Grüße, Maria", q: "Warum kann Maria nicht kommen?", options: ["Sie ist krank", "Sie ist verreist", "Sie hat keine Zeit", "Sie hat es vergessen"], answer: "Sie ist krank", lvl: "A2" },
+  { text: "Im Sommer fährt die Familie oft ans Meer. Dieses Jahr bleiben sie aber in den Bergen.", q: "Wohin fährt die Familie dieses Jahr?", options: ["Ans Meer", "In die Stadt", "Ins Ausland", "In die Berge"], answer: "In die Berge", lvl: "A2" },
+  { text: "Immer mehr Menschen fahren mit dem Fahrrad zur Arbeit. Das ist gut für die Gesundheit und die Umwelt. Allerdings fehlen in vielen Städten sichere Radwege.", q: "Was ist ein Problem?", options: ["Es ist zu teuer", "Es gibt zu viele Räder", "Es ist ungesund", "Es fehlen sichere Radwege"], answer: "Es fehlen sichere Radwege", lvl: "B1" },
+  { text: "Viele Studierende arbeiten neben dem Studium. Einerseits brauchen sie das Geld, andererseits bleibt weniger Zeit zum Lernen.", q: "Was ist der Nachteil?", options: ["Zu viele Kurse", "Weniger Zeit zum Lernen", "Keine Arbeit", "Kein Geld"], answer: "Weniger Zeit zum Lernen", lvl: "B1" },
+  { text: "Das Museum bietet ab September kostenlose Führungen an. Eine Anmeldung ist allerdings erforderlich, da die Plätze begrenzt sind.", q: "Was muss man tun?", options: ["Eintritt zahlen", "Nichts tun", "Früh kommen", "Sich anmelden"], answer: "Sich anmelden", lvl: "B1" },
+  { text: "Das neue Gesetz soll den Datenschutz stärken. Kritiker bemängeln jedoch, dass die Umsetzung für kleine Unternehmen zu kompliziert und teuer sei.", q: "Was kritisieren die Kritiker?", options: ["Keine Wirkung", "Zu einfach", "Zu kompliziert für kleine Firmen", "Zu wenig Schutz"], answer: "Zu kompliziert für kleine Firmen", lvl: "B2" },
+  { text: "Die Studie zeigt, dass regelmäßige Bewegung nicht nur die körperliche, sondern auch die geistige Leistungsfähigkeit deutlich verbessert.", q: "Was verbessert Bewegung?", options: ["Nur den Körper", "Den Schlaf", "Körper und Geist", "Nur die Laune"], answer: "Körper und Geist", lvl: "B2" },
+  { text: "Trotz wiederholter Warnungen seitens der Experten ignorierte die Regierung die Risiken, was letztlich zu erheblichen wirtschaftlichen Einbußen führte.", q: "Was war die Folge?", options: ["Erhebliche wirtschaftliche Einbußen", "Keine Folgen", "Die Risiken verschwanden", "Die Experten entschuldigten sich"], answer: "Erhebliche wirtschaftliche Einbußen", lvl: "C1" },
+  { text: "Die zunehmende Automatisierung wirft grundlegende Fragen auf: Inwiefern lässt sich menschliche Arbeit ersetzen, ohne dass soziale Strukturen nachhaltig erschüttert werden?", q: "Worum geht es im Text?", options: ["Freude an der Arbeit", "Folgen der Automatisierung für die Gesellschaft", "Reparatur von Maschinen", "Preise von Robotern"], answer: "Folgen der Automatisierung für die Gesellschaft", lvl: "C1" },
 ];
 
 const LVL_ORDER = { A1: 1, A2: 2, B1: 3, B2: 4, C1: 5 };
@@ -3617,7 +3723,12 @@ function samplePT(bank, n) {
   for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
   const picked = arr.slice(0, n);
   picked.sort(function (a, b) { return LVL_ORDER[a.lvl] - LVL_ORDER[b.lvl]; });
-  return picked;
+  // 每題選項再洗牌（答案位置分散，「以上皆非」也不固定）
+  return picked.map(function (q) {
+    const opts = [...q.options];
+    for (let i = opts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = opts[i]; opts[i] = opts[j]; opts[j] = t; }
+    return Object.assign({}, q, { options: opts });
+  });
 }
 
 function PlacementScreen({ apiKey }) {
@@ -3832,6 +3943,12 @@ function PlacementScreen({ apiKey }) {
           );
         })}
       </div>
+
+      {chosen && q.correct && (
+        <div style={{ marginTop: 14, background: "#EEF2FF", border: "1.5px solid #818CF8", borderRadius: 12, padding: "12px 16px", fontSize: 15, color: "#3730A3", lineHeight: 1.7 }}>
+          ✍️ 正確答案是：<b style={{ color: "#4F46E5" }}>{q.correct}</b>
+        </div>
+      )}
 
       {chosen && (
         <button onClick={next} style={{ marginTop: 22, width: "100%", background: "linear-gradient(135deg, #7C3AED, #EC4899)", color: "#fff", border: "none", borderRadius: 16, padding: "15px", fontSize: 18, fontWeight: 900, cursor: "pointer" }}>
@@ -4132,6 +4249,78 @@ const PRONOUNCE_RULES = [
       { de: "machen", zh: "做", tip: "ch 喉音（a 後）" },
       { de: "groß", zh: "大的", tip: "ß 讀 ss，o 拉長" },
       { de: "Milch", zh: "牛奶", tip: "ch 輕音 ç" },
+    ],
+  },
+  {
+    id: "ie-ei", emoji: "🔑", title: "ie vs ei（最容易搞混！）", color: "#6366F1",
+    rule: "這是中文母語者最常錯的！口訣：「看後面那個字母」。ie 唸長音「一」(ee)；ei 唸「愛」(ai)。記法：ei 的 i 在後→唸字母 i 的名字「ai」；ie 的 e 在後→唸字母 e 的名字「ee」。",
+    words: [
+      { de: "die", zh: "這/那(冠詞)", tip: "ie → 長音「迪」(dee)" },
+      { de: "Liebe", zh: "愛", tip: "ie → 「立-be」(ee 音)" },
+      { de: "vier", zh: "四", tip: "ie → 「fee-a」" },
+      { de: "ein", zh: "一個", tip: "ei → 「愛n」(ain)" },
+      { de: "mein", zh: "我的", tip: "ei → 「賣n」(main)" },
+      { de: "Arbeit", zh: "工作", tip: "ei → 「-bait」" },
+    ],
+  },
+  {
+    id: "eu-au", emoji: "🌈", title: "eu / äu / au 雙母音", color: "#F59E0B",
+    rule: "eu 和 äu 都唸「oi（喔伊）」；au 唸「ao（嗷）」。這三個雙母音很常見，唸對了一下子就道地。",
+    words: [
+      { de: "neu", zh: "新的", tip: "eu → 「noi」" },
+      { de: "Deutsch", zh: "德語", tip: "eu → 「doitsch」" },
+      { de: "Häuser", zh: "房子(複)", tip: "äu → 「hoi-za」" },
+      { de: "Auto", zh: "汽車", tip: "au → 「ao-to」" },
+      { de: "Frau", zh: "女士", tip: "au → 「frao」" },
+      { de: "laufen", zh: "跑", tip: "au → 「lao-fen」" },
+    ],
+  },
+  {
+    id: "long-vowel", emoji: "📏", title: "長音規則：aa/ee/oo・母音+h", color: "#10B981",
+    rule: "母音拉長的兩種信號：①雙寫母音 aa/ee/oo；②母音後面跟一個不發音的 h（h 只負責拉長前面的音，自己不出聲）。",
+    words: [
+      { de: "Haar", zh: "頭髮", tip: "aa → 長「a—」" },
+      { de: "See", zh: "湖/海", tip: "ee → 長「e—」" },
+      { de: "Boot", zh: "船", tip: "oo → 長「o—」" },
+      { de: "gehen", zh: "走", tip: "eh → h 不發音，e 拉長" },
+      { de: "Uhr", zh: "鐘點", tip: "uh → 「u—a」h 不發音" },
+      { de: "Bahn", zh: "鐵路", tip: "ah → 長「a—」" },
+    ],
+  },
+  {
+    id: "consonant-combo", emoji: "🧩", title: "子音組合：sch・ng・tz・pf・qu・ph", color: "#EC4899",
+    rule: "德語特有的子音組合：sch=英語 sh「許」；ng=鼻音「嗯」(不加 g);tz=「ts」;pf=p 和 f 連發;qu=「kv」;ph=「f」。",
+    words: [
+      { de: "Schule", zh: "學校", tip: "sch → 「許-」" },
+      { de: "Tisch", zh: "桌子", tip: "sch → 「-許」" },
+      { de: "singen", zh: "唱歌", tip: "ng → 鼻音，不唸出 g" },
+      { de: "Katze", zh: "貓", tip: "tz → 「ka-tse」" },
+      { de: "Apfel", zh: "蘋果", tip: "pf → p+f 連發" },
+      { de: "Quelle", zh: "泉源", tip: "qu → 「kv-」" },
+    ],
+  },
+  {
+    id: "v-w-z-j", emoji: "🔀", title: "字母陷阱：v・w・z・j・s（和英語不同！）", color: "#8B5CF6",
+    rule: "這幾個字母發音和英語完全不同，是經典陷阱：v 唸「f」;w 唸英語的「v」;z 唸「ts」;j 唸「y(耶)」;母音前的 s 唸「z」。",
+    words: [
+      { de: "Vater", zh: "父親", tip: "v → 「f」→ fa-ta" },
+      { de: "Wasser", zh: "水", tip: "w → 英語 v → va-sa" },
+      { de: "Zeit", zh: "時間", tip: "z → 「ts」→ tsait" },
+      { de: "ja", zh: "是", tip: "j → 「y」→ ya" },
+      { de: "Sonne", zh: "太陽", tip: "母音前 s → 「z」→ zo-ne" },
+      { de: "sieben", zh: "七", tip: "s → 「z」→ zee-ben" },
+    ],
+  },
+  {
+    id: "endings", emoji: "🔚", title: "詞尾發音：-er・-en・-e・-ig・-b/d/g 清化", color: "#0D9488",
+    rule: "詞尾常弱化或清化：-er 唸近似「a」;詞尾 -en 的 e 常省略;詞尾 -ig 唸「ich(輕 ç)」;詞尾的 b/d/g 會清化成 p/t/k。",
+    words: [
+      { de: "Lehrer", zh: "老師", tip: "-er → 「le-ra」" },
+      { de: "Vater", zh: "父親", tip: "-er → 「fa-ta」" },
+      { de: "haben", zh: "有", tip: "-en → 「ha-bn」e 弱化" },
+      { de: "wichtig", zh: "重要的", tip: "-ig → 「-ich」輕音" },
+      { de: "Tag", zh: "日子", tip: "詞尾 g → 清化成「k」→ tak" },
+      { de: "und", zh: "和", tip: "詞尾 d → 清化成「t」→ unt" },
     ],
   },
 ];
