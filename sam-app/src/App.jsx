@@ -3636,6 +3636,13 @@ function CompanionScreen({ onPick }) {
 
 // ══ 德語水平測評・大題庫（全德文，無中文）・每次隨機抽題 ══
 const BANK_GRAMMAR = [
+  // E 為干擾項（答案是正常選項，E 是陷阱，讓學生不敢亂選 E）
+  { q: "Ich ___ einen Bruder.（有）", options: ["habe", "bin", "wird", "hat", "以上皆非"], answer: "habe", lvl: "A1" },
+  { q: "Wir fahren ___ Italien.（去）", options: ["nach", "aus", "von", "bei", "以上皆非"], answer: "nach", lvl: "A2" },
+  { q: "Das Auto ist ___ als das Fahrrad.（更快）", options: ["schneller", "schnell", "am schnellsten", "schnellere", "以上皆非"], answer: "schneller", lvl: "A2" },
+  { q: "___ du mir helfen?（你能…嗎）", options: ["Kannst", "Kann", "Könnt", "Könnte", "以上皆非"], answer: "Kannst", lvl: "A2" },
+  { q: "Ich interessiere mich ___ Kunst.", options: ["für", "auf", "an", "über", "以上皆非"], answer: "für", lvl: "B1" },
+
   // 形容詞詞尾
   { q: "Ich trinke ___ Kaffee.（heiß，無冠詞陽性第四格）", options: ["heißen", "heiße", "heißem", "heißer"], answer: "heißen", lvl: "A2" },
   { q: "Das ist ein ___ Auto.（neu，不定冠詞中性）", options: ["neues", "neue", "neuen", "neuer"], answer: "neues", lvl: "A2" },
@@ -3684,6 +3691,11 @@ const BANK_GRAMMAR = [
 ];
 
 const BANK_LISTEN = [
+  { tts: "Ich komme um Viertel nach drei.", q: "Wann kommt die Person?", options: ["um 15:15", "um 15:45", "um 14:15", "um 03:30"], answer: "um 15:15", lvl: "A2" },
+  { tts: "Nehmen Sie die zweite Straße links, dann sehen Sie die Bank.", q: "Wo ist die Bank?", options: ["zweite Straße links", "erste Straße rechts", "geradeaus", "neben der Post"], answer: "zweite Straße links", lvl: "A2" },
+  { tts: "Heute koche ich nicht, wir bestellen eine Pizza.", q: "Was machen sie zum Essen?", options: ["sie bestellen Pizza", "sie kochen", "sie gehen ins Restaurant", "sie essen nichts"], answer: "sie bestellen Pizza", lvl: "A2" },
+  { tts: "Der Chef sagt, die Sitzung beginnt eine halbe Stunde später.", q: "Was passiert mit der Sitzung?", options: ["sie beginnt später", "sie fällt aus", "sie beginnt früher", "sie ist vorbei"], answer: "sie beginnt später", lvl: "B1" },
+  { tts: "Ich würde dir ja gern helfen, aber ich habe leider keine Zeit.", q: "Hilft die Person?", options: ["nein, keine Zeit", "ja, sofort", "ja, morgen", "ja, gern"], answer: "nein, keine Zeit", lvl: "B1" },
   { tts: "Es ist jetzt acht Uhr.", q: "Wie spät ist es?", options: ["Sechs Uhr", "Acht Uhr", "Zehn Uhr", "Zwölf Uhr"], answer: "Acht Uhr", lvl: "A1" },
   { tts: "Mein Name ist Anna. Ich komme aus Wien.", q: "Woher kommt Anna?", options: ["Aus Wien", "Aus Bern", "Aus Berlin", "Aus Bonn"], answer: "Aus Wien", lvl: "A1" },
   { tts: "Heute ist Montag.", q: "Welcher Tag ist heute?", options: ["Freitag", "Montag", "Mittwoch", "Sonntag"], answer: "Montag", lvl: "A1" },
@@ -3702,6 +3714,10 @@ const BANK_LISTEN = [
 ];
 
 const BANK_READ = [
+  { text: "Der Kurs findet jeden Dienstag und Donnerstag von 18 bis 20 Uhr statt.", q: "An welchen Tagen ist der Kurs?", options: ["Dienstag und Donnerstag", "Montag und Mittwoch", "nur Dienstag", "am Wochenende"], answer: "Dienstag und Donnerstag", lvl: "A2" },
+  { text: "Bitte schalten Sie während des Films Ihr Handy aus. Essen und Trinken sind im Saal nicht erlaubt.", q: "Was ist im Saal verboten?", options: ["Essen und Trinken", "Sitzen", "Reden mit Nachbarn", "Filme schauen"], answer: "Essen und Trinken", lvl: "A2" },
+  { text: "Wer einen Sitzplatz reservieren möchte, sollte dies mindestens drei Tage vorher tun, da die Plätze schnell ausgebucht sind.", q: "Wann sollte man reservieren?", options: ["mindestens drei Tage vorher", "am selben Tag", "eine Stunde vorher", "gar nicht"], answer: "mindestens drei Tage vorher", lvl: "B1" },
+  { text: "Obwohl das Unternehmen hohe Gewinne machte, wurden die Löhne der Mitarbeiter nicht erhöht, was zu großer Unzufriedenheit führte.", q: "Warum waren die Mitarbeiter unzufrieden?", options: ["die Löhne stiegen nicht", "die Firma machte Verlust", "sie hatten zu viel Arbeit", "das Büro war zu klein"], answer: "die Löhne stiegen nicht", lvl: "B2" },
   { text: "Anna steht jeden Morgen um 7 Uhr auf.", q: "Wann steht Anna auf?", options: ["Um 8 Uhr", "Um 9 Uhr", "Um 6 Uhr", "Um 7 Uhr"], answer: "Um 7 Uhr", lvl: "A1" },
   { text: "Das Geschäft ist von Montag bis Freitag geöffnet. Am Wochenende ist es geschlossen.", q: "Wann ist das Geschäft geschlossen?", options: ["Am Wochenende", "Am Freitag", "Jeden Tag", "Am Montag"], answer: "Am Wochenende", lvl: "A1" },
   { text: "Max wohnt in Hamburg. Er hat einen Hund und eine Katze.", q: "Welche Tiere hat Max?", options: ["Hund und Katze", "Nur eine Katze", "Einen Vogel", "Nur einen Hund"], answer: "Hund und Katze", lvl: "A1" },
@@ -3740,10 +3756,10 @@ function PlacementScreen({ apiKey }) {
   const [scores, setScores] = useState({ g: 0, l: 0, r: 0 });
   const [lvlHits, setLvlHits] = useState({ A1: 0, A2: 0, B1: 0, B2: 0, C1: 0 });
   // 每次進入隨機抽題（刷新／再測都換一批）
-  const [qg, setQg] = useState(() => samplePT(BANK_GRAMMAR, 12));
-  const [ql, setQl] = useState(() => samplePT(BANK_LISTEN, 8));
-  const [qr, setQr] = useState(() => samplePT(BANK_READ, 10));
-  const reroll = () => { setQg(samplePT(BANK_GRAMMAR, 12)); setQl(samplePT(BANK_LISTEN, 8)); setQr(samplePT(BANK_READ, 10)); };
+  const [qg, setQg] = useState(() => samplePT(BANK_GRAMMAR, 16));
+  const [ql, setQl] = useState(() => samplePT(BANK_LISTEN, 10));
+  const [qr, setQr] = useState(() => samplePT(BANK_READ, 14));
+  const reroll = () => { setQg(samplePT(BANK_GRAMMAR, 16)); setQl(samplePT(BANK_LISTEN, 10)); setQr(samplePT(BANK_READ, 14)); };
 
   const parts = [
     { key: "g", name: "Wortschatz & Grammatik", emoji: "📝", data: qg, color: "#8B5CF6" },
@@ -3812,7 +3828,7 @@ function PlacementScreen({ apiKey }) {
         <div style={{ background: "#fff", border: "1.5px solid #EEE", borderRadius: 16, padding: 20, marginBottom: 16 }}>
           <div style={{ fontWeight: 800, color: "#1F2937", fontSize: 16, marginBottom: 12 }}>📋 測試說明</div>
           {[
-            ["共 30 題", "單字・文法 12 題 ＋ 聽力 8 題 ＋ 閱讀 10 題"],
+            ["共 40 題", "單字・文法 16 題 ＋ 聽力 10 題 ＋ 閱讀 14 題"],
             ["難度遞進", "由淺入深，從 A1 到 C1，誠實作答最準"],
             ["有聽力題", "請先戴好耳機，確認能聽到聲音"],
           ].map(([t, d], i) => (
