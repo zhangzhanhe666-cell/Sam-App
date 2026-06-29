@@ -4142,8 +4142,8 @@ function PronounceScreen({ apiKey }) {
   const [recording, setRecording] = useState(false);
   const [recordedUrl, setRecordedUrl] = useState(null);
   const [recWord, setRecWord] = useState(null);
-  const mediaRef = React.useRef(null);
-  const chunksRef = React.useRef([]);
+  const mediaRef = useRef(null);
+  const chunksRef = useRef([]);
 
   const play = async (text) => {
     setPlaying(text);
