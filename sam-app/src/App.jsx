@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect, useMemo } from "react";
-import { HOMEWORK, HW_SOURCE } from "./homework.js";
-import { READINGS, READING_SOURCE } from "./readings.js";
 
 // ─── COLOUR TOKENS ────────────────────────────────────────────────────────────
 const C = {
@@ -1870,119 +1868,10 @@ const THEME_MAP = {
 };
 function THEME_OF(topic) { return THEME_MAP[topic] || "🌍 Ein Leben lang 人生百態"; }
 // 可分動詞清單 → 顯示分隔點，如 auf|stehen
-const SEPARABLE = {
-  aufstehen: "auf·stehen", einkaufen: "ein·kaufen", einladen: "ein·laden", anrufen: "an·rufen",
-  fernsehen: "fern·sehen", anfangen: "an·fangen", aufhören: "auf·hören", abfahren: "ab·fahren",
-  ankommen: "an·kommen", umsteigen: "um·steigen", umziehen: "um·ziehen", mitbringen: "mit·bringen",
-  einsteigen: "ein·steigen", aussteigen: "aus·steigen", vorstellen: "vor·stellen", zuhören: "zu·hören",
-  mitkommen: "mit·kommen", aufmachen: "auf·machen", zumachen: "zu·machen",
-  // ── 補充：資料中出現、考試常見的可分動詞 ──
-  aufräumen: "auf·räumen", abholen: "ab·holen", anziehen: "an·ziehen", ausziehen: "aus·ziehen",
-  aufpassen: "auf·passen", ausgehen: "aus·gehen", einschlafen: "ein·schlafen", aufwachen: "auf·wachen",
-  mitmachen: "mit·machen", teilnehmen: "teil·nehmen", stattfinden: "statt·finden", vorbeikommen: "vorbei·kommen",
-  zurückkommen: "zurück·kommen", weggehen: "weg·gehen", losfahren: "los·fahren", nachdenken: "nach·denken",
-  ausfüllen: "aus·füllen", abgeben: "ab·geben", anbieten: "an·bieten", vorbereiten: "vor·bereiten",
-  einpacken: "ein·packen", auspacken: "aus·packen", anmachen: "an·machen", ausmachen: "aus·machen",
-  zunehmen: "zu·nehmen", abnehmen: "ab·nehmen", aufschreiben: "auf·schreiben", herstellen: "her·stellen",
-  einkehren: "ein·kehren", ausprobieren: "aus·probieren", weitermachen: "weiter·machen", aufgeben: "auf·geben",
-  zurücktreten: "zurück·treten", absagen: "ab·sagen", aufrufen: "auf·rufen", abschalten: "ab·schalten",
-};
+const SEPARABLE = { aufstehen: "auf·stehen", einkaufen: "ein·kaufen", einladen: "ein·laden", anrufen: "an·rufen", fernsehen: "fern·sehen", anfangen: "an·fangen", aufhören: "auf·hören", abfahren: "ab·fahren", ankommen: "an·kommen", umsteigen: "um·steigen", umziehen: "um·ziehen", mitbringen: "mit·bringen", einsteigen: "ein·steigen", aussteigen: "aus·steigen", vorstellen: "vor·stellen", zuhören: "zu·hören", mitkommen: "mit·kommen", aufmachen: "auf·machen", zumachen: "zu·machen" };
 function sepLabel(de) {
   const w = de.replace(/^(der|die|das)\s+/, "").trim();
   return SEPARABLE[w] || null;
-}
-
-// 名詞複數表 → 學員背單字時連複數一起記（die + 複數形）。常變音者特別重要。
-const PLURALS = {
-  // 人 & 家庭
-  Name: "Namen", Vorname: "Vornamen", Mann: "Männer", Frau: "Frauen", Vater: "Väter", Mutter: "Mütter",
-  Sohn: "Söhne", Tochter: "Töchter", Bruder: "Brüder", Schwester: "Schwestern", Kind: "Kinder",
-  Großmutter: "Großmütter", Großvater: "Großväter", Freund: "Freunde", Freundin: "Freundinnen",
-  Person: "Personen", Leute: "Leute", Mensch: "Menschen", Familie: "Familien", Adresse: "Adressen",
-  // 日常 & 物
-  Tisch: "Tische", Stuhl: "Stühle", Buch: "Bücher", Apfel: "Äpfel", Auto: "Autos", Haus: "Häuser",
-  Stadt: "Städte", Land: "Länder", Tag: "Tage", Nacht: "Nächte", Woche: "Wochen", Monat: "Monate",
-  Jahr: "Jahre", Stunde: "Stunden", Minute: "Minuten", Zimmer: "Zimmer", Wohnung: "Wohnungen",
-  Tür: "Türen", Fenster: "Fenster", Bett: "Betten", Lampe: "Lampen", Stift: "Stifte", Tasche: "Taschen",
-  Handy: "Handys", Foto: "Fotos", Brille: "Brillen", Schlüssel: "Schlüssel", Uhr: "Uhren",
-  // 食物
-  Brot: "Brote", Brötchen: "Brötchen", Wurst: "Würste", Käse: "Käse", Ei: "Eier", Kuchen: "Kuchen",
-  Kartoffel: "Kartoffeln", Tomate: "Tomaten", Gemüse: "Gemüse", Obst: "Obst", Getränk: "Getränke",
-  // 工作 & 學習
-  Arbeit: "Arbeiten", Beruf: "Berufe", Büro: "Büros", Termin: "Termine", Kollege: "Kollegen",
-  Schule: "Schulen", Lehrer: "Lehrer", Lehrerin: "Lehrerinnen", Kurs: "Kurse", Frage: "Fragen",
-  Antwort: "Antworten", Wort: "Wörter", Sprache: "Sprachen", Übung: "Übungen", Aufgabe: "Aufgaben",
-  // 旅行 & 城市
-  Zug: "Züge", Bus: "Busse", Bahn: "Bahnen", Flughafen: "Flughäfen", Hotel: "Hotels", Reise: "Reisen",
-  Straße: "Straßen", Platz: "Plätze", Park: "Parks", Markt: "Märkte", Geschäft: "Geschäfte",
-  // 動物 & 自然
-  Hund: "Hunde", Katze: "Katzen", Vogel: "Vögel", Tier: "Tiere", Baum: "Bäume", Blume: "Blumen",
-  Wald: "Wälder", Berg: "Berge", See: "Seen", Fluss: "Flüsse", Insel: "Inseln",
-};
-// 從 "der Apfel" 取出 "Apfel"，查複數
-function pluralLabel(de) {
-  const m = de.match(/^(der|die|das)\s+(.+)$/);
-  if (!m) return null;            // 不是名詞（動詞/形容詞）→ 無複數
-  const noun = m[2].trim();
-  if (de.startsWith("die ") && PLURALS[noun] === noun) return null; // 不可數/單複同形時略過顯示
-  return PLURALS[noun] ? `die ${PLURALS[noun]}` : null;
-}
-// 規則動詞的 er/sie/es 變位提示（不規則由 IRREG_3RD 覆蓋）
-const IRREG_3RD = {
-  sein: "ist", haben: "hat", werden: "wird", essen: "isst", geben: "gibt", nehmen: "nimmt",
-  sprechen: "spricht", lesen: "liest", sehen: "sieht", fahren: "fährt", schlafen: "schläft",
-  laufen: "läuft", treffen: "trifft", helfen: "hilft", wissen: "weiß", fangen: "fängt",
-  tragen: "trägt", waschen: "wäscht", halten: "hält", lassen: "lässt", können: "kann",
-  müssen: "muss", wollen: "will", dürfen: "darf", mögen: "mag", möchten: "möchte",
-};
-// 判斷是否為動詞（簡單啟發：以 -en/-eln/-ern 結尾且不是名詞冠詞開頭）
-function verbLabel(de) {
-  if (/^(der|die|das)\s/.test(de)) return null;
-  const w = de.trim();
-  if (!/(en|eln|ern|n)$/.test(w)) return null;
-  if (IRREG_3RD[w]) return `er ${IRREG_3RD[w]}`;          // 不規則：直接給第三人稱
-  if (SEPARABLE[w]) return null;                          // 可分動詞已另外標「可分」，不重複
-  // 規則動詞：詞幹 + t（去掉 -en）
-  const stem = w.replace(/en$/, "").replace(/(eln|ern)$/, "$1".replace("ln", "l").replace("rn", "r"));
-  if (!/en$/.test(w)) return null;                        // 只對 -en 結尾給規則提示，避免誤判
-  const base = w.replace(/en$/, "");
-  // 詞幹以 t/d/chn/ffn/gn 結尾要加 -et
-  const e = /(t|d|chn|ffn|gn|tm)$/.test(base) ? "et" : "t";
-  return `er ${base}${e}`;
-}
-
-// 🔊 點單字聽發音（用瀏覽器德語語音，免金鑰；手機也能用）
-function SpeakBtn({ text, big = false }) {
-  return (
-    <button
-      onClick={(e) => { e.stopPropagation(); speak(text); }}
-      title="聽發音"
-      style={{
-        background: big ? "#EDE9FE" : "none", border: "none", cursor: "pointer",
-        color: "#7C3AED", fontSize: big ? 20 : 15, lineHeight: 1,
-        padding: big ? "8px 14px" : "2px 4px", borderRadius: big ? 14 : 6,
-        fontWeight: 800, display: "inline-flex", alignItems: "center", gap: 4,
-      }}>
-      🔊{big && <span style={{ fontSize: 13 }}>聽發音</span>}
-    </button>
-  );
-}
-
-// 單字語法標籤：可分動詞 / 名詞複數 / 動詞第三人稱變位
-function WordTags({ de }) {
-  const sep = sepLabel(de);
-  const plur = pluralLabel(de);
-  const verb = verbLabel(de);
-  const tag = (text, bg, col) => (
-    <span style={{ fontSize: 10.5, fontWeight: 800, color: col, background: bg, borderRadius: 6, padding: "1px 7px", whiteSpace: "nowrap" }}>{text}</span>
-  );
-  return (
-    <>
-      {sep && tag(`可分 ${sep}`, "#CCFBF1", "#0D9488")}
-      {plur && tag(`複 ${plur}`, "#FEF3C7", "#B45309")}
-      {verb && tag(verb, "#FCE7F3", "#BE185D")}
-    </>
-  );
 }
 
 function VocabModule({ myWords = [], onAddWord, onDeleteWord }) {
@@ -2041,7 +1930,6 @@ function VocabModule({ myWords = [], onAddWord, onDeleteWord }) {
           {!flipped ? (
             <>
               <div style={{ fontSize: 34, fontWeight: 900, color: C.purple, marginBottom: 8 }}>{w.de}</div>
-              <div style={{ marginBottom: 8 }}><SpeakBtn text={w.de.replace(/^(der|die|das)\s+/, "")} big /></div>
               <Badge text={w.level} color={w.level === "A1" ? C.green : C.amber} />
               <div style={{ fontSize: 13, color: "#9CA3AF", marginTop: 12 }}>點擊看中文 👆</div>
             </>
@@ -2049,7 +1937,6 @@ function VocabModule({ myWords = [], onAddWord, onDeleteWord }) {
             <>
               <div style={{ fontSize: 28, fontWeight: 800, color: C.pink, marginBottom: 6 }}>{w.zh}</div>
               <div style={{ fontSize: 15, color: "#6B7280" }}>{w.de}</div>
-              <div style={{ margin: "8px 0", display: "flex", gap: 6, justifyContent: "center", flexWrap: "wrap" }}><WordTags de={w.de} /></div>
               {w.ex && <div style={{ fontSize: 14, color: "#7C3AED", marginTop: 10, fontStyle: "italic" }}>{w.ex}</div>}
               <div style={{ fontSize: 12, color: "#9CA3AF", marginTop: 8 }}>{w.topic}</div>
             </>
@@ -2139,11 +2026,7 @@ function VocabModule({ myWords = [], onAddWord, onDeleteWord }) {
                 {myWords.map((w, i) => (
                   <div key={i} style={{ padding: "9px 10px", borderBottom: i < myWords.length - 1 ? "1px solid #F5F0FF" : "none" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <div style={{ fontWeight: 700, color: "#1F2937", fontSize: 14, display: "flex", alignItems: "center", gap: 4 }}>
-                        <SpeakBtn text={w.de.replace(/^(der|die|das)\s+/, "")} />
-                        <span>{w.de}</span>
-                        <WordTags de={w.de} />
-                      </div>
+                      <div style={{ fontWeight: 700, color: "#1F2937", fontSize: 14 }}>{w.de}</div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <span style={{ color: hideZh ? "transparent" : "#7C3AED", fontSize: 14, background: hideZh ? "#F0EBF8" : "none", borderRadius: 4 }}>{w.zh}</span>
                         <button onClick={() => onDeleteWord && onDeleteWord(i)} style={{ background: "none", border: "none", color: "#EF4444", cursor: "pointer", fontSize: 16 }}>🗑️</button>
@@ -2174,10 +2057,9 @@ function VocabModule({ myWords = [], onAddWord, onDeleteWord }) {
               {topics[tn].map((w, i) => (
                 <div key={i} style={{ padding: "8px 10px", borderBottom: i < topics[tn].length - 1 ? "1px solid #F5F0FF" : "none" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div style={{ fontWeight: 700, color: "#1F2937", fontSize: 14, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
-                      <SpeakBtn text={w.de.replace(/^(der|die|das)\s+/, "")} />
-                      <span>{w.de}</span>
-                      <WordTags de={w.de} />
+                    <div style={{ fontWeight: 700, color: "#1F2937", fontSize: 14 }}>
+                      {w.de}
+                      {sepLabel(w.de) && <span style={{ marginLeft: 8, fontSize: 11, fontWeight: 800, color: "#0D9488", background: "#CCFBF1", borderRadius: 6, padding: "1px 7px" }}>可分 {sepLabel(w.de)}</span>}
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ color: hideZh ? "transparent" : "#7C3AED", fontSize: 14, background: hideZh ? "#F0EBF8" : "none", borderRadius: 4, minWidth: 40, textAlign: "right" }}>{w.zh}</span>
@@ -2197,11 +2079,7 @@ function VocabModule({ myWords = [], onAddWord, onDeleteWord }) {
         <div style={{ background: "#fff", borderRadius: 14, padding: 10, border: "1px solid #F0EBF8" }}>
           {alphaList.map((w, i) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 10px", borderBottom: i < alphaList.length - 1 ? "1px solid #F5F0FF" : "none" }}>
-              <div style={{ fontWeight: 700, color: "#1F2937", fontSize: 14, display: "flex", alignItems: "center", flexWrap: "wrap", gap: 4 }}>
-                <SpeakBtn text={w.de.replace(/^(der|die|das)\s+/, "")} />
-                <span>{w.de}</span>
-                <WordTags de={w.de} />
-              </div>
+              <div style={{ fontWeight: 700, color: "#1F2937", fontSize: 14 }}>{w.de}</div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ color: hideZh ? "transparent" : "#7C3AED", fontSize: 14, background: hideZh ? "#F0EBF8" : "none", borderRadius: 4, minWidth: 40, textAlign: "right" }}>{w.zh}</span>
                 <Badge text={w.level} color={w.level === "A1" ? C.green : C.amber} />
@@ -4021,7 +3899,7 @@ export default function App() {
   };
 
   // 受保護的內容頁籤（未登入點擊會被攔截）
-  const PROTECTED = ["vocab", "grammar", "listen", "read", "write", "speak", "exam", "system", "review", "stats", "guide", "threemin", "placement", "companion", "extend", "pronounce", "homework", "extread"];
+  const PROTECTED = ["vocab", "grammar", "listen", "read", "write", "speak", "exam", "system", "review", "stats", "guide", "threemin", "placement", "companion", "extend", "pronounce"];
 
   // 切換頁籤：未登入且點受保護內容 → 提示登入
   const go = (target) => {
@@ -4083,8 +3961,6 @@ export default function App() {
         {tab === "home" && <HomeScreen onPick={go} user={user} myWords={myWords} onSpeakWord={(t) => speak(t)} />}
         {tab === "vocab" && <VocabModule myWords={myWords} onAddWord={addWord} onDeleteWord={deleteWord} />}
         {tab === "grammar" && <GrammarModule aiKey={aiKey} />}
-        {tab === "homework" && <HomeworkScreen />}
-        {tab === "extread" && <ReadingHubScreen />}
         {tab === "extend" && <ExtendScreen />}
         {tab === "pronounce" && <PronounceScreen apiKey={apiKey} />}
         {tab === "listen" && <ListeningModule apiKey={apiKey} onSetApiKey={setApiKey} aiKey={aiKey} onSetAiKey={setAiKey} />}
@@ -4164,332 +4040,6 @@ const GLOSS_EXTRA = {
   mein: "我的", dein: "你的", dieser: "這個", welcher: "哪個", Tisch: "桌子", Tische: "桌子(複)", Apfel: "蘋果", Äpfel: "蘋果(複)", Bruder: "兄弟", Brüder: "兄弟(複)", stehen: "站/起", auf: "(可分前綴)上", einkaufen: "購物", aufstehen: "起床", können: "能", müssen: "必須", wollen: "想要", wo: "在哪", wohin: "去哪", woher: "從哪來", wann: "何時", fahren: "開/搭乘", treffen: "見面", Buch: "書", Bücher: "書(複)", Frau: "女人", Frauen: "女人(複)", Kind: "孩子", Kinder: "孩子(複)", Auto: "車", Autos: "車(複)", Stift: "筆", sprechen: "說話", Sport: "運動", spielen: "玩", rot: "紅", Tür: "門", schön: "美", über: "在上方", hören: "聽", ich: "我", machen: "做", Milch: "牛奶",
 };
 
-// ─── 課後作業（互動練習）────────────────────────────────────────────────────
-// 把 PDF 課本拆成可點擊作答的練習，依 A1 / A2 分級
-function normAns(s) {
-  return String(s).trim().toLowerCase()
-    .replace(/[’'`]/g, "'")
-    .replace(/\s*…\s*/g, " ").replace(/\s*\.\.\.\s*/g, " ")
-    .replace(/\s+/g, " ");
-}
-function fillCorrect(userVal, answer) {
-  const arr = Array.isArray(answer) ? answer : [answer];
-  return arr.some(a => normAns(a) === normAns(userVal || ""));
-}
-
-// 連連看
-function MatchExercise({ ex, locked, state, onChange }) {
-  const sel = state || { pick: null, map: {} };
-  const setSel = (next) => onChange(next);
-  const usedRight = new Set(Object.values(sel.map));
-  const click = (side, idx) => {
-    if (locked) return;
-    if (side === "left") {
-      setSel({ ...sel, pick: sel.pick === idx ? null : idx });
-    } else {
-      if (sel.pick === null) return;
-      const map = { ...sel.map };
-      // 移除右項先前的配對
-      Object.keys(map).forEach(k => { if (map[k] === idx) delete map[k]; });
-      map[sel.pick] = idx;
-      setSel({ pick: null, map });
-    }
-  };
-  return (
-    <div>
-      {ex.zh && <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10 }}>{ex.zh}</div>}
-      <div style={{ display: "flex", gap: 10 }}>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          {ex.left.map((l, i) => {
-            const paired = sel.map[i] !== undefined;
-            let bg = "#fff", border = "2px solid #E9D5FF", col = "#374151";
-            if (sel.pick === i) { bg = "#EDE9FE"; border = `2px solid ${C.purple}`; }
-            if (locked) {
-              const ok = sel.map[i] === ex.pairs[i];
-              bg = ok ? "#D1FAE5" : "#FEE2E2"; border = `2px solid ${ok ? C.green : C.red}`; col = ok ? "#065F46" : "#991B1B";
-            } else if (paired) { bg = "#F5F3FF"; }
-            return (
-              <button key={i} disabled={locked} onClick={() => click("left", i)}
-                style={{ background: bg, border, color: col, borderRadius: 10, padding: "10px 8px", fontSize: 13, fontWeight: 600, cursor: locked ? "default" : "pointer", textAlign: "left", position: "relative" }}>
-                {l} {paired && <span style={{ color: C.purple, fontWeight: 800 }}>→ {sel.map[i] + 1}</span>}
-              </button>
-            );
-          })}
-        </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          {ex.right.map((r, j) => {
-            let bg = "#fff", border = "2px solid #FBCFE8", col = "#374151";
-            if (usedRight.has(j) && !locked) { bg = "#FCE7F3"; }
-            return (
-              <button key={j} disabled={locked} onClick={() => click("right", j)}
-                style={{ background: bg, border, color: col, borderRadius: 10, padding: "10px 8px", fontSize: 13, fontWeight: 600, cursor: locked ? "default" : "pointer", textAlign: "left" }}>
-                <b style={{ color: C.pink }}>{j + 1}.</b> {r}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-      {!locked && <div style={{ fontSize: 11, color: "#C4B5FD", marginTop: 8 }}>👆 先點左邊一項，再點右邊配對的答案</div>}
-      {locked && (
-        <div style={{ marginTop: 10, background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#166534", lineHeight: 1.7 }}>
-          ✅ 正確配對：{ex.left.map((l, i) => `${l.replace(/ ?___/, "")} → ${ex.right[ex.pairs[i]]}`).join("；")}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function HomeworkRunner({ hw, onBack, source = HW_SOURCE }) {
-  const [state, setState] = useState({}); // idx -> 答案
-  const [submitted, setSubmitted] = useState(false);
-
-  const total = hw.exercises.length;
-  const isMatch = (ex) => ex.type === "match";
-
-  const answered = hw.exercises.filter((ex, i) => {
-    if (ex.type === "match") { const s = state[i]; return s && Object.keys(s.map || {}).length === ex.left.length; }
-    return state[i] !== undefined && state[i] !== "" ;
-  }).length;
-  const allAnswered = answered === total;
-
-  const isExCorrect = (ex, i) => {
-    if (ex.type === "mc") return state[i] === ex.answer;
-    if (ex.type === "multi") { const got = state[i] || []; return ex.answers.length === got.length && ex.answers.every(a => got.includes(a)); }
-    if (ex.type === "fill") return fillCorrect(state[i], ex.answer);
-    if (ex.type === "match") { const m = (state[i] || {}).map || {}; return ex.left.every((_, k) => m[k] === ex.pairs[k]); }
-    return false;
-  };
-  const score = submitted ? hw.exercises.filter((ex, i) => isExCorrect(ex, i)).length : 0;
-
-  const lvlColor = hw.level === "A1" ? C.green : C.blue;
-
-  return (
-    <div>
-      <button onClick={onBack} style={{ background: "none", border: "none", color: C.purple, cursor: "pointer", fontWeight: 700, marginBottom: 10 }}>← 返回作業清單</button>
-      <h2 style={{ fontWeight: 900, color: "#1F2937", fontSize: 19, marginBottom: 4 }}>{hw.emoji} {hw.title}</h2>
-      <div style={{ display: "flex", gap: 6, marginBottom: 4 }}>
-        <Badge text={hw.level} color={lvlColor} />
-        <Badge text={`${total} 題`} color="#6B7280" />
-      </div>
-      <SourceBadge text={hw.src || source} />
-      <div style={{ fontSize: 13, color: "#6B7280", marginBottom: hw.note ? 8 : 16, lineHeight: 1.6 }}>{hw.desc}</div>
-      {hw.note && (
-        <div style={{ marginBottom: 16, background: "#EFF6FF", border: "1.5px solid #93C5FD", borderRadius: 10, padding: "9px 13px", fontSize: 12.5, color: "#1E40AF", lineHeight: 1.6 }}>
-          🎯 {hw.note}
-        </div>
-      )}
-
-      {hw.passage && (
-        <Card color={lvlColor}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <div style={{ fontSize: 13, fontWeight: 800, color: lvlColor }}>📄 閱讀材料{hw.passageTitle ? `・${hw.passageTitle}` : ""}</div>
-            <button onClick={() => speak(hw.passage)} style={{ background: lvlColor + "22", color: lvlColor, border: "none", borderRadius: 14, padding: "5px 12px", fontSize: 12, fontWeight: 800, cursor: "pointer", whiteSpace: "nowrap" }}>🔊 朗讀全文</button>
-          </div>
-          <div style={{ background: lvlColor + "0D", borderRadius: 10, padding: "14px 16px", fontSize: 14.5, lineHeight: 1.9, color: "#1F2937", whiteSpace: "pre-line" }}>
-            <GlossInline text={hw.passage} />
-          </div>
-          {hw.passageZh && (
-            <div style={{ marginTop: 10, fontSize: 12.5, color: "#9CA3AF", lineHeight: 1.7 }}>💬 大意：{hw.passageZh}</div>
-          )}
-          <div style={{ marginTop: 8, fontSize: 11.5, color: "#C4B5FD" }}>👆 點德文單字看中文翻譯　·　🔊 可聽全文發音</div>
-        </Card>
-      )}
-
-      {hw.exercises.map((ex, i) => {
-        const wrong = submitted && !isExCorrect(ex, i);
-        const cardColor = submitted ? (isExCorrect(ex, i) ? C.green : C.red) : lvlColor;
-        return (
-          <Card key={i} color={cardColor}>
-            <div style={{ display: "flex", gap: 6, alignItems: "baseline", marginBottom: 2 }}>
-              <span style={{ fontWeight: 900, color: cardColor }}>{i + 1}.</span>
-              <span style={{ fontWeight: 700, color: "#1F2937", fontSize: 15 }}>{ex.q || ex.zh}</span>
-            </div>
-            {ex.q && ex.zh && <div style={{ fontSize: 12, color: "#9CA3AF", marginBottom: 10, marginLeft: 18 }}>{ex.zh}</div>}
-
-            {ex.type === "mc" && (
-              <div style={{ display: "grid", gridTemplateColumns: ex.options.length > 2 ? "1fr 1fr" : "1fr 1fr", gap: 8, marginTop: 6 }}>
-                {ex.options.map(opt => {
-                  let bg = "#fff", border = `2px solid ${lvlColor}33`, col = "#374151";
-                  if (state[i] === opt && !submitted) { bg = lvlColor + "22"; border = `2px solid ${lvlColor}`; }
-                  if (submitted) {
-                    if (opt === ex.answer) { bg = "#D1FAE5"; border = `2px solid ${C.green}`; col = "#065F46"; }
-                    else if (opt === state[i]) { bg = "#FEE2E2"; border = `2px solid ${C.red}`; col = "#991B1B"; }
-                  }
-                  return (
-                    <button key={opt} disabled={submitted} onClick={() => setState(s => ({ ...s, [i]: opt }))}
-                      style={{ background: bg, border, color: col, borderRadius: 10, padding: "10px 8px", fontSize: 13, fontWeight: 600, cursor: submitted ? "default" : "pointer" }}>
-                      {opt}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {ex.type === "fill" && (
-              <div style={{ marginTop: 6 }}>
-                <input
-                  value={state[i] || ""}
-                  disabled={submitted}
-                  onChange={e => setState(s => ({ ...s, [i]: e.target.value }))}
-                  placeholder={ex.hint ? `提示：${ex.hint}` : "輸入答案…"}
-                  style={{
-                    width: "100%", boxSizing: "border-box", padding: "11px 14px", fontSize: 15,
-                    borderRadius: 10, outline: "none",
-                    border: submitted ? `2px solid ${isExCorrect(ex, i) ? C.green : C.red}` : `2px solid ${lvlColor}55`,
-                    background: submitted ? (isExCorrect(ex, i) ? "#F0FDF4" : "#FEF2F2") : "#fff",
-                    color: "#1F2937", fontWeight: 700,
-                  }}
-                />
-                {submitted && !isExCorrect(ex, i) && (
-                  <div style={{ fontSize: 13, color: C.green, marginTop: 6, fontWeight: 700 }}>
-                    ✅ 正解：{(Array.isArray(ex.answer) ? ex.answer[0] : ex.answer)}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {ex.type === "match" && (
-              <MatchExercise ex={ex} locked={submitted} state={state[i]} onChange={(v) => setState(s => ({ ...s, [i]: v }))} />
-            )}
-
-            {submitted && ex.tip && (
-              <div style={{ marginTop: 10, background: "#FEF3C7", border: "1.5px solid #F59E0B", borderRadius: 10, padding: "8px 12px", fontSize: 12, color: "#92400E", lineHeight: 1.6 }}>
-                💡 {ex.tip}
-              </div>
-            )}
-          </Card>
-        );
-      })}
-
-      {!submitted ? (
-        <button onClick={() => setSubmitted(true)} disabled={!allAnswered}
-          style={{ ...btnStyle(allAnswered ? lvlColor : "#9CA3AF"), width: "100%", padding: 14, fontSize: 15 }}>
-          {allAnswered ? "提交作業 ✓" : `請完成所有題目（${answered}/${total}）`}
-        </button>
-      ) : (
-        <Card color={lvlColor} style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 40 }}>{score === total ? "🏆" : score >= total * 0.6 ? "💪" : "📖"}</div>
-          <div style={{ fontSize: 24, fontWeight: 900, color: lvlColor }}>{score}/{total} 正確</div>
-          <div style={{ fontSize: 13, color: "#6B7280", margin: "6px 0 12px" }}>
-            {score === total ? "完美！這份作業全對 🎉" : score >= total * 0.6 ? "不錯，再複習錯題就更穩了！" : "別灰心，看下方解析再做一次會更好。"}
-          </div>
-          <ProgressBar value={Math.round((score / total) * 100)} color={lvlColor} />
-          <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 12 }}>
-            <button onClick={() => { setSubmitted(false); setState({}); }} style={btnStyle(lvlColor, true)}>🔄 再做一次</button>
-            <button onClick={onBack} style={btnStyle(lvlColor)}>← 其他作業</button>
-          </div>
-        </Card>
-      )}
-    </div>
-  );
-}
-
-function HomeworkScreen() {
-  const [active, setActive] = useState(null);
-  const [lvl, setLvl] = useState("all");
-
-  if (active) {
-    const hw = HOMEWORK.find(h => h.id === active);
-    return <HomeworkRunner hw={hw} onBack={() => setActive(null)} />;
-  }
-
-  const list = HOMEWORK.filter(h => lvl === "all" || h.level === lvl);
-  const counts = { A1: HOMEWORK.filter(h => h.level === "A1").length, A2: HOMEWORK.filter(h => h.level === "A2").length };
-
-  return (
-    <div>
-      <div style={{ fontSize: 22, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>📝 課後作業</div>
-      <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 6 }}>把課本《{HW_SOURCE}》拆成互動練習，點開即可作答、自動批改</div>
-      <SourceBadge text={HW_SOURCE} />
-
-      {/* 等級篩選 */}
-      <div style={{ display: "flex", gap: 8, margin: "6px 0 18px", flexWrap: "wrap" }}>
-        {[{ k: "all", t: "全部" }, { k: "A1", t: `A1 基礎（${counts.A1}）` }, { k: "A2", t: `A2 進階（${counts.A2}）` }].map(b => (
-          <button key={b.k} onClick={() => setLvl(b.k)}
-            style={{
-              border: `2px solid ${lvl === b.k ? C.purple : "#E9D5FF"}`,
-              background: lvl === b.k ? C.purple : "#fff",
-              color: lvl === b.k ? "#fff" : C.purple,
-              borderRadius: 20, padding: "7px 16px", fontSize: 13, fontWeight: 800, cursor: "pointer",
-            }}>{b.t}</button>
-        ))}
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        {list.map(h => {
-          const lc = h.level === "A1" ? C.green : C.blue;
-          return (
-            <button key={h.id} onClick={() => setActive(h.id)}
-              style={{ background: "#fff", border: `2px solid ${lc}33`, boxShadow: `0 4px 16px ${lc}15`, borderRadius: 18, padding: "18px 18px", cursor: "pointer", textAlign: "left", display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 30 }}>{h.emoji}</span>
-                <Badge text={h.level} color={lc} />
-              </div>
-              <div style={{ fontSize: 16, fontWeight: 900, color: "#1F2937" }}>{h.title}</div>
-              <div style={{ fontSize: 12, color: lc, fontWeight: 700 }}>{h.zh} · {h.exercises.length} 題</div>
-              <div style={{ fontSize: 12, color: "#9CA3AF", lineHeight: 1.5 }}>{h.desc}</div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-// 課外閱讀：雜誌正刊文章拆解成閱讀理解練習
-function ReadingHubScreen() {
-  const [active, setActive] = useState(null);
-  const [lvl, setLvl] = useState("all");
-
-  if (active) {
-    const rd = READINGS.find(r => r.id === active);
-    return <HomeworkRunner hw={rd} onBack={() => setActive(null)} source={READING_SOURCE} />;
-  }
-
-  const list = READINGS.filter(r => lvl === "all" || r.level === lvl);
-  const counts = { A1: READINGS.filter(r => r.level === "A1").length, A2: READINGS.filter(r => r.level === "A2").length };
-
-  return (
-    <div>
-      <div style={{ fontSize: 22, fontWeight: 900, color: "#1F2937", marginBottom: 4 }}>📖 課外閱讀</div>
-      <div style={{ fontSize: 14, color: "#9CA3AF", marginBottom: 6 }}>讀雜誌真實文章 → 作答理解題，邊讀邊學、自動批改（點德文單字看翻譯）</div>
-      <SourceBadge text={READING_SOURCE} />
-
-      {/* 等級篩選 */}
-      <div style={{ display: "flex", gap: 8, margin: "6px 0 18px", flexWrap: "wrap" }}>
-        {[{ k: "all", t: "全部" }, { k: "A1", t: `A1 基礎（${counts.A1}）` }, { k: "A2", t: `A2 進階（${counts.A2}）` }].map(b => (
-          <button key={b.k} onClick={() => setLvl(b.k)}
-            style={{
-              border: `2px solid ${lvl === b.k ? C.purple : "#E9D5FF"}`,
-              background: lvl === b.k ? C.purple : "#fff",
-              color: lvl === b.k ? "#fff" : C.purple,
-              borderRadius: 20, padding: "7px 16px", fontSize: 13, fontWeight: 800, cursor: "pointer",
-            }}>{b.t}</button>
-        ))}
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        {list.map(r => {
-          const lc = r.level === "A1" ? C.green : C.blue;
-          return (
-            <button key={r.id} onClick={() => setActive(r.id)}
-              style={{ background: "#fff", border: `2px solid ${lc}33`, boxShadow: `0 4px 16px ${lc}15`, borderRadius: 18, padding: "18px 18px", cursor: "pointer", textAlign: "left", display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontSize: 30 }}>{r.emoji}</span>
-                <Badge text={r.level} color={lc} />
-              </div>
-              <div style={{ fontSize: 16, fontWeight: 900, color: "#1F2937" }}>{r.title}</div>
-              <div style={{ fontSize: 12, color: lc, fontWeight: 700 }}>{r.zh} · {r.exercises.length} 題</div>
-              {r.note && <div style={{ fontSize: 10.5, fontWeight: 800, color: "#1E40AF", background: "#DBEAFE", borderRadius: 6, padding: "2px 8px", alignSelf: "flex-start" }}>🎯 A2 以上同樣適用</div>}
-              <div style={{ fontSize: 12, color: "#9CA3AF", lineHeight: 1.5 }}>{r.desc}</div>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 // 課本延伸：吃透考點 + 作業
 function ExtendScreen() {
   const [open, setOpen] = useState(0);
@@ -4528,7 +4078,7 @@ function ExtendScreen() {
                 {u.hw.map((h, j) => <li key={j} style={{ fontSize: 14, color: "#374151", lineHeight: 1.8 }}><GlossInline text={h} /></li>)}
               </ul>
               <div style={{ marginTop: 12, background: "#F0FDF4", border: "1.5px solid #86EFAC", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#166534", lineHeight: 1.6 }}>
-                💡 想直接「點開就做、自動批改」的練習？到 <b>系統課程 → 📝 課後作業</b>，課本已拆成 A1／A2 互動題！
+                💡 完成作業後，可交給 Sam 老師批改（見「練習陪伴 → 每日作業批改」）。
               </div>
             </div>
           )}
@@ -4685,9 +4235,7 @@ function SystemHub({ onPick }) {
   const cards = [
     { id: "vocab", zh: "必背單字", desc: "A1+A2 高頻字 321 個・7 大主題・可分動詞標註・卡片模式", emoji: "📒", bg: "linear-gradient(135deg, #818CF8, #6366F1)" },
     { id: "grammar", zh: "必考文法", desc: "21 課彩色記憶卡・考試應用・翻譯練習", emoji: "📐", bg: "linear-gradient(135deg, #A78BFA, #8B5CF6)" },
-    { id: "homework", zh: "課後作業", desc: "課本拆解・A1/A2 分級・點開即做・自動批改", emoji: "📝", bg: "linear-gradient(135deg, #34D399, #059669)" },
-    { id: "extread", zh: "課外閱讀", desc: "雜誌真實文章・A1/A2 分級・閱讀理解題・點詞翻譯", emoji: "📖", bg: "linear-gradient(135deg, #FBBF24, #F59E0B)" },
-    { id: "extend", zh: "課本延伸", desc: "吃透考點・把課堂學的練到會用", emoji: "🚀", bg: "linear-gradient(135deg, #F472B6, #EC4899)" },
+    { id: "extend", zh: "課本延伸", desc: "吃透考點・課後作業・把課堂學的練到會用", emoji: "🚀", bg: "linear-gradient(135deg, #F472B6, #EC4899)" },
     { id: "pronounce", zh: "發音攻堅", desc: "st/sp・小舌音 r・難發音規則・聽範例・錄音對比", emoji: "🗣️", bg: "linear-gradient(135deg, #2DD4BF, #0D9488)" },
   ];
   return (
